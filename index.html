@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>AJ Protocol — Plataforma</title>
+<title>Método Ananias Jr — Plataforma</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
 <style>
-/* ── TOKENS ──────────────────────────────────────── */
 :root {
   --bg:      #0a0a0a;
   --surface: #111111;
@@ -26,14 +25,13 @@
   --sidebar-w: 220px;
   --nav-h: 56px;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { background: var(--bg); color: var(--white); font-family: 'Barlow', sans-serif; overflow-x: hidden; min-height: 100vh; }
 html { -webkit-tap-highlight-color: transparent; }
 button { cursor: pointer; font-family: inherit; border: none; background: none; }
 input, select { font-family: inherit; }
 
-/* ── LOCK SCREEN ──────────────────────────────────── */
+/* ── LOCK ─────────────────────────────────────────── */
 #lockScreen {
   position: fixed; inset: 0; z-index: 9999;
   background: var(--bg);
@@ -43,8 +41,8 @@ input, select { font-family: inherit; }
 }
 .lock-logo {
   font-family: 'Bebas Neue', cursive;
-  font-size: clamp(36px, 9vw, 52px);
-  letter-spacing: 6px; text-align: center; margin-bottom: 4px;
+  font-size: clamp(30px, 8vw, 48px);
+  letter-spacing: 4px; text-align: center; margin-bottom: 4px; line-height: 1;
 }
 .lock-logo span { color: var(--red); }
 .lock-sub {
@@ -61,7 +59,7 @@ input, select { font-family: inherit; }
   font-size: 10px; letter-spacing: 4px;
   text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
 }
-.lock-lbl + .lock-lbl { margin-top: 16px; }
+.lock-lbl-mt { margin-top: 16px; }
 .lock-inp {
   width: 100%; background: var(--bg);
   border: 1px solid var(--border); color: var(--white);
@@ -75,11 +73,7 @@ input, select { font-family: inherit; }
 }
 .lock-inp:focus { border-color: var(--red); }
 .lock-inp.error { border-color: var(--red2); animation: shake .3s; }
-@keyframes shake {
-  0%,100% { transform: translateX(0) }
-  25%      { transform: translateX(-8px) }
-  75%      { transform: translateX(8px) }
-}
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 .pass-wrap { position: relative; }
 .pass-eye {
   position: absolute; right: 0; top: 0; height: 100%;
@@ -109,7 +103,7 @@ input, select { font-family: inherit; }
 /* ── APP SHELL ────────────────────────────────────── */
 #appShell { display: none; min-height: 100vh; }
 
-/* ── TOPBAR (mobile) ──────────────────────────────── */
+/* ── TOPBAR ───────────────────────────────────────── */
 #topbar {
   position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
   background: rgba(10,10,10,.96); border-bottom: 1px solid var(--border);
@@ -119,9 +113,14 @@ input, select { font-family: inherit; }
 }
 .topbar-logo {
   font-family: 'Bebas Neue', cursive;
-  font-size: 22px; letter-spacing: 4px;
+  font-size: 18px; letter-spacing: 3px; line-height: 1;
 }
 .topbar-logo span { color: var(--red); }
+.topbar-logo small {
+  display: block; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 8px; letter-spacing: 4px; color: var(--muted);
+  text-transform: uppercase; margin-top: -2px;
+}
 .topbar-right { display: flex; align-items: center; gap: 8px; }
 .topbar-btn {
   width: 40px; height: 40px; border: 1px solid var(--border);
@@ -130,7 +129,6 @@ input, select { font-family: inherit; }
   transition: all .2s;
 }
 .topbar-btn:hover { color: var(--white); border-color: var(--border2); }
-#menuBtn { font-size: 18px; }
 
 /* ── SIDEBAR ──────────────────────────────────────── */
 #sidebar {
@@ -147,10 +145,7 @@ input, select { font-family: inherit; }
   #menuBtn { display: none; }
   #mainArea { margin-left: var(--sidebar-w); }
 }
-
-.sidebar-section {
-  padding: 20px 12px 6px;
-}
+.sidebar-section { padding: 20px 12px 6px; }
 .sidebar-section-lbl {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 9px; font-weight: 700; letter-spacing: 4px;
@@ -171,7 +166,7 @@ input, select { font-family: inherit; }
   content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
   width: 2px; background: var(--red);
 }
-.nav-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+.nav-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
 .nav-badge {
   margin-left: auto;
   background: rgba(232,0,42,.15); color: var(--red2);
@@ -179,7 +174,6 @@ input, select { font-family: inherit; }
   font-size: 9px; font-weight: 700; letter-spacing: 1px;
   padding: 2px 6px; font-family: 'Barlow Condensed', sans-serif;
 }
-
 .sidebar-user {
   margin-top: auto; padding: 16px 12px;
   border-top: 1px solid var(--border);
@@ -197,45 +191,24 @@ input, select { font-family: inherit; }
   font-size: 12px; font-weight: 700; letter-spacing: 1px;
   text-transform: uppercase; color: var(--white);
 }
-.sidebar-plan {
-  font-size: 10px; color: var(--green); letter-spacing: 1px;
-  margin-top: 1px;
-}
-.sidebar-logout {
-  margin-left: auto; color: var(--faint); font-size: 14px; padding: 6px;
-}
+.sidebar-plan { font-size: 10px; color: var(--green); letter-spacing: 1px; margin-top: 1px; }
+.sidebar-logout { margin-left: auto; color: var(--faint); font-size: 14px; padding: 6px; }
 .sidebar-logout:hover { color: var(--red); }
 
-/* ── MAIN AREA ────────────────────────────────────── */
-#mainArea {
-  padding-top: var(--nav-h);
-  min-height: 100vh;
-  transition: margin-left .28s cubic-bezier(.4,0,.2,1);
-}
-
-/* ── PAGES ────────────────────────────────────────── */
+/* ── MAIN ─────────────────────────────────────────── */
+#mainArea { padding-top: var(--nav-h); min-height: 100vh; transition: margin-left .28s cubic-bezier(.4,0,.2,1); }
 .page { display: none; }
 .page.active { display: block; }
 
 /* ── PAGE HEADER ──────────────────────────────────── */
-.page-hdr {
-  padding: 32px 20px 0;
-  max-width: 1100px; margin: 0 auto;
-}
+.page-hdr { padding: 32px 20px 0; max-width: 1100px; margin: 0 auto; }
 .page-eyebrow {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 10px; font-weight: 700; letter-spacing: 5px;
   text-transform: uppercase; color: var(--red2); margin-bottom: 6px;
 }
-.page-title {
-  font-family: 'Bebas Neue', cursive;
-  font-size: clamp(32px, 7vw, 56px); letter-spacing: 2px; line-height: 1;
-}
-.page-sub {
-  font-size: 14px; color: var(--muted); margin-top: 6px;
-}
-
-/* ── CONTAINER ────────────────────────────────────── */
+.page-title { font-family: 'Bebas Neue', cursive; font-size: clamp(32px,7vw,56px); letter-spacing: 2px; line-height: 1; }
+.page-sub { font-size: 14px; color: var(--muted); margin-top: 6px; }
 .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; }
 
 /* ── DASHBOARD ────────────────────────────────────── */
@@ -256,489 +229,287 @@ input, select { font-family: inherit; }
   font-size: 10px; font-weight: 700; letter-spacing: 4px;
   text-transform: uppercase; color: var(--red2); margin-bottom: 6px;
 }
-.dash-greeting h2 {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 28px; letter-spacing: 2px; color: var(--white); margin-bottom: 4px;
-}
+.dash-greeting h2 { font-family: 'Bebas Neue', cursive; font-size: 28px; letter-spacing: 2px; margin-bottom: 4px; }
 .dash-greeting p { font-size: 13px; color: var(--muted); }
 
-/* stats row */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 2px; margin-bottom: 20px;
-}
-.stat-card {
-  background: var(--card); border: 1px solid var(--border);
-  padding: 16px 14px;
-}
-.stat-lbl {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 9px; font-weight: 700; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
-}
-.stat-val {
-  font-family: 'Bebas Neue', cursive; font-size: 36px;
-  line-height: 1; color: var(--white);
-}
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 2px; margin-bottom: 20px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); padding: 16px 14px; }
+.stat-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.stat-val { font-family: 'Bebas Neue', cursive; font-size: 36px; line-height: 1; color: var(--white); }
 .stat-val.red { color: var(--red); text-shadow: 0 0 20px rgba(232,0,42,.25); }
-.stat-val.green { color: var(--green); text-shadow: 0 0 16px rgba(0,230,118,.2); }
-.stat-unit {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; letter-spacing: 2px; color: var(--faint);
-  margin-top: 2px; text-transform: uppercase;
-}
+.stat-val.green { color: var(--green); }
+.stat-unit { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; color: var(--faint); margin-top: 2px; text-transform: uppercase; }
 .stat-bar { height: 2px; background: var(--border); margin-top: 10px; overflow: hidden; }
 .stat-bar-fill { height: 100%; background: var(--red); transition: width .6s; }
 .stat-bar-fill.green { background: var(--green); }
 
-/* 30-day mini grid */
-.mini-grid-wrap {
-  background: var(--card); border: 1px solid var(--border); padding: 18px 16px;
-  margin-bottom: 20px;
-}
-.mini-grid-hdr {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
-}
-.mini-grid-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--muted);
-}
-.mini-grid-prog {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 18px; color: var(--red);
-}
-.days-mini {
-  display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px;
-}
-.day-mini {
-  aspect-ratio: 1; background: var(--card2);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Bebas Neue', cursive; font-size: 12px;
-  color: var(--faint); cursor: pointer; transition: all .15s;
-}
+.mini-grid-wrap { background: var(--card); border: 1px solid var(--border); padding: 18px 16px; margin-bottom: 20px; }
+.mini-grid-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+.mini-grid-title { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
+.mini-grid-prog { font-family: 'Bebas Neue', cursive; font-size: 18px; color: var(--red); }
+.days-mini { display: grid; grid-template-columns: repeat(10,1fr); gap: 2px; }
+.day-mini { aspect-ratio:1; background: var(--card2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', cursive; font-size: 12px; color: var(--faint); cursor: pointer; transition: all .15s; }
 .day-mini:hover { border-color: var(--red); color: var(--white); }
 .day-mini.done { background: var(--red); border-color: var(--red); color: #fff; }
 .day-mini.today { border-color: rgba(232,0,42,.5); color: var(--red2); }
 .prog-bar { height: 2px; background: var(--border); margin-top: 10px; overflow: hidden; }
 .prog-bar-fill { height: 100%; background: var(--red); transition: width .6s; }
 
-/* module cards */
-.modules-hdr {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--muted);
-  margin-bottom: 10px;
-}
-.modules-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2px; margin-bottom: 24px;
-}
-.mod-card {
-  background: var(--card); border: 1px solid var(--border);
-  padding: 20px 16px; cursor: pointer; position: relative;
-  overflow: hidden; transition: border-color .2s;
-}
+.modules-hdr { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 2px; margin-bottom: 24px; }
+.mod-card { background: var(--card); border: 1px solid var(--border); padding: 20px 16px; cursor: pointer; position: relative; overflow: hidden; transition: border-color .2s; }
 .mod-card:hover { border-color: rgba(232,0,42,.35); }
-.mod-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0;
-  height: 2px; background: var(--red);
-  transform: scaleX(0); transform-origin: left; transition: transform .35s;
-}
-.mod-card:hover::before { transform: scaleX(1); }
-.mod-card.locked { opacity: .45; cursor: not-allowed; }
-.mod-card.locked::before { display: none; }
-.mod-card.locked:hover { border-color: var(--border); }
+.mod-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--red); transform:scaleX(0); transform-origin:left; transition:transform .35s; }
+.mod-card:hover::before { transform:scaleX(1); }
+.mod-card.locked { opacity:.45; cursor:not-allowed; }
+.mod-card.locked::before { display:none; }
+.mod-card.locked:hover { border-color:var(--border); }
 .mod-icon { font-size: 22px; margin-bottom: 12px; }
-.mod-name {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 14px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--white); margin-bottom: 4px;
-}
+.mod-name { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--white); margin-bottom: 4px; }
 .mod-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
-.mod-tag {
-  display: inline-block; margin-top: 10px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 9px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; padding: 3px 8px;
-}
+.mod-tag { display: inline-block; margin-top: 10px; font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 3px 8px; }
 .mod-tag.free { color: var(--green); background: rgba(0,230,118,.08); border: 1px solid rgba(0,230,118,.25); }
 .mod-tag.premium { color: var(--amber); background: rgba(255,179,0,.08); border: 1px solid rgba(255,179,0,.25); }
 .mod-tag.locked { color: var(--faint); background: rgba(255,255,255,.04); border: 1px solid var(--border); }
-.mod-lock-icon {
-  position: absolute; top: 12px; right: 12px;
-  font-size: 14px; color: var(--faint);
-}
+.mod-lock-icon { position: absolute; top: 12px; right: 12px; font-size: 14px; color: var(--faint); }
 
-/* ── TREINO PAGE ──────────────────────────────────── */
-.tabs { display: flex; gap: 2px; margin-bottom: 2px; }
-.tab {
-  flex: 1; background: var(--card2); border: 1px solid var(--border);
-  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; padding: 13px 6px; text-align: center;
-  transition: all .2s; min-height: 44px;
-}
+/* ── TREINO ───────────────────────────────────────── */
+.tabs { display: flex; gap: 2px; margin-bottom: 2px; flex-wrap: wrap; }
+.tab { flex: 1; background: var(--card2); border: 1px solid var(--border); color: var(--muted); font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 13px 6px; text-align: center; transition: all .2s; min-height: 44px; min-width: 80px; }
 .tab.active { background: var(--red); border-color: var(--red); color: #fff; }
 .tab:hover:not(.active) { color: var(--white); }
-
 .panel { display: none; }
 .panel.active { display: block; }
 
-.treino-hdr {
-  background: var(--card); border: 1px solid var(--border); border-bottom: none;
-  padding: 20px 16px;
-  display: flex; justify-content: space-between; align-items: flex-start;
-  flex-wrap: wrap; gap: 12px;
-}
-.treino-hdr h2 {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 28px; letter-spacing: 2px;
-}
+.treino-hdr { background: var(--card); border: 1px solid var(--border); border-bottom: none; padding: 20px 16px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+.treino-hdr h2 { font-family: 'Bebas Neue', cursive; font-size: 28px; letter-spacing: 2px; }
 .treino-hdr p { font-size: 13px; color: var(--muted); margin-top: 3px; }
 .day-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; }
-.day-tag {
-  background: rgba(232,0,42,.1); border: 1px solid rgba(232,0,42,.25);
-  color: var(--red2);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 2px; padding: 4px 8px;
-}
+.day-tag { background: rgba(232,0,42,.1); border: 1px solid rgba(232,0,42,.25); color: var(--red2); font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; padding: 4px 8px; }
 .treino-meta { display: flex; gap: 18px; flex-wrap: wrap; }
 .meta { text-align: right; }
-.meta .v {
-  font-family: 'Bebas Neue', cursive; font-size: 24px;
-  color: var(--white); display: block;
-}
-.meta .l {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--faint);
-}
-
+.meta .v { font-family: 'Bebas Neue', cursive; font-size: 24px; color: var(--white); display: block; }
+.meta .l { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--faint); }
 .ex-list { background: var(--card); border: 1px solid var(--border); border-top: none; }
-.ex-item {
-  display: grid; grid-template-columns: 46px 1fr 72px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer; transition: background .15s; align-items: center;
-}
+.ex-item { display: grid; grid-template-columns: 46px 1fr 72px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .15s; align-items: center; }
 .ex-item:last-child { border-bottom: none; }
 .ex-item:hover { background: rgba(232,0,42,.04); }
 .ex-item.done { background: rgba(232,0,42,.07); }
 .ex-item.done .ex-name { text-decoration: line-through; color: var(--faint); }
-.ex-n {
-  width: 46px; text-align: center;
-  font-family: 'Bebas Neue', cursive; font-size: 16px; color: var(--faint);
-  border-right: 1px solid var(--border); align-self: stretch;
-  display: flex; align-items: center; justify-content: center;
-}
+.ex-n { width: 46px; text-align: center; font-family: 'Bebas Neue', cursive; font-size: 16px; color: var(--faint); border-right: 1px solid var(--border); align-self: stretch; display: flex; align-items: center; justify-content: center; }
 .ex-item.done .ex-n { color: var(--red); }
 .ex-body { padding: 14px 12px; }
-.ex-name {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 14px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--white);
-}
+.ex-name { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--white); }
 .ex-detail { font-size: 12px; color: var(--faint); margin-top: 2px; }
-.ex-timer-btn {
-  background: var(--card2); border-left: 1px solid var(--border);
-  color: var(--muted);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; padding: 0 8px;
-  height: 100%; transition: color .2s; white-space: nowrap; min-width: 72px;
-}
+.ex-timer-btn { background: var(--card2); border-left: 1px solid var(--border); color: var(--muted); font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 0 8px; height: 100%; transition: color .2s; white-space: nowrap; min-width: 72px; }
 .ex-timer-btn:hover { color: var(--red); }
 
-/* ── DIETA PAGE ───────────────────────────────────── */
-.dieta-setup {
-  background: var(--card); border: 1px solid var(--border);
-  padding: 20px 16px; margin-bottom: 2px;
+/* ── DIETA — MEAL TABS ────────────────────────────── */
+.meal-tabs { display: flex; gap: 2px; margin-bottom: 0; flex-wrap: wrap; }
+.meal-tab {
+  flex: 1; background: var(--card2); border: 1px solid var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; padding: 12px 8px; text-align: center;
+  transition: all .2s; min-height: 52px; min-width: 70px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer;
 }
-.setup-row {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 10px; margin-bottom: 16px;
-}
-.setup-field { display: flex; flex-direction: column; gap: 5px; }
-.setup-lbl {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--muted);
-}
-.setup-inp {
-  background: var(--bg); border: 1px solid var(--border); color: var(--white);
-  font-family: 'Bebas Neue', cursive; font-size: 22px;
-  padding: 8px 10px; outline: none; transition: border-color .2s;
-  min-height: 44px; -moz-appearance: textfield;
-}
-.setup-inp::-webkit-outer-spin-button,
-.setup-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
-.setup-inp:focus { border-color: var(--red); }
-.setup-sel {
-  background: var(--bg); border: 1px solid var(--border); color: var(--white);
-  font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600;
-  padding: 10px 12px; outline: none; transition: border-color .2s;
-  cursor: pointer; -webkit-appearance: none; appearance: none; min-height: 44px;
-}
-.setup-sel:focus { border-color: var(--red); }
-.sex-row { display: flex; gap: 6px; }
-.sex-btn {
-  flex: 1; background: var(--bg); border: 1px solid var(--border);
-  color: var(--muted);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; padding: 10px; transition: all .2s;
-  text-align: center; min-height: 44px;
-}
-.sex-btn.sel { background: rgba(232,0,42,.12); border-color: var(--red); color: var(--red2); }
-.calc-btn {
-  width: 100%; background: var(--red); color: #fff;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px; font-weight: 700; letter-spacing: 5px;
-  text-transform: uppercase; padding: 14px; min-height: 48px; transition: background .2s;
-}
-.calc-btn:hover { background: var(--red2); }
+.meal-tab .meal-tab-icon { font-size: 18px; }
+.meal-tab .meal-tab-lbl { font-size: 9px; }
+.meal-tab.active { background: var(--card); border-color: var(--red); color: var(--white); border-bottom-color: var(--card); position: relative; z-index: 1; }
+.meal-tab:hover:not(.active) { color: var(--white); }
 
-.result-block { display: none; }
-.result-block.show { display: block; }
-.result-cards {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 2px; margin-top: 16px;
-}
-.result-card {
-  background: var(--card2); border: 1px solid var(--border);
-  padding: 14px 12px; text-align: center;
-}
-.result-card.hl { background: rgba(232,0,42,.07); border-color: rgba(232,0,42,.3); }
-.result-card.hl-g { background: rgba(0,230,118,.06); border-color: rgba(0,230,118,.3); }
-.rc-lbl {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 9px; font-weight: 700; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
-}
-.rc-val {
-  font-family: 'Bebas Neue', cursive; font-size: 30px; line-height: 1; color: var(--white);
-}
-.rc-val.red { color: var(--red); }
-.rc-val.green { color: var(--green); }
-.rc-unit {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; color: var(--faint); letter-spacing: 2px; margin-top: 2px;
-}
+.meal-panel { display: none; }
+.meal-panel.active { display: block; }
 
-.meal-block { background: var(--card); border: 1px solid var(--border); margin-top: 2px; }
-.meal-hdr {
-  padding: 14px 16px; border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;
-}
-.meal-title {
-  font-family: 'Bebas Neue', cursive; font-size: 20px;
-  letter-spacing: 2px; color: var(--white);
-}
-.meal-meta {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--faint);
-}
-.meal-meta strong { color: var(--red2); }
-.food-row {
-  display: grid;
-  grid-template-columns: 1fr 80px 56px 56px;
-  padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,.04);
-  align-items: center; transition: background .12s;
-}
+.meal-block { background: var(--card); border: 1px solid var(--border); border-top: none; }
+.meal-hdr { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); }
+.meal-title { font-family: 'Bebas Neue', cursive; font-size: 22px; letter-spacing: 2px; color: var(--white); }
+.meal-meta-row { display: flex; gap: 16px; margin-top: 6px; flex-wrap: wrap; }
+.meal-meta-item { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+.meal-meta-item.kcal { color: var(--red2); }
+.meal-meta-item.prot { color: var(--green); }
+.meal-meta-item.tip  { color: var(--muted); }
+
+.meal-cols { display: grid; grid-template-columns: 1fr 80px 56px 56px; padding: 8px 16px; background: var(--card2); border-bottom: 1px solid var(--border); }
+.meal-col-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--faint); }
+.meal-col-lbl.c { text-align: center; }
+.meal-col-lbl.r { text-align: right; }
+.meal-col-lbl.g { color: var(--green); text-align: right; }
+
+.food-row { display: grid; grid-template-columns: 1fr 80px 56px 56px; padding: 11px 16px; border-bottom: 1px solid rgba(255,255,255,.04); align-items: center; transition: background .12s; }
 .food-row:hover { background: rgba(255,255,255,.02); }
 .food-row:last-child { border-bottom: none; }
 .food-name { font-size: 13px; color: var(--white); }
 .food-qty { font-size: 12px; color: var(--muted); text-align: center; }
-.food-kcal {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px; font-weight: 700; color: var(--text); text-align: right;
-}
-.food-prot {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px; font-weight: 700; color: var(--green); text-align: right;
-}
-.meal-cols {
-  display: grid; grid-template-columns: 1fr 80px 56px 56px;
-  padding: 8px 16px; background: var(--card2);
-  border-bottom: 1px solid var(--border);
-}
-.meal-col-lbl {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 9px; font-weight: 700; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--faint);
-}
-.meal-col-lbl:not(:first-child) { text-align: center; }
-.meal-col-lbl:last-child { color: var(--green); text-align: right; }
-.meal-col-lbl:nth-child(3) { text-align: right; }
+.food-kcal { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); text-align: right; }
+.food-prot { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; color: var(--green); text-align: right; }
 
-/* ── PROGRESSO PAGE ───────────────────────────────── */
-.streak-block {
-  background: var(--card); border: 1px solid rgba(232,0,42,.2);
-  border-top: 2px solid var(--red); padding: 20px 16px; margin-bottom: 2px;
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-}
-.streak-num {
-  font-family: 'Bebas Neue', cursive; font-size: 72px;
-  color: var(--red); line-height: 1; text-shadow: 0 0 30px rgba(232,0,42,.3);
-}
-.streak-lbl {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px; font-weight: 700; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--muted);
-}
+.meal-total-row { display: flex; justify-content: flex-end; gap: 20px; padding: 10px 16px; background: var(--card2); border-top: 1px solid var(--border); }
+.meal-total-item { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+.meal-total-item.kcal { color: var(--red2); }
+.meal-total-item.prot { color: var(--green); }
+
+/* ── DIETA SETUP ──────────────────────────────────── */
+.dieta-setup { background: var(--card); border: 1px solid var(--border); padding: 20px 16px; margin-bottom: 16px; }
+.setup-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 10px; margin-bottom: 16px; }
+.setup-field { display: flex; flex-direction: column; gap: 5px; }
+.setup-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+.setup-inp { background: var(--bg); border: 1px solid var(--border); color: var(--white); font-family: 'Bebas Neue', cursive; font-size: 22px; padding: 8px 10px; outline: none; transition: border-color .2s; min-height: 44px; -moz-appearance: textfield; }
+.setup-inp::-webkit-outer-spin-button, .setup-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
+.setup-inp:focus { border-color: var(--red); }
+.setup-sel { background: var(--bg); border: 1px solid var(--border); color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600; padding: 10px 12px; outline: none; transition: border-color .2s; cursor: pointer; -webkit-appearance: none; appearance: none; min-height: 44px; }
+.setup-sel:focus { border-color: var(--red); }
+.sex-row { display: flex; gap: 6px; }
+.sex-btn { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--muted); font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 10px; transition: all .2s; text-align: center; min-height: 44px; }
+.sex-btn.sel { background: rgba(232,0,42,.12); border-color: var(--red); color: var(--red2); }
+.calc-btn { width: 100%; background: var(--red); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; padding: 14px; min-height: 48px; transition: background .2s; }
+.calc-btn:hover { background: var(--red2); }
+.result-block { display: none; }
+.result-block.show { display: block; }
+.result-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 2px; margin-top: 16px; }
+.result-card { background: var(--card2); border: 1px solid var(--border); padding: 14px 12px; text-align: center; }
+.result-card.hl { background: rgba(232,0,42,.07); border-color: rgba(232,0,42,.3); }
+.result-card.hl-g { background: rgba(0,230,118,.06); border-color: rgba(0,230,118,.3); }
+.rc-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.rc-val { font-family: 'Bebas Neue', cursive; font-size: 30px; line-height: 1; color: var(--white); }
+.rc-val.red { color: var(--red); }
+.rc-val.green { color: var(--green); }
+.rc-unit { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; color: var(--faint); letter-spacing: 2px; margin-top: 2px; }
+
+/* ── PROGRESSO ────────────────────────────────────── */
+.streak-block { background: var(--card); border: 1px solid rgba(232,0,42,.2); border-top: 2px solid var(--red); padding: 20px 16px; margin-bottom: 2px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.streak-num { font-family: 'Bebas Neue', cursive; font-size: 72px; color: var(--red); line-height: 1; text-shadow: 0 0 30px rgba(232,0,42,.3); }
+.streak-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
 .streak-msg { font-size: 14px; color: var(--text); margin-top: 4px; line-height: 1.5; }
-
-.medidas-block {
-  background: var(--card); border: 1px solid var(--border);
-  padding: 20px 16px; margin-bottom: 2px;
-}
-.medidas-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 2px; margin-top: 12px;
-}
-.medida-card {
-  background: var(--card2); border: 1px solid var(--border);
-  padding: 14px 12px; text-align: center;
-}
-.medida-lbl {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 9px; font-weight: 700; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
-}
-.medida-inp {
-  background: var(--bg); border: 1px solid var(--border);
-  color: var(--white); font-family: 'Bebas Neue', cursive;
-  font-size: 22px; width: 100%; text-align: center;
-  padding: 6px 8px; outline: none; transition: border-color .2s;
-  -moz-appearance: textfield;
-}
-.medida-inp::-webkit-outer-spin-button,
-.medida-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
+.medidas-block { background: var(--card); border: 1px solid var(--border); padding: 20px 16px; margin-bottom: 2px; }
+.medidas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 2px; margin-top: 12px; }
+.medida-card { background: var(--card2); border: 1px solid var(--border); padding: 14px 12px; text-align: center; }
+.medida-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.medida-inp { background: var(--bg); border: 1px solid var(--border); color: var(--white); font-family: 'Bebas Neue', cursive; font-size: 22px; width: 100%; text-align: center; padding: 6px 8px; outline: none; transition: border-color .2s; -moz-appearance: textfield; }
+.medida-inp::-webkit-outer-spin-button, .medida-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
 .medida-inp:focus { border-color: var(--red); }
-.medida-unit {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 9px; color: var(--faint); margin-top: 4px; letter-spacing: 2px;
-}
-.save-medidas {
-  width: 100%; margin-top: 12px;
-  background: transparent; border: 1px solid var(--border);
-  color: var(--muted);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px; font-weight: 700; letter-spacing: 4px;
-  text-transform: uppercase; padding: 12px; transition: all .2s; min-height: 44px;
-}
+.medida-unit { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; color: var(--faint); margin-top: 4px; letter-spacing: 2px; }
+.save-medidas { width: 100%; margin-top: 12px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; padding: 12px; transition: all .2s; min-height: 44px; }
 .save-medidas:hover { border-color: var(--red); color: var(--red); }
-
 .historico-list { background: var(--card); border: 1px solid var(--border); }
-.hist-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px;
-}
+.hist-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
 .hist-item:last-child { border-bottom: none; }
-.hist-date {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--muted);
-}
+.hist-date { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
 .hist-vals { display: flex; gap: 16px; flex-wrap: wrap; }
-.hist-val {
-  font-family: 'Bebas Neue', cursive; font-size: 18px; color: var(--white);
-}
-.hist-val span {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 9px; color: var(--faint); letter-spacing: 1px; margin-left: 2px;
-}
-.hist-delta {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px; font-weight: 700; letter-spacing: 1px;
-  padding: 3px 8px;
-}
+.hist-val { font-family: 'Bebas Neue', cursive; font-size: 18px; color: var(--white); }
+.hist-val span { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; color: var(--faint); letter-spacing: 1px; margin-left: 2px; }
+.hist-delta { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 3px 8px; }
 .hist-delta.down { color: var(--green); background: rgba(0,230,118,.1); border: 1px solid rgba(0,230,118,.25); }
 .hist-delta.up   { color: var(--red2); background: rgba(232,0,42,.1);   border: 1px solid rgba(232,0,42,.25); }
 
-/* ── PERFIL PAGE ──────────────────────────────────── */
-.perfil-hero {
+/* ── QUEM É ANANIAS ───────────────────────────────── */
+.ananias-hero {
   background: var(--card); border: 1px solid var(--border);
-  padding: 28px 20px; margin-bottom: 2px;
-  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  border-top: 3px solid var(--red);
+  padding: 32px 24px; margin-bottom: 2px;
+  position: relative; overflow: hidden;
 }
-.perfil-avatar {
-  width: 72px; height: 72px; background: rgba(232,0,42,.12);
-  border: 2px solid rgba(232,0,42,.3);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Bebas Neue', cursive; font-size: 28px; color: var(--red2);
-  flex-shrink: 0;
+.ananias-hero::before {
+  content: 'AJ'; position: absolute; right: -20px; bottom: -30px;
+  font-family: 'Bebas Neue', cursive; font-size: 180px;
+  color: rgba(232,0,42,.04); pointer-events: none; line-height: 1;
 }
-.perfil-name {
-  font-family: 'Bebas Neue', cursive; font-size: 28px; letter-spacing: 2px;
-}
-.perfil-email { font-size: 13px; color: var(--muted); margin-top: 2px; }
-.perfil-plan {
-  display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+.ananias-badge {
+  display: inline-flex; align-items: center; gap: 8px;
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--green); background: rgba(0,230,118,.08);
-  border: 1px solid rgba(0,230,118,.25); padding: 5px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--red2); background: rgba(232,0,42,.08);
+  border: 1px solid rgba(232,0,42,.25); padding: 5px 14px; margin-bottom: 16px;
 }
-.plan-dot {
-  width: 6px; height: 6px; background: var(--green);
-  border-radius: 50%; animation: blink 1.4s infinite;
+.ananias-nome {
+  font-family: 'Bebas Neue', cursive; font-size: clamp(36px,8vw,64px);
+  letter-spacing: 3px; line-height: 1; color: var(--white); margin-bottom: 4px;
 }
-@keyframes blink { 0%,100% { opacity: 1 } 50% { opacity: .2 } }
-@keyframes pulse { 0%,100% { opacity: 1; transform: scale(1) } 50% { opacity: .4; transform: scale(.6) } }
+.ananias-nome span { color: var(--red); }
+.ananias-titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 600; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
+}
+.ananias-frase {
+  font-family: 'Bebas Neue', cursive; font-size: 20px; letter-spacing: 2px;
+  color: var(--text); border-left: 3px solid var(--red); padding-left: 16px;
+  line-height: 1.3;
+}
 
-.perfil-actions { display: flex; flex-direction: column; gap: 2px; }
-.perfil-action {
+.ananias-nums {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+  gap: 2px; margin-bottom: 2px;
+}
+.ananias-num-card {
   background: var(--card); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 16px; transition: all .2s; cursor: pointer;
+  padding: 20px 14px; text-align: center;
 }
-.perfil-action:hover { border-color: rgba(232,0,42,.3); background: rgba(232,0,42,.04); }
-.action-lbl {
+.ananias-num-val {
+  font-family: 'Bebas Neue', cursive; font-size: 44px; line-height: 1;
+  color: var(--red); text-shadow: 0 0 20px rgba(232,0,42,.25);
+}
+.ananias-num-lbl {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px; font-weight: 700; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--white);
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted); margin-top: 4px;
 }
+
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item { display: grid; grid-template-columns: 80px 2px 1fr; gap: 0 16px; }
+.tl-year {
+  font-family: 'Bebas Neue', cursive; font-size: 22px; color: var(--red);
+  text-align: right; padding-top: 2px; padding-right: 0;
+}
+.tl-line-wrap { display: flex; flex-direction: column; align-items: center; }
+.tl-dot { width: 10px; height: 10px; background: var(--red); border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+.tl-line { flex: 1; width: 2px; background: var(--border); }
+.tl-item:last-child .tl-line { display: none; }
+.tl-content { padding-bottom: 28px; }
+.tl-title {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--white); margin-bottom: 4px;
+}
+.tl-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+.filosofia-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 2px; }
+.filo-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 3px solid var(--red); padding: 20px 16px;
+}
+.filo-card.green { border-left-color: var(--green); }
+.filo-card.blue  { border-left-color: var(--blue); }
+.filo-title {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--white); margin-bottom: 8px;
+}
+.filo-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── PERFIL ───────────────────────────────────────── */
+.perfil-hero { background: var(--card); border: 1px solid var(--border); padding: 28px 20px; margin-bottom: 2px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.perfil-avatar { width: 72px; height: 72px; background: rgba(232,0,42,.12); border: 2px solid rgba(232,0,42,.3); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', cursive; font-size: 28px; color: var(--red2); flex-shrink: 0; }
+.perfil-name { font-family: 'Bebas Neue', cursive; font-size: 28px; letter-spacing: 2px; }
+.perfil-email { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.perfil-plan { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--green); background: rgba(0,230,118,.08); border: 1px solid rgba(0,230,118,.25); padding: 5px 12px; }
+.plan-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: blink 1.4s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.6)} }
+.perfil-actions { display: flex; flex-direction: column; gap: 2px; }
+.perfil-action { background: var(--card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 16px 16px; transition: all .2s; cursor: pointer; }
+.perfil-action:hover { border-color: rgba(232,0,42,.3); background: rgba(232,0,42,.04); }
+.action-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--white); }
 .action-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .action-arrow { color: var(--faint); font-size: 16px; }
 
-/* ── OVERLAY ──────────────────────────────────────── */
-#overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,.6); z-index: 140;
-}
-#overlay.open { display: block; }
-
 /* ── TIMER MODAL ──────────────────────────────────── */
-#timerModal {
-  display: none; position: fixed; inset: 0; z-index: 300;
-  background: rgba(0,0,0,.88);
-  align-items: center; justify-content: center; padding: 20px;
-}
+#timerModal { display: none; position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,.88); align-items: center; justify-content: center; padding: 20px; }
 #timerModal.open { display: flex; }
-.timer-box {
-  background: var(--card); border: 1px solid rgba(232,0,42,.35);
-  border-top: 2px solid var(--red);
-  padding: 32px 24px; width: 100%; max-width: 300px; text-align: center;
-}
-.timer-ex {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--red2); margin-bottom: 8px;
-}
-.timer-display {
-  font-family: 'Bebas Neue', cursive; font-size: 88px;
-  color: var(--white); line-height: 1; margin-bottom: 24px;
-}
+.timer-box { background: var(--card); border: 1px solid rgba(232,0,42,.35); border-top: 2px solid var(--red); padding: 32px 24px; width: 100%; max-width: 300px; text-align: center; }
+.timer-ex { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--red2); margin-bottom: 8px; }
+.timer-display { font-family: 'Bebas Neue', cursive; font-size: 88px; color: var(--white); line-height: 1; margin-bottom: 24px; }
 .timer-actions { display: flex; gap: 8px; }
-.timer-btn {
-  flex: 1; font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px; font-weight: 700; letter-spacing: 3px;
-  text-transform: uppercase; padding: 13px; min-height: 44px;
-  transition: all .2s;
-}
+.timer-btn { flex: 1; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; padding: 13px; min-height: 44px; transition: all .2s; }
 .timer-btn.primary { background: var(--red); color: #fff; }
 .timer-btn.primary:hover { background: var(--red2); }
 .timer-btn.secondary { background: transparent; border: 1px solid var(--border); color: var(--muted); }
@@ -746,97 +517,68 @@ input, select { font-family: inherit; }
 
 /* ── UTILITY ──────────────────────────────────────── */
 .divider { height: 1px; background: var(--border); margin: 20px 0; }
-.section-hdr {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
-}
+.section-hdr { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
 .badge-dot { width: 6px; height: 6px; background: var(--red2); border-radius: 50%; animation: pulse 1.5s infinite; display: inline-block; }
-
-/* ── MOBILE OVERLAY CLOSE ─────────────────────────── */
-@media (max-width: 899px) {
-  #sidebar.open + #overlay { display: block; }
-}
+#overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 140; }
+#overlay.open { display: block; }
+@media (max-width: 899px) { #sidebar.open + #overlay { display: block; } }
 </style>
 </head>
 <body>
 
 <!-- ══ LOCK ════════════════════════════════════════ -->
 <div id="lockScreen">
-  <div class="lock-logo">AJ <span>Protocol</span></div>
+  <div class="lock-logo">Método<br><span>Ananias Jr</span></div>
   <div class="lock-sub">Plataforma de Performance</div>
-
   <div class="lock-card">
     <div class="lock-lbl">Email</div>
     <input class="lock-inp" id="emailInp" type="email" placeholder="seu@email.com" autocomplete="email">
-
     <div class="lock-lbl lock-lbl-mt">Senha de Acesso</div>
     <div class="pass-wrap">
-      <input class="lock-inp pass" id="passInp" type="password" placeholder="CÓDIGO" maxlength="20" autocomplete="current-password">
+      <input class="lock-inp pass" id="passInp" type="password" placeholder="CÓDIGO" maxlength="30" autocomplete="current-password">
       <button class="pass-eye" id="eyeBtn" onclick="toggleEye()">👁</button>
     </div>
-
     <label class="lock-remember">
       <input type="checkbox" id="rememberMe" checked>
       <span>Manter acesso neste dispositivo</span>
     </label>
-
-    <button class="lock-btn" onclick="tryLogin()">Acessar Protocolo</button>
+    <button class="lock-btn" onclick="tryLogin()">Acessar o Método</button>
     <div class="lock-err" id="lockErr"></div>
   </div>
 </div>
 
-<!-- ══ APP SHELL ════════════════════════════════════ -->
+<!-- ══ APP ══════════════════════════════════════════ -->
 <div id="appShell">
 
-  <!-- TOPBAR -->
   <div id="topbar">
-    <div class="topbar-logo">AJ <span>Protocol</span></div>
+    <div class="topbar-logo">
+      Método <span>Ananias Jr</span>
+      <small>Plataforma de Performance</small>
+    </div>
     <div class="topbar-right">
-      <button class="topbar-btn" onclick="navigate('notif')" title="Notificações">🔔</button>
       <button class="topbar-btn" id="menuBtn" onclick="toggleSidebar()">☰</button>
     </div>
   </div>
 
-  <!-- SIDEBAR -->
   <nav id="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-section-lbl">Principal</div>
-      <div class="nav-item active" onclick="navigate('dashboard')">
-        <span class="nav-icon">🏠</span> Dashboard
-      </div>
-      <div class="nav-item" onclick="navigate('treino')">
-        <span class="nav-icon">💪</span> Treino
-        <span class="nav-badge">Dia 8</span>
-      </div>
-      <div class="nav-item" onclick="navigate('dieta')">
-        <span class="nav-icon">🥗</span> Nutrição
-      </div>
-      <div class="nav-item" onclick="navigate('progresso')">
-        <span class="nav-icon">📈</span> Progresso
-      </div>
+      <div class="nav-item active" onclick="navigate('dashboard')"><span class="nav-icon">🏠</span> Dashboard</div>
+      <div class="nav-item" onclick="navigate('treino')"><span class="nav-icon">💪</span> Treino<span class="nav-badge">Dia 8</span></div>
+      <div class="nav-item" onclick="navigate('dieta')"><span class="nav-icon">🥗</span> Nutrição</div>
+      <div class="nav-item" onclick="navigate('progresso')"><span class="nav-icon">📈</span> Progresso</div>
     </div>
-
     <div class="sidebar-section">
-      <div class="sidebar-section-lbl">Módulos</div>
-      <div class="nav-item" onclick="navigate('modulos')">
-        <span class="nav-icon">⚡</span> Todos os Módulos
-      </div>
-      <div class="nav-item" onclick="navigate('ciencia')">
-        <span class="nav-icon">🔬</span> A Ciência
-      </div>
+      <div class="sidebar-section-lbl">Conhecimento</div>
+      <div class="nav-item" onclick="navigate('ananias')"><span class="nav-icon">⭐</span> Quem é Ananias</div>
+      <div class="nav-item" onclick="navigate('ciencia')"><span class="nav-icon">🔬</span> A Ciência</div>
+      <div class="nav-item" onclick="navigate('modulos')"><span class="nav-icon">⚡</span> Módulos</div>
     </div>
-
     <div class="sidebar-section">
       <div class="sidebar-section-lbl">Conta</div>
-      <div class="nav-item" onclick="navigate('perfil')">
-        <span class="nav-icon">👤</span> Perfil
-      </div>
-      <div class="nav-item" onclick="navigate('suporte')">
-        <span class="nav-icon">💬</span> Suporte
-      </div>
+      <div class="nav-item" onclick="navigate('perfil')"><span class="nav-icon">👤</span> Perfil</div>
+      <div class="nav-item" onclick="navigate('suporte')"><span class="nav-icon">💬</span> Suporte</div>
     </div>
-
     <div class="sidebar-user">
       <div class="sidebar-avatar" id="sidebarInitials">?</div>
       <div>
@@ -849,50 +591,26 @@ input, select { font-family: inherit; }
 
   <div id="overlay" onclick="closeSidebar()"></div>
 
-  <!-- MAIN AREA -->
   <div id="mainArea">
 
-    <!-- ── DASHBOARD ──────────────────────────────── -->
+    <!-- DASHBOARD -->
     <div class="page active" id="pageDashboard">
       <div class="page-hdr">
         <div class="page-eyebrow"><span class="badge-dot"></span> Protocolo Ativo — Dia <span id="dDia">8</span>/30</div>
         <div class="page-title">Dashboard</div>
       </div>
       <div class="wrap">
-
         <div class="dash-greeting">
           <div class="dash-greeting-day" id="greetDay">Carregando…</div>
           <h2 id="greetMsg">Bom dia, Atleta!</h2>
           <p>Consistência é o que separa quem chega de quem desiste.</p>
         </div>
-
         <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-lbl">Dias Completos</div>
-            <div class="stat-val red" id="statDias">7</div>
-            <div class="stat-unit">de 30 dias</div>
-            <div class="stat-bar"><div class="stat-bar-fill" style="width:23%"></div></div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-lbl">Streak Atual</div>
-            <div class="stat-val red" id="statStreak">5</div>
-            <div class="stat-unit">dias seguidos</div>
-            <div class="stat-bar"><div class="stat-bar-fill" style="width:17%"></div></div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-lbl">Meta Kcal</div>
-            <div class="stat-val" id="statKcal">1830</div>
-            <div class="stat-unit">kcal / dia</div>
-            <div class="stat-bar"><div class="stat-bar-fill green" style="width:78%"></div></div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-lbl">Proteína</div>
-            <div class="stat-val green" id="statProt">142</div>
-            <div class="stat-unit">g / dia</div>
-            <div class="stat-bar"><div class="stat-bar-fill green" style="width:85%"></div></div>
-          </div>
+          <div class="stat-card"><div class="stat-lbl">Dias Completos</div><div class="stat-val red" id="statDias">7</div><div class="stat-unit">de 30 dias</div><div class="stat-bar"><div class="stat-bar-fill" style="width:23%"></div></div></div>
+          <div class="stat-card"><div class="stat-lbl">Streak Atual</div><div class="stat-val red" id="statStreak">5</div><div class="stat-unit">dias seguidos</div><div class="stat-bar"><div class="stat-bar-fill" style="width:17%"></div></div></div>
+          <div class="stat-card"><div class="stat-lbl">Meta Kcal</div><div class="stat-val" id="statKcal">1830</div><div class="stat-unit">kcal / dia</div><div class="stat-bar"><div class="stat-bar-fill green" style="width:78%"></div></div></div>
+          <div class="stat-card"><div class="stat-lbl">Proteína</div><div class="stat-val green" id="statProt">142</div><div class="stat-unit">g / dia</div><div class="stat-bar"><div class="stat-bar-fill green" style="width:85%"></div></div></div>
         </div>
-
         <div class="mini-grid-wrap">
           <div class="mini-grid-hdr">
             <div class="mini-grid-title">30 Dias do Protocolo</div>
@@ -901,187 +619,75 @@ input, select { font-family: inherit; }
           <div class="days-mini" id="miniGrid"></div>
           <div class="prog-bar"><div class="prog-bar-fill" id="miniProgBar" style="width:0%"></div></div>
         </div>
-
         <div class="modules-hdr">Módulos Disponíveis</div>
         <div class="modules-grid">
-          <div class="mod-card" onclick="navigate('treino')">
-            <div class="mod-icon">💪</div>
-            <div class="mod-name">Treino 30 Dias</div>
-            <div class="mod-desc">Protocolo completo casa ou academia com progressão semanal.</div>
-            <div class="mod-tag free">Incluído</div>
-          </div>
-          <div class="mod-card" onclick="navigate('dieta')">
-            <div class="mod-icon">🥗</div>
-            <div class="mod-name">Plano Alimentar</div>
-            <div class="mod-desc">Calculadora + plano seca barriga com refeições detalhadas.</div>
-            <div class="mod-tag free">Incluído</div>
-          </div>
-          <div class="mod-card" onclick="navigate('progresso')">
-            <div class="mod-icon">📈</div>
-            <div class="mod-name">Rastreio de Progresso</div>
-            <div class="mod-desc">Medidas, peso e fotos comparativas semana a semana.</div>
-            <div class="mod-tag free">Incluído</div>
-          </div>
-          <div class="mod-card locked">
-            <div class="mod-lock-icon">🔒</div>
-            <div class="mod-icon">🏃</div>
-            <div class="mod-name">Módulo Cardio</div>
-            <div class="mod-desc">Protocolos HIIT e steady-state para acelerar o resultado.</div>
-            <div class="mod-tag locked">Em Breve</div>
-          </div>
-          <div class="mod-card locked">
-            <div class="mod-lock-icon">🔒</div>
-            <div class="mod-icon">🎯</div>
-            <div class="mod-name">Desafio 15 Dias</div>
-            <div class="mod-desc">Protocolo intensivo pré-evento. Corte máximo em 2 semanas.</div>
-            <div class="mod-tag premium">Premium</div>
-          </div>
-          <div class="mod-card locked">
-            <div class="mod-lock-icon">🔒</div>
-            <div class="mod-icon">🎬</div>
-            <div class="mod-name">Vídeos de Técnica</div>
-            <div class="mod-desc">Execução correta de cada exercício com o Ananias.</div>
-            <div class="mod-tag premium">Premium</div>
-          </div>
+          <div class="mod-card" onclick="navigate('treino')"><div class="mod-icon">💪</div><div class="mod-name">Treino 30 Dias</div><div class="mod-desc">Protocolo completo casa ou academia com progressão semanal.</div><div class="mod-tag free">Incluído</div></div>
+          <div class="mod-card" onclick="navigate('dieta')"><div class="mod-icon">🥗</div><div class="mod-name">Plano Alimentar</div><div class="mod-desc">Calculadora + plano seca barriga personalizado com macros.</div><div class="mod-tag free">Incluído</div></div>
+          <div class="mod-card" onclick="navigate('progresso')"><div class="mod-icon">📈</div><div class="mod-name">Progresso</div><div class="mod-desc">Medidas, peso e streak semanal para manter a motivação alta.</div><div class="mod-tag free">Incluído</div></div>
+          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🏃</div><div class="mod-name">Cardio Protocolo</div><div class="mod-desc">HIIT e steady-state por fase do protocolo.</div><div class="mod-tag locked">Em Breve</div></div>
+          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🎬</div><div class="mod-name">Vídeo-Aulas</div><div class="mod-desc">Execução de cada exercício com o Ananias.</div><div class="mod-tag premium">Premium</div></div>
+          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">👥</div><div class="mod-name">Comunidade</div><div class="mod-desc">Grupo exclusivo de alunos. Motivação e resultados.</div><div class="mod-tag premium">Premium</div></div>
         </div>
-
       </div>
     </div>
 
-    <!-- ── TREINO ─────────────────────────────────── -->
+    <!-- TREINO -->
     <div class="page" id="pageTreino">
       <div class="page-hdr">
         <div class="page-eyebrow">Módulo · Treino</div>
         <div class="page-title">Treinos 30 Dias</div>
-        <div class="page-sub">Selecione o tipo de treino e marque os exercícios concluídos</div>
+        <div class="page-sub">Selecione o tipo e marque os exercícios concluídos</div>
       </div>
       <div class="wrap">
-
         <div class="tabs">
           <button class="tab active" onclick="setTab(this,'t1')">🏠 Casa</button>
-          <button class="tab"        onclick="setTab(this,'t2')">🏋️ Academia</button>
-          <button class="tab"        onclick="setTab(this,'t3')">💪 Avançado</button>
+          <button class="tab" onclick="setTab(this,'t2')">🏋️ Academia</button>
+          <button class="tab" onclick="setTab(this,'t3')">💪 Avançado</button>
         </div>
-
-        <!-- TREINO CASA -->
         <div class="panel active" id="t1">
           <div class="treino-hdr">
-            <div>
-              <h2>Treino A — Casa</h2>
-              <p>Peito, Ombro e Tríceps · Peso Corporal</p>
-              <div class="day-tags">
-                <span class="day-tag">Seg</span>
-                <span class="day-tag">Qua</span>
-                <span class="day-tag">Sex</span>
-              </div>
-            </div>
-            <div class="treino-meta">
-              <div class="meta"><span class="v">6</span><span class="l">Exercícios</span></div>
-              <div class="meta"><span class="v">40</span><span class="l">min</span></div>
-              <div class="meta"><span class="v">4×12</span><span class="l">Séries</span></div>
-            </div>
+            <div><h2>Treino A — Casa</h2><p>Peito, Ombro e Tríceps · Peso Corporal</p><div class="day-tags"><span class="day-tag">Seg</span><span class="day-tag">Qua</span><span class="day-tag">Sex</span></div></div>
+            <div class="treino-meta"><div class="meta"><span class="v">6</span><span class="l">Exercícios</span></div><div class="meta"><span class="v">40</span><span class="l">min</span></div><div class="meta"><span class="v">4×12</span><span class="l">Séries</span></div></div>
           </div>
           <div class="ex-list" id="exListCasa"></div>
         </div>
-
-        <!-- TREINO ACADEMIA -->
         <div class="panel" id="t2">
           <div class="treino-hdr">
-            <div>
-              <h2>Treino A — Academia</h2>
-              <p>Peito, Ombro e Tríceps · Com Pesos</p>
-              <div class="day-tags">
-                <span class="day-tag">Seg</span>
-                <span class="day-tag">Qua</span>
-                <span class="day-tag">Sex</span>
-              </div>
-            </div>
-            <div class="treino-meta">
-              <div class="meta"><span class="v">7</span><span class="l">Exercícios</span></div>
-              <div class="meta"><span class="v">55</span><span class="l">min</span></div>
-              <div class="meta"><span class="v">4×10</span><span class="l">Séries</span></div>
-            </div>
+            <div><h2>Treino A — Academia</h2><p>Peito, Ombro e Tríceps · Com Pesos</p><div class="day-tags"><span class="day-tag">Seg</span><span class="day-tag">Qua</span><span class="day-tag">Sex</span></div></div>
+            <div class="treino-meta"><div class="meta"><span class="v">7</span><span class="l">Exercícios</span></div><div class="meta"><span class="v">55</span><span class="l">min</span></div><div class="meta"><span class="v">4×10</span><span class="l">Séries</span></div></div>
           </div>
           <div class="ex-list" id="exListAca"></div>
         </div>
-
-        <!-- TREINO AVANÇADO -->
         <div class="panel" id="t3">
           <div class="treino-hdr">
-            <div>
-              <h2>Treino A — Avançado</h2>
-              <p>Hipertrofia + Força · Alta Intensidade</p>
-              <div class="day-tags">
-                <span class="day-tag">Seg</span>
-                <span class="day-tag">Qua</span>
-                <span class="day-tag">Sex</span>
-              </div>
-            </div>
-            <div class="treino-meta">
-              <div class="meta"><span class="v">8</span><span class="l">Exercícios</span></div>
-              <div class="meta"><span class="v">70</span><span class="l">min</span></div>
-              <div class="meta"><span class="v">5×8</span><span class="l">Séries</span></div>
-            </div>
+            <div><h2>Treino A — Avançado</h2><p>Hipertrofia + Força · Alta Intensidade</p><div class="day-tags"><span class="day-tag">Seg</span><span class="day-tag">Qua</span><span class="day-tag">Sex</span></div></div>
+            <div class="treino-meta"><div class="meta"><span class="v">8</span><span class="l">Exercícios</span></div><div class="meta"><span class="v">70</span><span class="l">min</span></div><div class="meta"><span class="v">5×8</span><span class="l">Séries</span></div></div>
           </div>
           <div class="ex-list" id="exListAdv"></div>
         </div>
-
       </div>
     </div>
 
-    <!-- ── DIETA ──────────────────────────────────── -->
+    <!-- DIETA -->
     <div class="page" id="pageDieta">
       <div class="page-hdr">
         <div class="page-eyebrow">Módulo · Nutrição</div>
         <div class="page-title">Plano Alimentar</div>
-        <div class="page-sub">Calcule suas metas e visualize o plano Seca Barriga</div>
+        <div class="page-sub">Calcule suas metas e selecione a refeição</div>
       </div>
       <div class="wrap">
 
         <div class="dieta-setup">
           <div class="section-hdr">Seus Dados</div>
           <div class="setup-row">
-            <div class="setup-field">
-              <div class="setup-lbl">Peso (kg)</div>
-              <input class="setup-inp" id="dPeso" type="number" min="40" max="200" placeholder="75">
-            </div>
-            <div class="setup-field">
-              <div class="setup-lbl">Altura (cm)</div>
-              <input class="setup-inp" id="dAltura" type="number" min="140" max="220" placeholder="175">
-            </div>
-            <div class="setup-field">
-              <div class="setup-lbl">Idade</div>
-              <input class="setup-inp" id="dIdade" type="number" min="15" max="80" placeholder="30">
-            </div>
-            <div class="setup-field">
-              <div class="setup-lbl">Sexo</div>
-              <div class="sex-row">
-                <button class="sex-btn" id="sexM" onclick="setSex('M')">M</button>
-                <button class="sex-btn" id="sexF" onclick="setSex('F')">F</button>
-              </div>
-            </div>
-            <div class="setup-field">
-              <div class="setup-lbl">Atividade</div>
-              <select class="setup-sel" id="dAtiv">
-                <option value="1.2">Sedentário</option>
-                <option value="1.375">Leve (1-3x/sem)</option>
-                <option value="1.55" selected>Moderado (3-5x)</option>
-                <option value="1.725">Intenso (6-7x)</option>
-                <option value="1.9">Atleta</option>
-              </select>
-            </div>
-            <div class="setup-field">
-              <div class="setup-lbl">Objetivo</div>
-              <select class="setup-sel" id="dObj">
-                <option value="0.8" selected>Secar (-20%)</option>
-                <option value="0.9">Secar Leve (-10%)</option>
-                <option value="1.0">Manter</option>
-                <option value="1.1">Ganhar (+10%)</option>
-              </select>
-            </div>
+            <div class="setup-field"><div class="setup-lbl">Peso (kg)</div><input class="setup-inp" id="dPeso" type="number" min="40" max="200" placeholder="75"></div>
+            <div class="setup-field"><div class="setup-lbl">Altura (cm)</div><input class="setup-inp" id="dAltura" type="number" min="140" max="220" placeholder="175"></div>
+            <div class="setup-field"><div class="setup-lbl">Idade</div><input class="setup-inp" id="dIdade" type="number" min="15" max="80" placeholder="30"></div>
+            <div class="setup-field"><div class="setup-lbl">Sexo</div><div class="sex-row"><button class="sex-btn" id="sexM" onclick="setSex('M')">M</button><button class="sex-btn" id="sexF" onclick="setSex('F')">F</button></div></div>
+            <div class="setup-field"><div class="setup-lbl">Atividade</div><select class="setup-sel" id="dAtiv"><option value="1.2">Sedentário</option><option value="1.375">Leve (1-3x)</option><option value="1.55" selected>Moderado (3-5x)</option><option value="1.725">Intenso (6-7x)</option><option value="1.9">Atleta</option></select></div>
+            <div class="setup-field"><div class="setup-lbl">Objetivo</div><select class="setup-sel" id="dObj"><option value="0.8" selected>Secar (-20%)</option><option value="0.9">Secar Leve (-10%)</option><option value="1.0">Manter</option><option value="1.1">Ganhar (+10%)</option></select></div>
           </div>
           <button class="calc-btn" onclick="calcTMB()">Calcular Minhas Metas</button>
-
           <div class="result-block" id="resultBlock">
             <div class="result-cards">
               <div class="result-card"><div class="rc-lbl">TMB</div><div class="rc-val" id="rTMB">—</div><div class="rc-unit">kcal base</div></div>
@@ -1092,65 +698,122 @@ input, select { font-family: inherit; }
           </div>
         </div>
 
-        <!-- PLANO ALIMENTAR -->
-        <div class="section-hdr" style="margin-top:20px;">Plano Seca Barriga</div>
-
-        <div class="meal-block">
-          <div class="meal-hdr">
-            <div class="meal-title">☀️ Café da Manhã</div>
-            <div class="meal-meta">~450 kcal · <strong>Proteína Alta</strong></div>
-          </div>
-          <div class="meal-cols">
-            <div class="meal-col-lbl">Alimento</div>
-            <div class="meal-col-lbl" style="text-align:center">Qtd</div>
-            <div class="meal-col-lbl" style="text-align:right">kcal</div>
-            <div class="meal-col-lbl" style="text-align:right;color:var(--green)">Prot</div>
-          </div>
-          <div class="food-row"><div class="food-name">Ovos mexidos</div><div class="food-qty">3 un</div><div class="food-kcal">210</div><div class="food-prot">18g</div></div>
-          <div class="food-row"><div class="food-name">Aveia em flocos</div><div class="food-qty">50g</div><div class="food-kcal">187</div><div class="food-prot">6g</div></div>
-          <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
-          <div class="food-row"><div class="food-name">Café preto sem açúcar</div><div class="food-qty">200ml</div><div class="food-kcal">5</div><div class="food-prot">0g</div></div>
+        <!-- MEAL TABS -->
+        <div class="section-hdr">Plano Seca Barriga</div>
+        <div class="meal-tabs">
+          <div class="meal-tab active" onclick="setMealTab(this,'m1')"><span class="meal-tab-icon">☀️</span><span class="meal-tab-lbl">Café</span></div>
+          <div class="meal-tab" onclick="setMealTab(this,'m2')"><span class="meal-tab-icon">🌞</span><span class="meal-tab-lbl">Almoço</span></div>
+          <div class="meal-tab" onclick="setMealTab(this,'m3')"><span class="meal-tab-icon">🍎</span><span class="meal-tab-lbl">Lanche</span></div>
+          <div class="meal-tab" onclick="setMealTab(this,'m4')"><span class="meal-tab-icon">🌙</span><span class="meal-tab-lbl">Jantar</span></div>
+          <div class="meal-tab" onclick="setMealTab(this,'m5')"><span class="meal-tab-icon">⚡</span><span class="meal-tab-lbl">Pós-Treino</span></div>
         </div>
 
-        <div class="meal-block">
-          <div class="meal-hdr">
-            <div class="meal-title">🌞 Almoço</div>
-            <div class="meal-meta">~620 kcal · <strong>Maior Refeição</strong></div>
+        <!-- CAFÉ -->
+        <div class="meal-panel active" id="m1">
+          <div class="meal-block">
+            <div class="meal-hdr">
+              <div class="meal-title">☀️ Café da Manhã</div>
+              <div class="meal-meta-row">
+                <span class="meal-meta-item kcal">491 kcal</span>
+                <span class="meal-meta-item prot">25g proteína</span>
+                <span class="meal-meta-item tip">Energético · Proteico</span>
+              </div>
+            </div>
+            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+            <div class="food-row"><div class="food-name">Ovos mexidos</div><div class="food-qty">3 un</div><div class="food-kcal">210</div><div class="food-prot">18g</div></div>
+            <div class="food-row"><div class="food-name">Aveia em flocos</div><div class="food-qty">50g</div><div class="food-kcal">187</div><div class="food-prot">6g</div></div>
+            <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
+            <div class="food-row"><div class="food-name">Café preto sem açúcar</div><div class="food-qty">200ml</div><div class="food-kcal">5</div><div class="food-prot">0g</div></div>
+            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 491 kcal</span><span class="meal-total-item prot">25g prot</span></div>
           </div>
-          <div class="meal-cols">
-            <div class="meal-col-lbl">Alimento</div>
-            <div class="meal-col-lbl" style="text-align:center">Qtd</div>
-            <div class="meal-col-lbl" style="text-align:right">kcal</div>
-            <div class="meal-col-lbl" style="text-align:right;color:var(--green)">Prot</div>
-          </div>
-          <div class="food-row"><div class="food-name">Frango grelhado (peito)</div><div class="food-qty">200g</div><div class="food-kcal">330</div><div class="food-prot">62g</div></div>
-          <div class="food-row"><div class="food-name">Arroz integral</div><div class="food-qty">100g</div><div class="food-kcal">124</div><div class="food-prot">3g</div></div>
-          <div class="food-row"><div class="food-name">Feijão carioca</div><div class="food-qty">80g</div><div class="food-kcal">91</div><div class="food-prot">6g</div></div>
-          <div class="food-row"><div class="food-name">Salada verde (à vontade)</div><div class="food-qty">—</div><div class="food-kcal">25</div><div class="food-prot">2g</div></div>
-          <div class="food-row"><div class="food-name">Azeite extra virgem</div><div class="food-qty">1 col.sopa</div><div class="food-kcal">90</div><div class="food-prot">0g</div></div>
         </div>
 
-        <div class="meal-block">
-          <div class="meal-hdr">
-            <div class="meal-title">🌙 Jantar</div>
-            <div class="meal-meta">~420 kcal · <strong>Leve e Proteico</strong></div>
+        <!-- ALMOÇO -->
+        <div class="meal-panel" id="m2">
+          <div class="meal-block">
+            <div class="meal-hdr">
+              <div class="meal-title">🌞 Almoço</div>
+              <div class="meal-meta-row">
+                <span class="meal-meta-item kcal">660 kcal</span>
+                <span class="meal-meta-item prot">74g proteína</span>
+                <span class="meal-meta-item tip">Maior refeição do dia</span>
+              </div>
+            </div>
+            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+            <div class="food-row"><div class="food-name">Frango grelhado (peito)</div><div class="food-qty">200g</div><div class="food-kcal">330</div><div class="food-prot">62g</div></div>
+            <div class="food-row"><div class="food-name">Arroz integral</div><div class="food-qty">100g</div><div class="food-kcal">124</div><div class="food-prot">3g</div></div>
+            <div class="food-row"><div class="food-name">Feijão carioca</div><div class="food-qty">80g</div><div class="food-kcal">91</div><div class="food-prot">6g</div></div>
+            <div class="food-row"><div class="food-name">Salada verde (à vontade)</div><div class="food-qty">—</div><div class="food-kcal">25</div><div class="food-prot">2g</div></div>
+            <div class="food-row"><div class="food-name">Azeite extra virgem</div><div class="food-qty">1 col.sopa</div><div class="food-kcal">90</div><div class="food-prot">0g</div></div>
+            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 660 kcal</span><span class="meal-total-item prot">73g prot</span></div>
           </div>
-          <div class="meal-cols">
-            <div class="meal-col-lbl">Alimento</div>
-            <div class="meal-col-lbl" style="text-align:center">Qtd</div>
-            <div class="meal-col-lbl" style="text-align:right">kcal</div>
-            <div class="meal-col-lbl" style="text-align:right;color:var(--green)">Prot</div>
+        </div>
+
+        <!-- LANCHE -->
+        <div class="meal-panel" id="m3">
+          <div class="meal-block">
+            <div class="meal-hdr">
+              <div class="meal-title">🍎 Lanche da Tarde</div>
+              <div class="meal-meta-row">
+                <span class="meal-meta-item kcal">218 kcal</span>
+                <span class="meal-meta-item prot">22g proteína</span>
+                <span class="meal-meta-item tip">Leve · Anti-catabólico</span>
+              </div>
+            </div>
+            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+            <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">170g</div><div class="food-kcal">100</div><div class="food-prot">17g</div></div>
+            <div class="food-row"><div class="food-name">Castanha do Pará</div><div class="food-qty">3 un</div><div class="food-kcal">90</div><div class="food-prot">2g</div></div>
+            <div class="food-row"><div class="food-name">Maçã</div><div class="food-qty">1 un</div><div class="food-kcal">81</div><div class="food-prot">0g</div></div>
+            <div class="food-row"><div class="food-name">Whey Protein</div><div class="food-qty">25g</div><div class="food-kcal">97</div><div class="food-prot">20g</div></div>
+            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 368 kcal</span><span class="meal-total-item prot">39g prot</span></div>
           </div>
-          <div class="food-row"><div class="food-name">Atum em água</div><div class="food-qty">2 latas</div><div class="food-kcal">160</div><div class="food-prot">36g</div></div>
-          <div class="food-row"><div class="food-name">Batata doce assada</div><div class="food-qty">150g</div><div class="food-kcal">129</div><div class="food-prot">3g</div></div>
-          <div class="food-row"><div class="food-name">Brócolis cozido</div><div class="food-qty">120g</div><div class="food-kcal">41</div><div class="food-prot">3g</div></div>
-          <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">200g</div><div class="food-kcal">118</div><div class="food-prot">17g</div></div>
+        </div>
+
+        <!-- JANTAR -->
+        <div class="meal-panel" id="m4">
+          <div class="meal-block">
+            <div class="meal-hdr">
+              <div class="meal-title">🌙 Jantar</div>
+              <div class="meal-meta-row">
+                <span class="meal-meta-item kcal">448 kcal</span>
+                <span class="meal-meta-item prot">59g proteína</span>
+                <span class="meal-meta-item tip">Leve · Proteico · Sem carboidrato pesado</span>
+              </div>
+            </div>
+            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+            <div class="food-row"><div class="food-name">Atum em água</div><div class="food-qty">2 latas</div><div class="food-kcal">160</div><div class="food-prot">36g</div></div>
+            <div class="food-row"><div class="food-name">Batata doce assada</div><div class="food-qty">150g</div><div class="food-kcal">129</div><div class="food-prot">3g</div></div>
+            <div class="food-row"><div class="food-name">Brócolis cozido</div><div class="food-qty">120g</div><div class="food-kcal">41</div><div class="food-prot">3g</div></div>
+            <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">200g</div><div class="food-kcal">118</div><div class="food-prot">17g</div></div>
+            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 448 kcal</span><span class="meal-total-item prot">59g prot</span></div>
+          </div>
+        </div>
+
+        <!-- PÓS-TREINO -->
+        <div class="meal-panel" id="m5">
+          <div class="meal-block">
+            <div class="meal-hdr">
+              <div class="meal-title">⚡ Pós-Treino</div>
+              <div class="meal-meta-row">
+                <span class="meal-meta-item kcal">310 kcal</span>
+                <span class="meal-meta-item prot">30g proteína</span>
+                <span class="meal-meta-item tip">Janela anabólica · 30min após treino</span>
+              </div>
+            </div>
+            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+            <div class="food-row"><div class="food-name">Whey Protein</div><div class="food-qty">30g</div><div class="food-kcal">120</div><div class="food-prot">24g</div></div>
+            <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
+            <div class="food-row"><div class="food-name">Mel</div><div class="food-qty">1 col.chá</div><div class="food-kcal">21</div><div class="food-prot">0g</div></div>
+            <div class="food-row"><div class="food-name">Água de coco</div><div class="food-qty">200ml</div><div class="food-kcal">38</div><div class="food-prot">0g</div></div>
+            <div class="food-row" style="background:rgba(0,230,118,.03)"><div class="food-name" style="color:var(--green);font-size:12px;">✓ Ou: 3 claras + 1 ovo inteiro + fruta</div><div class="food-qty">—</div><div class="food-kcal">—</div><div class="food-prot">—</div></div>
+            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 268 kcal</span><span class="meal-total-item prot">25g prot</span></div>
+          </div>
         </div>
 
       </div>
     </div>
 
-    <!-- ── PROGRESSO ──────────────────────────────── -->
+    <!-- PROGRESSO -->
     <div class="page" id="pageProgresso">
       <div class="page-hdr">
         <div class="page-eyebrow">Módulo · Acompanhamento</div>
@@ -1158,130 +821,81 @@ input, select { font-family: inherit; }
         <div class="page-sub">Registre suas medidas semanalmente</div>
       </div>
       <div class="wrap">
-
         <div class="streak-block">
           <div class="streak-num" id="streakNum">5</div>
-          <div>
-            <div class="streak-lbl">Dias Seguidos</div>
-            <div class="streak-msg">Continue assim!<br>Sua consistência está construindo o resultado.</div>
-          </div>
+          <div><div class="streak-lbl">Dias Seguidos</div><div class="streak-msg">Continue assim!<br>Sua consistência está construindo o resultado.</div></div>
         </div>
-
         <div class="divider"></div>
-
         <div class="section-hdr">Registrar Medidas</div>
         <div class="medidas-block">
           <div class="medidas-grid">
-            <div class="medida-card">
-              <div class="medida-lbl">Peso (kg)</div>
-              <input class="medida-inp" type="number" id="mPeso" placeholder="75.0" step="0.1">
-              <div class="medida-unit">KG</div>
-            </div>
-            <div class="medida-card">
-              <div class="medida-lbl">Cintura (cm)</div>
-              <input class="medida-inp" type="number" id="mCintura" placeholder="80" step="0.5">
-              <div class="medida-unit">CM</div>
-            </div>
-            <div class="medida-card">
-              <div class="medida-lbl">Abdômen (cm)</div>
-              <input class="medida-inp" type="number" id="mAbdomen" placeholder="88" step="0.5">
-              <div class="medida-unit">CM</div>
-            </div>
-            <div class="medida-card">
-              <div class="medida-lbl">Quadril (cm)</div>
-              <input class="medida-inp" type="number" id="mQuadril" placeholder="95" step="0.5">
-              <div class="medida-unit">CM</div>
-            </div>
+            <div class="medida-card"><div class="medida-lbl">Peso (kg)</div><input class="medida-inp" type="number" id="mPeso" placeholder="75.0" step="0.1"><div class="medida-unit">KG</div></div>
+            <div class="medida-card"><div class="medida-lbl">Cintura (cm)</div><input class="medida-inp" type="number" id="mCintura" placeholder="80" step="0.5"><div class="medida-unit">CM</div></div>
+            <div class="medida-card"><div class="medida-lbl">Abdômen (cm)</div><input class="medida-inp" type="number" id="mAbdomen" placeholder="88" step="0.5"><div class="medida-unit">CM</div></div>
+            <div class="medida-card"><div class="medida-lbl">Quadril (cm)</div><input class="medida-inp" type="number" id="mQuadril" placeholder="95" step="0.5"><div class="medida-unit">CM</div></div>
           </div>
           <button class="save-medidas" onclick="saveMedidas()">Salvar Medidas de Hoje</button>
         </div>
-
         <div class="divider"></div>
         <div class="section-hdr">Histórico</div>
         <div class="historico-list" id="historicoList"></div>
-
       </div>
     </div>
 
-    <!-- ── PERFIL ─────────────────────────────────── -->
-    <div class="page" id="pagePerfil">
+    <!-- QUEM É ANANIAS -->
+    <div class="page" id="pageAnanias">
       <div class="page-hdr">
-        <div class="page-eyebrow">Conta</div>
-        <div class="page-title">Perfil</div>
+        <div class="page-eyebrow">O Profissional por trás do Método</div>
+        <div class="page-title">Quem é Ananias</div>
       </div>
       <div class="wrap">
 
-        <div class="perfil-hero">
-          <div class="perfil-avatar" id="perfilAvatar">?</div>
-          <div>
-            <div class="perfil-name" id="perfilName">Atleta</div>
-            <div class="perfil-email" id="perfilEmail">—</div>
-            <div class="perfil-plan">
-              <span class="plan-dot"></span>
-              Protocolo Seca Barriga · Ativo
-            </div>
+        <div class="ananias-hero">
+          <div class="ananias-badge"><span class="badge-dot"></span> Personal Trainer · Sinop, MT</div>
+          <div class="ananias-nome">Ananias <span>Júnior</span></div>
+          <div class="ananias-titulo">Personal Trainer · @ananiasjr_personal</div>
+          <div class="ananias-frase">"Consistência vence intensidade.<br>Apareça todos os dias e o resultado vem."</div>
+        </div>
+
+        <div class="ananias-nums">
+          <div class="ananias-num-card"><div class="ananias-num-val">+10</div><div class="ananias-num-lbl">Anos de Experiência</div></div>
+          <div class="ananias-num-card"><div class="ananias-num-val">+500</div><div class="ananias-num-lbl">Alunos Transformados</div></div>
+          <div class="ananias-num-card"><div class="ananias-num-val">30</div><div class="ananias-num-lbl">Dias do Protocolo</div></div>
+          <div class="ananias-num-card"><div class="ananias-num-val">MT</div><div class="ananias-num-lbl">Base em Sinop, Mato Grosso</div></div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-hdr">Trajetória</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-year">—</div>
+            <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-content"><div class="tl-title">Início na musculação</div><div class="tl-desc">A história começa aqui. Preencha com o Ananias.</div></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">—</div>
+            <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-content"><div class="tl-title">Formação e primeiros alunos</div><div class="tl-desc">Preencha com o Ananias.</div></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">Hoje</div>
+            <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-content"><div class="tl-title">Método Ananias Jr</div><div class="tl-desc">A experiência de uma década condensada em 30 dias de protocolo. Sem mistério, sem fórmula mágica. Déficit + proteína + consistência.</div></div>
           </div>
         </div>
 
         <div class="divider"></div>
-        <div class="section-hdr">Configurações</div>
-
-        <div class="perfil-actions">
-          <div class="perfil-action">
-            <div>
-              <div class="action-lbl">Alterar Senha</div>
-              <div class="action-sub">Atualizar credenciais de acesso</div>
-            </div>
-            <div class="action-arrow">›</div>
-          </div>
-          <div class="perfil-action">
-            <div>
-              <div class="action-lbl">Notificações</div>
-              <div class="action-sub">Lembretes de treino e hidratação</div>
-            </div>
-            <div class="action-arrow">›</div>
-          </div>
-          <div class="perfil-action">
-            <div>
-              <div class="action-lbl">Suporte</div>
-              <div class="action-sub">Falar com o Ananias</div>
-            </div>
-            <div class="action-arrow">›</div>
-          </div>
-          <div class="perfil-action" onclick="logout()">
-            <div>
-              <div class="action-lbl" style="color:var(--red2)">Sair da Conta</div>
-              <div class="action-sub">Desconectar deste dispositivo</div>
-            </div>
-            <div class="action-arrow" style="color:var(--red)">›</div>
-          </div>
+        <div class="section-hdr">Filosofia</div>
+        <div class="filosofia-grid">
+          <div class="filo-card"><div class="filo-title">Sem atalhos</div><div class="filo-desc">Resultado real vem de processo real. O método não promete milagre — entrega estrutura para quem quer aparecer todo dia.</div></div>
+          <div class="filo-card green"><div class="filo-title">Ciência na prática</div><div class="filo-desc">Déficit calórico, proteína adequada, treino resistido. Três pilares que a ciência valida e que o Ananias aplica há mais de uma década.</div></div>
+          <div class="filo-card blue"><div class="filo-title">Acessível de verdade</div><div class="filo-desc">Casa ou academia. Com ou sem equipamento. O protocolo foi desenhado para a vida real de quem mora em Sinop, não pra quem treina em SP.</div></div>
         </div>
 
       </div>
     </div>
 
-    <!-- ── MÓDULOS ─────────────────────────────────── -->
-    <div class="page" id="pageModulos">
-      <div class="page-hdr">
-        <div class="page-eyebrow">Ecossistema AJ Protocol</div>
-        <div class="page-title">Todos os Módulos</div>
-        <div class="page-sub">Sua plataforma de performance está crescendo</div>
-      </div>
-      <div class="wrap">
-        <div class="modules-grid">
-          <div class="mod-card" onclick="navigate('treino')"><div class="mod-icon">💪</div><div class="mod-name">Treino 30 Dias</div><div class="mod-desc">Protocolo completo casa ou academia com progressão semanal integrada.</div><div class="mod-tag free">Incluído</div></div>
-          <div class="mod-card" onclick="navigate('dieta')"><div class="mod-icon">🥗</div><div class="mod-name">Plano Alimentar</div><div class="mod-desc">Calculadora TMB + plano seca barriga personalizado com macros.</div><div class="mod-tag free">Incluído</div></div>
-          <div class="mod-card" onclick="navigate('progresso')"><div class="mod-icon">📈</div><div class="mod-name">Progresso</div><div class="mod-desc">Medidas, peso e streak semanal para manter a motivação alta.</div><div class="mod-tag free">Incluído</div></div>
-          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🏃</div><div class="mod-name">Cardio Protocolo</div><div class="mod-desc">HIIT e steady-state. Protocolos específicos por fase do protocolo.</div><div class="mod-tag premium">Em breve</div></div>
-          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🎯</div><div class="mod-name">Desafio 15 Dias</div><div class="mod-desc">Protocolo intensivo pré-evento. Resultado máximo em curto prazo.</div><div class="mod-tag premium">Premium</div></div>
-          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🎬</div><div class="mod-name">Vídeo-Aulas</div><div class="mod-desc">Execução de cada exercício com o Ananias. Técnica perfeita.</div><div class="mod-tag premium">Premium</div></div>
-          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">👥</div><div class="mod-name">Comunidade</div><div class="mod-desc">Grupo exclusivo para alunos. Motivação, dúvidas e resultados.</div><div class="mod-tag premium">Premium</div></div>
-          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">📊</div><div class="mod-name">Análise Avançada</div><div class="mod-desc">Gráficos de evolução, comparativos e relatório mensal.</div><div class="mod-tag premium">Premium</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── CIÊNCIA ─────────────────────────────────── -->
+    <!-- CIÊNCIA -->
     <div class="page" id="pageCiencia">
       <div class="page-hdr">
         <div class="page-eyebrow">Conhecimento</div>
@@ -1290,59 +904,80 @@ input, select { font-family: inherit; }
       </div>
       <div class="wrap">
         <div style="display:flex;flex-direction:column;gap:2px;">
-          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);padding:20px 16px;">
-            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Déficit Calórico</div>
-            <div style="font-size:14px;color:var(--muted);line-height:1.7;">Para perder gordura é necessário consumir menos energia do que o seu corpo gasta. Sem déficit calórico não há perda de gordura — independente de qualquer outro fator. O protocolo usa um déficit de 15-20%, sustentável e eficaz sem comprometer massa muscular.</div>
-          </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--green);padding:20px 16px;">
-            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Proteína Alta</div>
-            <div style="font-size:14px;color:var(--muted);line-height:1.7;">2g de proteína por kg de peso corporal preserva massa muscular durante o déficit, aumenta a saciedade e eleva o gasto energético pela termogênese da digestão. É o nutriente mais importante em uma fase de seca.</div>
-          </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--blue);padding:20px 16px;">
-            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Treino de Força</div>
-            <div style="font-size:14px;color:var(--muted);line-height:1.7;">O treino resistido sinaliza ao corpo para manter e construir músculo mesmo em déficit. Músculo aumenta o metabolismo basal — mais músculo = queima mais gordura mesmo em repouso.</div>
-          </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--amber);padding:20px 16px;">
-            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Consistência como Variável</div>
-            <div style="font-size:14px;color:var(--muted);line-height:1.7;">Nenhum protocolo funciona sem adesão. 30 dias aplicados vale mais do que 6 meses de início e parada. O sistema de gamificação e streak foi desenhado especificamente para criar o hábito.</div>
-          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);padding:20px 16px;"><div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Déficit Calórico</div><div style="font-size:14px;color:var(--muted);line-height:1.7;">Para perder gordura é necessário consumir menos energia do que seu corpo gasta. Sem déficit não há perda de gordura, independente de qualquer outro fator. O protocolo usa um déficit de 15-20% — sustentável e eficaz sem comprometer massa muscular.</div></div>
+          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--green);padding:20px 16px;"><div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Proteína Alta</div><div style="font-size:14px;color:var(--muted);line-height:1.7;">2g de proteína por kg de peso corporal preserva massa muscular no déficit, aumenta saciedade e eleva o gasto energético pela termogênese. É o nutriente mais importante numa fase de seca.</div></div>
+          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--blue);padding:20px 16px;"><div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Treino de Força</div><div style="font-size:14px;color:var(--muted);line-height:1.7;">O treino resistido sinaliza ao corpo para manter e construir músculo mesmo em déficit. Músculo aumenta o metabolismo basal — mais músculo, mais gordura queimada em repouso.</div></div>
+          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--amber);padding:20px 16px;"><div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Consistência como Variável</div><div style="font-size:14px;color:var(--muted);line-height:1.7;">Nenhum protocolo funciona sem adesão. 30 dias aplicados vale mais do que 6 meses de início e parada. O sistema de streak e gamificação foi desenhado para criar o hábito antes de criar o resultado.</div></div>
         </div>
       </div>
     </div>
 
-    <!-- ── SUPORTE ─────────────────────────────────── -->
+    <!-- MÓDULOS -->
+    <div class="page" id="pageModulos">
+      <div class="page-hdr">
+        <div class="page-eyebrow">Ecossistema · Método Ananias Jr</div>
+        <div class="page-title">Todos os Módulos</div>
+        <div class="page-sub">Sua plataforma de performance está crescendo</div>
+      </div>
+      <div class="wrap">
+        <div class="modules-grid">
+          <div class="mod-card" onclick="navigate('treino')"><div class="mod-icon">💪</div><div class="mod-name">Treino 30 Dias</div><div class="mod-desc">Protocolo completo casa ou academia com progressão semanal integrada.</div><div class="mod-tag free">Incluído</div></div>
+          <div class="mod-card" onclick="navigate('dieta')"><div class="mod-icon">🥗</div><div class="mod-name">Plano Alimentar</div><div class="mod-desc">Calculadora TMB + plano seca barriga personalizado com macros.</div><div class="mod-tag free">Incluído</div></div>
+          <div class="mod-card" onclick="navigate('progresso')"><div class="mod-icon">📈</div><div class="mod-name">Progresso</div><div class="mod-desc">Medidas, peso e streak semanal para manter a motivação alta.</div><div class="mod-tag free">Incluído</div></div>
+          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🏃</div><div class="mod-name">Cardio Protocolo</div><div class="mod-desc">HIIT e steady-state por fase do protocolo.</div><div class="mod-tag locked">Em Breve</div></div>
+          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🎯</div><div class="mod-name">Desafio 15 Dias</div><div class="mod-desc">Protocolo intensivo pré-evento. Resultado máximo em curto prazo.</div><div class="mod-tag premium">Premium</div></div>
+          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🎬</div><div class="mod-name">Vídeo-Aulas</div><div class="mod-desc">Execução de cada exercício com o Ananias. Técnica perfeita.</div><div class="mod-tag premium">Premium</div></div>
+          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">👥</div><div class="mod-name">Comunidade</div><div class="mod-desc">Grupo exclusivo de alunos. Motivação e resultados reais.</div><div class="mod-tag premium">Premium</div></div>
+          <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">📊</div><div class="mod-name">Análise Avançada</div><div class="mod-desc">Gráficos de evolução, comparativos e relatório mensal.</div><div class="mod-tag premium">Premium</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERFIL -->
+    <div class="page" id="pagePerfil">
+      <div class="page-hdr">
+        <div class="page-eyebrow">Conta</div>
+        <div class="page-title">Perfil</div>
+      </div>
+      <div class="wrap">
+        <div class="perfil-hero">
+          <div class="perfil-avatar" id="perfilAvatar">?</div>
+          <div>
+            <div class="perfil-name" id="perfilName">Atleta</div>
+            <div class="perfil-email" id="perfilEmail">—</div>
+            <div class="perfil-plan"><span class="plan-dot"></span>Método Ananias Jr · Ativo</div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="section-hdr">Configurações</div>
+        <div class="perfil-actions">
+          <div class="perfil-action"><div><div class="action-lbl">Notificações</div><div class="action-sub">Lembretes de treino e hidratação</div></div><div class="action-arrow">›</div></div>
+          <div class="perfil-action"><div><div class="action-lbl">Suporte</div><div class="action-sub">Falar com o Ananias</div></div><div class="action-arrow">›</div></div>
+          <div class="perfil-action" onclick="logout()"><div><div class="action-lbl" style="color:var(--red2)">Sair da Conta</div><div class="action-sub">Desconectar deste dispositivo</div></div><div class="action-arrow" style="color:var(--red)">›</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPORTE -->
     <div class="page" id="pageSuporte">
       <div class="page-hdr">
         <div class="page-eyebrow">Atendimento</div>
         <div class="page-title">Suporte</div>
       </div>
       <div class="wrap">
-        <div style="background:var(--card);border:1px solid var(--border);padding:24px 20px;text-align:center;">
+        <div style="background:var(--card);border:1px solid var(--border);padding:32px 20px;text-align:center;">
           <div style="font-size:40px;margin-bottom:12px;">💬</div>
           <div style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:2px;margin-bottom:8px;">Fale com o Ananias</div>
-          <div style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6;">Dúvidas sobre treino, dieta ou acesso ao protocolo.<br>Resposta em até 24h.</div>
-          <a href="https://instagram.com/ananiasjr_personal" target="_blank" style="display:inline-block;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;padding:14px 28px;text-decoration:none;">
-            Instagram @ananiasjr_personal
-          </a>
+          <div style="font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6;">Dúvidas sobre treino, dieta ou acesso.<br>Resposta em até 24h.</div>
+          <a href="https://instagram.com/ananiasjr_personal" target="_blank" style="display:inline-block;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;padding:14px 28px;text-decoration:none;">Instagram @ananiasjr_personal</a>
         </div>
-      </div>
-    </div>
-
-    <!-- ── NOTIF (stub) ────────────────────────────── -->
-    <div class="page" id="pageNotif">
-      <div class="page-hdr">
-        <div class="page-eyebrow">Central</div>
-        <div class="page-title">Notificações</div>
-      </div>
-      <div class="wrap">
-        <div style="color:var(--muted);font-size:14px;padding:24px 0;">Nenhuma notificação no momento.</div>
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- TIMER MODAL -->
+<!-- TIMER -->
 <div id="timerModal">
   <div class="timer-box">
     <div class="timer-ex" id="timerEx">Descanso</div>
@@ -1355,392 +990,245 @@ input, select { font-family: inherit; }
 </div>
 
 <script>
-/* ── DATA ─────────────────────────────────────────── */
-const PASS = 'seca30'; // senha padrão
+const PASS = 'ESPORTESEMPRE';
 
 const TREINOS_CASA = [
-  {n:'Flexão de Braços',     d:'4 × 15 reps · 40s descanso',   rest:40},
-  {n:'Flexão Inclinada',     d:'4 × 12 reps · 40s descanso',   rest:40},
-  {n:'Dip entre Cadeiras',   d:'3 × 12 reps · 45s descanso',   rest:45},
-  {n:'Pike Push-Up',         d:'3 × 10 reps · 45s descanso',   rest:45},
-  {n:'Tríceps Testa Solo',   d:'3 × 15 reps · 30s descanso',   rest:30},
-  {n:'Elevação Lateral Solo',d:'3 × 15 reps · 30s descanso',   rest:30},
+  {n:'Flexão de Braços',      d:'4 × 15 reps · 40s descanso', rest:40},
+  {n:'Flexão Inclinada',      d:'4 × 12 reps · 40s descanso', rest:40},
+  {n:'Dip entre Cadeiras',    d:'3 × 12 reps · 45s descanso', rest:45},
+  {n:'Pike Push-Up',          d:'3 × 10 reps · 45s descanso', rest:45},
+  {n:'Tríceps Testa no Solo', d:'3 × 15 reps · 30s descanso', rest:30},
+  {n:'Elevação Lateral Solo', d:'3 × 15 reps · 30s descanso', rest:30},
 ];
 const TREINOS_ACA = [
-  {n:'Supino Reto',          d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Supino Inclinado',     d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Crucifixo Reto',       d:'3 × 12 reps · 45s descanso',   rest:45},
-  {n:'Desenvolvimento Press',d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Elevação Lateral',     d:'4 × 12 reps · 45s descanso',   rest:45},
-  {n:'Tríceps Pulley',       d:'4 × 12 reps · 40s descanso',   rest:40},
-  {n:'Tríceps Francês',      d:'3 × 12 reps · 40s descanso',   rest:40},
+  {n:'Supino Reto',           d:'4 × 10 reps · 60s descanso', rest:60},
+  {n:'Supino Inclinado',      d:'4 × 10 reps · 60s descanso', rest:60},
+  {n:'Crucifixo Reto',        d:'3 × 12 reps · 45s descanso', rest:45},
+  {n:'Desenvolvimento Press', d:'4 × 10 reps · 60s descanso', rest:60},
+  {n:'Elevação Lateral',      d:'4 × 12 reps · 45s descanso', rest:45},
+  {n:'Tríceps Pulley',        d:'4 × 12 reps · 40s descanso', rest:40},
+  {n:'Tríceps Francês',       d:'3 × 12 reps · 40s descanso', rest:40},
 ];
 const TREINOS_ADV = [
-  {n:'Supino Reto Pesado',   d:'5 × 8 reps · 90s descanso',    rest:90},
-  {n:'Supino Inclinado',     d:'4 × 8 reps · 75s descanso',    rest:75},
-  {n:'Crucifixo Inclinado',  d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Arnold Press',         d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Elevação Lateral',     d:'5 × 12 reps · 45s descanso',   rest:45},
-  {n:'Tríceps Pulley',       d:'4 × 10 reps · 45s descanso',   rest:45},
-  {n:'Mergulho Paralelas',   d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Kickback',             d:'3 × 15 reps · 30s descanso',   rest:30},
+  {n:'Supino Reto Pesado',    d:'5 × 8 reps · 90s descanso',  rest:90},
+  {n:'Supino Inclinado',      d:'4 × 8 reps · 75s descanso',  rest:75},
+  {n:'Crucifixo Inclinado',   d:'4 × 10 reps · 60s descanso', rest:60},
+  {n:'Arnold Press',          d:'4 × 10 reps · 60s descanso', rest:60},
+  {n:'Elevação Lateral',      d:'5 × 12 reps · 45s descanso', rest:45},
+  {n:'Tríceps Pulley',        d:'4 × 10 reps · 45s descanso', rest:45},
+  {n:'Mergulho Paralelas',    d:'4 × 10 reps · 60s descanso', rest:60},
+  {n:'Kickback',              d:'3 × 15 reps · 30s descanso', rest:30},
 ];
-
 const HIST_MOCK = [
   {data:'25/05/2026', peso:'76.5', cintura:'82', abdomen:'89', quadril:'96', delta:-0.8},
   {data:'18/05/2026', peso:'77.3', cintura:'83', abdomen:'90', quadril:'96', delta:-0.5},
   {data:'11/05/2026', peso:'77.8', cintura:'84', abdomen:'91', quadril:'97', delta:null},
 ];
 
-/* ── STATE ────────────────────────────────────────── */
-let currentPage = 'dashboard';
 let sidebarOpen = false;
-let timerInterval = null;
-let timerSecs = 40;
-let timerRunning = false;
-let completedDays = JSON.parse(localStorage.getItem('ajp_days') || '[]');
+let timerInterval = null, timerSecs = 40, timerRunning = false;
+let completedDays = JSON.parse(localStorage.getItem('maj_days') || '[]');
 let sexSel = 'M';
 
-/* ── AUTH ─────────────────────────────────────────── */
+/* AUTH */
 function tryLogin() {
   const email = document.getElementById('emailInp').value.trim();
-  const pass  = document.getElementById('passInp').value.trim().toLowerCase();
+  const pass  = document.getElementById('passInp').value.trim().toUpperCase();
   const inp   = document.getElementById('passInp');
   const err   = document.getElementById('lockErr');
-
-  if (!email.includes('@')) {
-    err.textContent = 'Email inválido';
-    inp.classList.add('error');
-    setTimeout(() => inp.classList.remove('error'), 600);
-    return;
-  }
-  if (pass !== PASS) {
-    err.textContent = 'Senha incorreta';
-    inp.classList.add('error');
-    setTimeout(() => inp.classList.remove('error'), 600);
-    return;
-  }
-
-  const name = email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1);
+  if (!email.includes('@')) { err.textContent='Email inválido'; shake(inp); return; }
+  if (pass !== PASS)        { err.textContent='Senha incorreta'; shake(inp); return; }
+  const name = email.split('@')[0];
+  const nameF = name.charAt(0).toUpperCase() + name.slice(1);
   if (document.getElementById('rememberMe').checked) {
-    localStorage.setItem('ajp_email', email);
-    localStorage.setItem('ajp_name', name);
-    localStorage.setItem('ajp_auth', '1');
+    localStorage.setItem('maj_email', email);
+    localStorage.setItem('maj_name', nameF);
+    localStorage.setItem('maj_auth', '1');
   }
-  bootApp(email, name);
+  bootApp(email, nameF);
 }
+function shake(el) { el.classList.add('error'); setTimeout(()=>el.classList.remove('error'),600); }
+function logout() { localStorage.removeItem('maj_auth'); location.reload(); }
+function toggleEye() {
+  const inp=document.getElementById('passInp'), btn=document.getElementById('eyeBtn');
+  inp.type = inp.type==='password' ? 'text' : 'password';
+  btn.textContent = inp.type==='password' ? '👁' : '🙈';
+}
+document.getElementById('passInp').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
 
 function bootApp(email, name) {
   document.getElementById('lockScreen').style.display = 'none';
   document.getElementById('appShell').style.display = 'block';
-
-  const initials = name.slice(0,2).toUpperCase();
-  document.getElementById('sidebarInitials').textContent = initials;
+  const ini = name.slice(0,2).toUpperCase();
+  document.getElementById('sidebarInitials').textContent = ini;
   document.getElementById('sidebarName').textContent = name;
-  document.getElementById('perfilAvatar').textContent = initials;
+  document.getElementById('perfilAvatar').textContent = ini;
   document.getElementById('perfilName').textContent = name;
   document.getElementById('perfilEmail').textContent = email;
-
-  setGreeting();
-  buildMiniGrid();
-  buildExLists();
-  buildHistorico();
+  setGreeting(); buildMiniGrid(); buildExLists(); buildHistorico();
+  const k=localStorage.getItem('maj_kcal'), p=localStorage.getItem('maj_prot');
+  if(k) document.getElementById('statKcal').textContent=k;
+  if(p) document.getElementById('statProt').textContent=p;
 }
 
-function logout() {
-  localStorage.removeItem('ajp_auth');
-  location.reload();
-}
-
-function toggleEye() {
-  const inp = document.getElementById('passInp');
-  const btn = document.getElementById('eyeBtn');
-  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
-  else { inp.type = 'password'; btn.textContent = '👁'; }
-}
-
-document.getElementById('passInp').addEventListener('keydown', e => {
-  if (e.key === 'Enter') tryLogin();
-});
-
-/* ── AUTO LOGIN ───────────────────────────────────── */
-(function() {
-  if (localStorage.getItem('ajp_auth') === '1') {
-    const email = localStorage.getItem('ajp_email') || 'atleta@aj.com';
-    const name  = localStorage.getItem('ajp_name')  || 'Atleta';
-    bootApp(email, name);
+(function(){
+  if(localStorage.getItem('maj_auth')==='1'){
+    bootApp(localStorage.getItem('maj_email')||'atleta@metodo.com', localStorage.getItem('maj_name')||'Atleta');
   }
 })();
 
-/* ── NAVIGATION ───────────────────────────────────── */
+/* NAV */
+const PAGE_MAP = {
+  dashboard:'pageDashboard', treino:'pageTreino', dieta:'pageDieta',
+  progresso:'pageProgresso', ananias:'pageAnanias', ciencia:'pageCiencia',
+  modulos:'pageModulos', perfil:'pagePerfil', suporte:'pageSuporte',
+};
 function navigate(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-  const map = {
-    dashboard: 'pageDashboard',
-    treino:    'pageTreino',
-    dieta:     'pageDieta',
-    progresso: 'pageProgresso',
-    perfil:    'pagePerfil',
-    modulos:   'pageModulos',
-    ciencia:   'pageCiencia',
-    suporte:   'pageSuporte',
-    notif:     'pageNotif',
-  };
-
-  const el = document.getElementById(map[page]);
-  if (el) { el.classList.add('active'); el.scrollIntoView({behavior:'instant',block:'start'}); }
-  currentPage = page;
-
-  document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.textContent.toLowerCase().includes(page.slice(0,4))) n.classList.add('active');
-  });
-
-  closeSidebar();
-  window.scrollTo(0,0);
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el = document.getElementById(PAGE_MAP[page]);
+  if(el) { el.classList.add('active'); }
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  closeSidebar(); window.scrollTo(0,0);
 }
+function toggleSidebar() { sidebarOpen=!sidebarOpen; document.getElementById('sidebar').classList.toggle('open',sidebarOpen); document.getElementById('overlay').classList.toggle('open',sidebarOpen); }
+function closeSidebar()  { sidebarOpen=false; document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
 
-/* ── SIDEBAR ──────────────────────────────────────── */
-function toggleSidebar() {
-  sidebarOpen = !sidebarOpen;
-  document.getElementById('sidebar').classList.toggle('open', sidebarOpen);
-  document.getElementById('overlay').classList.toggle('open', sidebarOpen);
-}
-function closeSidebar() {
-  sidebarOpen = false;
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('overlay').classList.remove('open');
-}
-
-/* ── GREETING ─────────────────────────────────────── */
+/* GREETING */
 function setGreeting() {
-  const now  = new Date();
-  const h    = now.getHours();
-  const days = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const dayStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-
-  let msg = h < 12 ? 'Bom dia, Atleta!'
-           : h < 18 ? 'Boa tarde, Atleta!'
-           : 'Boa noite, Atleta!';
-
-  document.getElementById('greetDay').textContent = dayStr;
-  document.getElementById('greetMsg').textContent = msg;
+  const now=new Date(), h=now.getHours();
+  const days=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  document.getElementById('greetDay').textContent=`${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('greetMsg').textContent=h<12?'Bom dia, Atleta!':h<18?'Boa tarde, Atleta!':'Boa noite, Atleta!';
 }
 
-/* ── MINI GRID ────────────────────────────────────── */
+/* MINI GRID */
 function buildMiniGrid() {
-  const grid = document.getElementById('miniGrid');
-  grid.innerHTML = '';
-  const today = new Date().getDate() % 30 || 30;
-  const done  = completedDays.length;
-
-  for (let i = 1; i <= 30; i++) {
-    const d = document.createElement('div');
-    d.className = 'day-mini';
-    d.textContent = i;
-    if (completedDays.includes(i)) d.classList.add('done');
-    else if (i === today)          d.classList.add('today');
-    d.onclick = () => toggleDay(i, d);
+  const grid=document.getElementById('miniGrid');
+  grid.innerHTML='';
+  const today=new Date().getDate()%30||30, done=completedDays.length;
+  for(let i=1;i<=30;i++){
+    const d=document.createElement('div');
+    d.className='day-mini';
+    d.textContent=i;
+    if(completedDays.includes(i)) d.classList.add('done');
+    else if(i===today) d.classList.add('today');
+    d.onclick=()=>toggleDay(i,d);
     grid.appendChild(d);
   }
-
-  document.getElementById('miniProg').textContent = `${done}/30`;
-  document.getElementById('miniProgBar').style.width = (done/30*100) + '%';
-  document.getElementById('statDias').textContent  = done;
-  document.getElementById('statStreak').textContent = calcStreak();
-  document.getElementById('streakNum').textContent  = calcStreak();
-  document.getElementById('dDia').textContent = Math.min(today, 30);
+  document.getElementById('miniProg').textContent=`${done}/30`;
+  document.getElementById('miniProgBar').style.width=(done/30*100)+'%';
+  document.getElementById('statDias').textContent=done;
+  const s=calcStreak();
+  document.getElementById('statStreak').textContent=s;
+  document.getElementById('streakNum').textContent=s;
+  document.getElementById('dDia').textContent=Math.min(today,30);
 }
-
-function toggleDay(n, el) {
-  const idx = completedDays.indexOf(n);
-  if (idx === -1) completedDays.push(n);
-  else completedDays.splice(idx, 1);
-  localStorage.setItem('ajp_days', JSON.stringify(completedDays));
-  el.classList.toggle('done');
-  buildMiniGrid();
+function toggleDay(n,el){
+  const idx=completedDays.indexOf(n);
+  if(idx===-1) completedDays.push(n); else completedDays.splice(idx,1);
+  localStorage.setItem('maj_days',JSON.stringify(completedDays));
+  el.classList.toggle('done'); buildMiniGrid();
 }
-
-function calcStreak() {
-  if (!completedDays.length) return 0;
-  const sorted = [...completedDays].sort((a,b)=>b-a);
-  let streak = 0, cur = sorted[0];
-  for (const d of sorted) {
-    if (d === cur) { streak++; cur--; }
-    else break;
-  }
+function calcStreak(){
+  if(!completedDays.length) return 0;
+  const s=[...completedDays].sort((a,b)=>b-a); let streak=0,cur=s[0];
+  for(const d of s){ if(d===cur){streak++;cur--;} else break; }
   return streak;
 }
 
-/* ── TABS ─────────────────────────────────────────── */
-function setTab(btn, panelId) {
-  btn.closest('.wrap').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  btn.closest('.wrap').querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+/* TABS */
+function setTab(btn,panelId){
+  const wrap=btn.closest('.wrap');
+  wrap.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  wrap.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById(panelId).classList.add('active');
 }
-
-/* ── EX LIST ──────────────────────────────────────── */
-function buildExLists() {
-  renderEx('exListCasa', TREINOS_CASA);
-  renderEx('exListAca',  TREINOS_ACA);
-  renderEx('exListAdv',  TREINOS_ADV);
+function setMealTab(el,panelId){
+  document.querySelectorAll('.meal-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.meal-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
 }
 
-function renderEx(containerId, treinos) {
-  const el = document.getElementById(containerId);
-  el.innerHTML = '';
-  treinos.forEach((ex, i) => {
-    const row = document.createElement('div');
-    row.className = 'ex-item';
-    row.innerHTML = `
-      <div class="ex-n">${i+1}</div>
-      <div class="ex-body">
-        <div class="ex-name">${ex.n}</div>
-        <div class="ex-detail">${ex.d}</div>
-      </div>
-      <button class="ex-timer-btn" onclick="event.stopPropagation();openTimer('${ex.n}',${ex.rest})">
-        ⏱ ${ex.rest}s
-      </button>
-    `;
-    row.onclick = () => row.classList.toggle('done');
+/* EX LIST */
+function buildExLists(){
+  renderEx('exListCasa',TREINOS_CASA);
+  renderEx('exListAca',TREINOS_ACA);
+  renderEx('exListAdv',TREINOS_ADV);
+}
+function renderEx(id,list){
+  const el=document.getElementById(id); el.innerHTML='';
+  list.forEach((ex,i)=>{
+    const row=document.createElement('div');
+    row.className='ex-item';
+    row.innerHTML=`<div class="ex-n">${i+1}</div><div class="ex-body"><div class="ex-name">${ex.n}</div><div class="ex-detail">${ex.d}</div></div><button class="ex-timer-btn" onclick="event.stopPropagation();openTimer('${ex.n}',${ex.rest})">⏱ ${ex.rest}s</button>`;
+    row.onclick=()=>row.classList.toggle('done');
     el.appendChild(row);
   });
 }
 
-/* ── TIMER ────────────────────────────────────────── */
-function openTimer(name, secs) {
-  timerSecs    = secs;
-  timerRunning = true;
-  document.getElementById('timerEx').textContent = name;
-  document.getElementById('timerDisplay').textContent = fmt(secs);
-  document.getElementById('timerToggle').textContent = 'Pausar';
+/* TIMER */
+function openTimer(name,secs){
+  timerSecs=secs; timerRunning=true;
+  document.getElementById('timerEx').textContent=name;
+  document.getElementById('timerDisplay').textContent=fmt(secs);
+  document.getElementById('timerToggle').textContent='Pausar';
   document.getElementById('timerModal').classList.add('open');
   clearInterval(timerInterval);
-  timerInterval = setInterval(tick, 1000);
+  timerInterval=setInterval(tick,1000);
 }
+function tick(){ if(!timerRunning)return; timerSecs--; document.getElementById('timerDisplay').textContent=fmt(timerSecs); if(timerSecs<=0){clearInterval(timerInterval);closeTimer();} }
+function fmt(s){ const m=Math.floor(Math.abs(s)/60),sec=Math.abs(s)%60; return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
+function toggleTimer(){ timerRunning=!timerRunning; document.getElementById('timerToggle').textContent=timerRunning?'Pausar':'Continuar'; }
+function closeTimer(){ clearInterval(timerInterval); document.getElementById('timerModal').classList.remove('open'); }
 
-function tick() {
-  if (!timerRunning) return;
-  timerSecs--;
-  document.getElementById('timerDisplay').textContent = fmt(timerSecs);
-  if (timerSecs <= 0) { clearInterval(timerInterval); closeTimer(); }
-}
-
-function fmt(s) {
-  const m = Math.floor(Math.abs(s)/60);
-  const sec = Math.abs(s) % 60;
-  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-}
-
-function toggleTimer() {
-  timerRunning = !timerRunning;
-  document.getElementById('timerToggle').textContent = timerRunning ? 'Pausar' : 'Continuar';
-}
-
-function closeTimer() {
-  clearInterval(timerInterval);
-  document.getElementById('timerModal').classList.remove('open');
-}
-
-/* ── TMB CALC ─────────────────────────────────────── */
-function setSex(s) {
-  sexSel = s;
-  document.getElementById('sexM').classList.toggle('sel', s === 'M');
-  document.getElementById('sexF').classList.toggle('sel', s === 'F');
-}
+/* TMB */
+function setSex(s){ sexSel=s; document.getElementById('sexM').classList.toggle('sel',s==='M'); document.getElementById('sexF').classList.toggle('sel',s==='F'); }
 setSex('M');
-
-function calcTMB() {
-  const peso  = +document.getElementById('dPeso').value;
-  const alt   = +document.getElementById('dAltura').value;
-  const idade = +document.getElementById('dIdade').value;
-  const ativ  = +document.getElementById('dAtiv').value;
-  const obj   = +document.getElementById('dObj').value;
-
-  if (!peso || !alt || !idade) return;
-
-  const tmb = sexSel === 'M'
-    ? 88.36 + (13.4 * peso) + (4.8 * alt) - (5.7 * idade)
-    : 447.6 + (9.2  * peso) + (3.1 * alt) - (4.3 * idade);
-
-  const get  = Math.round(tmb * ativ);
-  const meta = Math.round(get * obj);
-  const prot = Math.round(peso * 2);
-
-  document.getElementById('rTMB').textContent  = Math.round(tmb);
-  document.getElementById('rGET').textContent  = get;
-  document.getElementById('rMeta').textContent = meta;
-  document.getElementById('rProt').textContent = prot;
+function calcTMB(){
+  const peso=+document.getElementById('dPeso').value, alt=+document.getElementById('dAltura').value;
+  const idade=+document.getElementById('dIdade').value, ativ=+document.getElementById('dAtiv').value;
+  const obj=+document.getElementById('dObj').value;
+  if(!peso||!alt||!idade) return;
+  const tmb=sexSel==='M'?88.36+(13.4*peso)+(4.8*alt)-(5.7*idade):447.6+(9.2*peso)+(3.1*alt)-(4.3*idade);
+  const get=Math.round(tmb*ativ), meta=Math.round(get*obj), prot=Math.round(peso*2);
+  document.getElementById('rTMB').textContent=Math.round(tmb);
+  document.getElementById('rGET').textContent=get;
+  document.getElementById('rMeta').textContent=meta;
+  document.getElementById('rProt').textContent=prot;
   document.getElementById('resultBlock').classList.add('show');
-
-  document.getElementById('statKcal').textContent = meta;
-  document.getElementById('statProt').textContent = prot;
-
-  localStorage.setItem('ajp_kcal', meta);
-  localStorage.setItem('ajp_prot', prot);
+  document.getElementById('statKcal').textContent=meta;
+  document.getElementById('statProt').textContent=prot;
+  localStorage.setItem('maj_kcal',meta); localStorage.setItem('maj_prot',prot);
 }
 
-/* ── MEDIDAS ──────────────────────────────────────── */
-function buildHistorico() {
-  const list  = document.getElementById('historicoList');
-  const saved = JSON.parse(localStorage.getItem('ajp_medidas') || '[]');
-  const all   = [...saved, ...HIST_MOCK];
-  list.innerHTML = '';
-  if (!all.length) { list.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:13px;">Nenhum registro ainda.</div>'; return; }
-  all.forEach((h, i) => {
-    const prev = all[i+1];
-    let deltaHtml = '';
-    if (h.delta !== null && h.delta !== undefined) {
-      const cls = h.delta < 0 ? 'down' : 'up';
-      const sign = h.delta < 0 ? '▼' : '▲';
-      deltaHtml = `<div class="hist-delta ${cls}">${sign} ${Math.abs(h.delta)} kg</div>`;
-    }
-    list.innerHTML += `
-      <div class="hist-item">
-        <div class="hist-date">${h.data}</div>
-        <div class="hist-vals">
-          <div class="hist-val">${h.peso}<span>kg</span></div>
-          <div class="hist-val">${h.cintura}<span>cin</span></div>
-          <div class="hist-val">${h.abdomen}<span>abd</span></div>
-        </div>
-        ${deltaHtml}
-      </div>
-    `;
+/* MEDIDAS */
+function buildHistorico(){
+  const list=document.getElementById('historicoList');
+  const saved=JSON.parse(localStorage.getItem('maj_medidas')||'[]');
+  const all=[...saved,...HIST_MOCK];
+  list.innerHTML='';
+  if(!all.length){list.innerHTML='<div style="padding:16px;color:var(--muted);font-size:13px;">Nenhum registro ainda.</div>';return;}
+  all.forEach(h=>{
+    const cls=h.delta<0?'down':'up', sign=h.delta<0?'▼':'▲';
+    const deltaHtml=h.delta!=null?`<div class="hist-delta ${cls}">${sign} ${Math.abs(h.delta)} kg</div>`:'';
+    list.innerHTML+=`<div class="hist-item"><div class="hist-date">${h.data}</div><div class="hist-vals"><div class="hist-val">${h.peso}<span>kg</span></div><div class="hist-val">${h.cintura}<span>cin</span></div><div class="hist-val">${h.abdomen}<span>abd</span></div></div>${deltaHtml}</div>`;
   });
 }
-
-function saveMedidas() {
-  const peso    = document.getElementById('mPeso').value;
-  const cintura = document.getElementById('mCintura').value;
-  const abdomen = document.getElementById('mAbdomen').value;
-  const quadril = document.getElementById('mQuadril').value;
-  if (!peso) return;
-
-  const hoje   = new Date();
-  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const data   = `${String(hoje.getDate()).padStart(2,'0')}/${months[hoje.getMonth()]}/${hoje.getFullYear()}`;
-
-  const saved = JSON.parse(localStorage.getItem('ajp_medidas') || '[]');
-  saved.unshift({data, peso, cintura, abdomen, quadril, delta: null});
-  localStorage.setItem('ajp_medidas', JSON.stringify(saved));
+function saveMedidas(){
+  const peso=document.getElementById('mPeso').value;
+  if(!peso) return;
+  const hoje=new Date();
+  const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const data=`${String(hoje.getDate()).padStart(2,'0')}/${months[hoje.getMonth()]}/${hoje.getFullYear()}`;
+  const saved=JSON.parse(localStorage.getItem('maj_medidas')||'[]');
+  saved.unshift({data,peso,cintura:document.getElementById('mCintura').value||'—',abdomen:document.getElementById('mAbdomen').value||'—',quadril:document.getElementById('mQuadril').value||'—',delta:null});
+  localStorage.setItem('maj_medidas',JSON.stringify(saved));
   buildHistorico();
-
-  [document.getElementById('mPeso'),
-   document.getElementById('mCintura'),
-   document.getElementById('mAbdomen'),
-   document.getElementById('mQuadril')].forEach(i => i.value = '');
+  ['mPeso','mCintura','mAbdomen','mQuadril'].forEach(id=>document.getElementById(id).value='');
 }
-
-/* ── RESTORE STATE ────────────────────────────────── */
-(function() {
-  const k = localStorage.getItem('ajp_kcal');
-  const p = localStorage.getItem('ajp_prot');
-  if (k) document.getElementById('statKcal').textContent = k;
-  if (p) document.getElementById('statProt').textContent = p;
-})();
 </script>
 </body>
 </html>
