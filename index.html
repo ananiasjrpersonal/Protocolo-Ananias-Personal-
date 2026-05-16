@@ -791,6 +791,106 @@ input, select { font-family: inherit; }
 .bn-item:hover { color: var(--text); }
 .bn-icon { font-size: 20px; line-height: 1; }
 .bn-lbl { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* ── ONBOARDING ───────────────────────────────────── */
+#onboarding {
+  position: fixed; inset: 0; z-index: 9998;
+  background: var(--bg);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px 20px;
+}
+#onboarding.open { display: flex; }
+.ob-logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(28px,7vw,42px); letter-spacing: 4px;
+  text-align: center; margin-bottom: 4px; line-height: 1.1;
+}
+.ob-logo span { color: var(--red); }
+.ob-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; letter-spacing: 5px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 32px;
+}
+.ob-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 28px 24px; width: 100%; max-width: 380px;
+}
+.ob-step-ind {
+  display: flex; gap: 6px; justify-content: center; margin-bottom: 24px;
+}
+.ob-dot {
+  width: 24px; height: 3px; background: var(--border); transition: background .3s;
+}
+.ob-dot.active { background: var(--red); }
+.ob-step { display: none; }
+.ob-step.active { display: block; }
+.ob-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 26px; letter-spacing: 2px; margin-bottom: 6px;
+}
+.ob-desc {
+  font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5;
+}
+.ob-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.ob-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--muted);
+}
+.ob-inp {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--white); padding: 13px 16px; outline: none;
+  font-family: 'Barlow', sans-serif; font-size: 16px;
+  transition: border-color .2s; -webkit-appearance: none; appearance: none;
+  -moz-appearance: textfield;
+}
+.ob-inp::-webkit-outer-spin-button,
+.ob-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
+.ob-inp:focus { border-color: var(--red); }
+.ob-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.ob-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.ob-btn-group { display: flex; gap: 6px; }
+.ob-choice {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; padding: 12px 8px; text-align: center;
+  transition: all .2s; cursor: pointer; min-height: 44px;
+}
+.ob-choice.sel { background: rgba(232,0,42,.12); border-color: var(--red); color: var(--red2); }
+.ob-next {
+  width: 100%; margin-top: 20px;
+  background: var(--red); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 5px;
+  text-transform: uppercase; padding: 15px; min-height: 48px;
+  transition: background .2s;
+}
+.ob-next:hover { background: var(--red2); }
+.ob-result-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin: 20px 0;
+}
+.ob-result-card {
+  background: var(--card2); border: 1px solid var(--border);
+  padding: 16px 12px; text-align: center;
+}
+.ob-result-card.hl { background: rgba(232,0,42,.07); border-color: rgba(232,0,42,.3); }
+.ob-result-card.hl-g { background: rgba(0,230,118,.06); border-color: rgba(0,230,118,.3); }
+.ob-rc-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+}
+.ob-rc-val {
+  font-family: 'Bebas Neue', cursive; font-size: 36px; line-height: 1;
+}
+.ob-rc-val.red { color: var(--red); text-shadow: 0 0 16px rgba(232,0,42,.3); }
+.ob-rc-val.green { color: var(--green); }
+.ob-rc-unit {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; color: var(--faint); letter-spacing: 2px; margin-top: 2px;
+}
 </style>
 </head>
 <body>
@@ -819,6 +919,107 @@ input, select { font-family: inherit; }
     <div class="lock-err" id="lockErr"></div>
   </div>
 </div>
+
+<!-- ══ ONBOARDING ══════════════════════════════════ -->
+<div id="onboarding">
+  <div class="ob-logo">Método <span>Ananias Jr</span></div>
+  <div class="ob-sub">Vamos personalizar seu protocolo</div>
+
+  <div class="ob-card">
+    <div class="ob-step-ind">
+      <div class="ob-dot active" id="obDot0"></div>
+      <div class="ob-dot" id="obDot1"></div>
+      <div class="ob-dot" id="obDot2"></div>
+    </div>
+
+    <!-- STEP 1: Nome + Objetivo -->
+    <div class="ob-step active" id="obStep0">
+      <div class="ob-title">Como te chamamos?</div>
+      <div class="ob-desc">Seu primeiro nome, como o Ananias vai te chamar.</div>
+      <div class="ob-field">
+        <div class="ob-lbl">Seu Nome</div>
+        <input class="ob-inp" id="obNome" type="text" placeholder="Ex: João" autocomplete="given-name" maxlength="30">
+      </div>
+      <div class="ob-field">
+        <div class="ob-lbl">Seu Objetivo</div>
+        <div class="ob-btn-group">
+          <button class="ob-choice sel" id="obObj0" onclick="selObjetivo(0)">Secar</button>
+          <button class="ob-choice" id="obObj1" onclick="selObjetivo(1)">Manter</button>
+          <button class="ob-choice" id="obObj2" onclick="selObjetivo(2)">Ganhar Massa</button>
+        </div>
+      </div>
+      <button class="ob-next" onclick="obNext(0)">Continuar →</button>
+    </div>
+
+    <!-- STEP 2: Dados corporais -->
+    <div class="ob-step" id="obStep1">
+      <div class="ob-title">Seus dados</div>
+      <div class="ob-desc">Para calcular sua meta de calorias e proteína com precisão.</div>
+      <div class="ob-grid">
+        <div class="ob-field">
+          <div class="ob-lbl">Peso (kg)</div>
+          <input class="ob-inp" id="obPeso" type="number" placeholder="75" min="40" max="200">
+        </div>
+        <div class="ob-field">
+          <div class="ob-lbl">Altura (cm)</div>
+          <input class="ob-inp" id="obAltura" type="number" placeholder="175" min="140" max="220">
+        </div>
+      </div>
+      <div class="ob-grid">
+        <div class="ob-field">
+          <div class="ob-lbl">Idade</div>
+          <input class="ob-inp" id="obIdade" type="number" placeholder="30" min="15" max="80">
+        </div>
+        <div class="ob-field">
+          <div class="ob-lbl">Sexo</div>
+          <div class="ob-btn-group">
+            <button class="ob-choice sel" id="obSexM" onclick="selSexo('M')">M</button>
+            <button class="ob-choice" id="obSexF" onclick="selSexo('F')">F</button>
+          </div>
+        </div>
+      </div>
+      <div class="ob-field">
+        <div class="ob-lbl">Você treina atualmente?</div>
+        <div class="ob-btn-group">
+          <button class="ob-choice" id="obAtiv0" onclick="selAtiv(0)">Não treino</button>
+          <button class="ob-choice sel" id="obAtiv1" onclick="selAtiv(1)">1–3x / sem</button>
+          <button class="ob-choice" id="obAtiv2" onclick="selAtiv(2)">4x ou mais</button>
+        </div>
+      </div>
+      <button class="ob-next" onclick="obNext(1)">Calcular →</button>
+    </div>
+
+    <!-- STEP 3: Resultado -->
+    <div class="ob-step" id="obStep2">
+      <div class="ob-title" id="obResultTitle">Tudo pronto!</div>
+      <div class="ob-desc" id="obResultDesc">O Ananias Jr calculou seu protocolo personalizado:</div>
+      <div class="ob-result-cards">
+        <div class="ob-result-card hl">
+          <div class="ob-rc-lbl">Meta Kcal</div>
+          <div class="ob-rc-val red" id="obRkcal">—</div>
+          <div class="ob-rc-unit">kcal / dia</div>
+        </div>
+        <div class="ob-result-card hl-g">
+          <div class="ob-rc-lbl">Proteína</div>
+          <div class="ob-rc-val green" id="obRprot">—</div>
+          <div class="ob-rc-unit">g / dia</div>
+        </div>
+        <div class="ob-result-card">
+          <div class="ob-rc-lbl">TMB</div>
+          <div class="ob-rc-val" id="obRtmb">—</div>
+          <div class="ob-rc-unit">kcal base</div>
+        </div>
+        <div class="ob-result-card">
+          <div class="ob-rc-lbl">Gasto Total</div>
+          <div class="ob-rc-val" id="obRget">—</div>
+          <div class="ob-rc-unit">kcal total</div>
+        </div>
+      </div>
+      <button class="ob-next" onclick="obFinish()">Começar o Protocolo →</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- ══ APP SHELL ════════════════════════════════════ -->
 <div id="appShell">
@@ -1498,6 +1699,96 @@ let timerRunning = false;
 let completedDays = JSON.parse(localStorage.getItem('maj_days') || '[]');
 let sexSel = 'M';
 
+
+/* ── ONBOARDING ───────────────────────────────────── */
+let obObjetivoSel = 0; // 0=secar 1=manter 2=ganhar
+let obSexoSel = 'M';
+let obAtivSel = 1;
+const OB_ATIV_VALS = [1.2, 1.375, 1.725];
+const OB_OBJ_VALS  = [0.8, 1.0, 1.1];
+
+function selObjetivo(n) {
+  obObjetivoSel = n;
+  [0,1,2].forEach(i => document.getElementById('obObj'+i).classList.toggle('sel', i===n));
+}
+function selSexo(s) {
+  obSexoSel = s;
+  document.getElementById('obSexM').classList.toggle('sel', s==='M');
+  document.getElementById('obSexF').classList.toggle('sel', s==='F');
+}
+function selAtiv(n) {
+  obAtivSel = n;
+  [0,1,2].forEach(i => document.getElementById('obAtiv'+i).classList.toggle('sel', i===n));
+}
+
+function obNext(step) {
+  if (step === 0) {
+    const nome = document.getElementById('obNome').value.trim();
+    if (!nome) { document.getElementById('obNome').focus(); return; }
+    document.getElementById('obStep0').classList.remove('active');
+    document.getElementById('obStep1').classList.add('active');
+    document.getElementById('obDot0').classList.remove('active');
+    document.getElementById('obDot1').classList.add('active');
+    return;
+  }
+  if (step === 1) {
+    const peso   = +document.getElementById('obPeso').value;
+    const altura = +document.getElementById('obAltura').value;
+    const idade  = +document.getElementById('obIdade').value;
+    if (!peso || !altura || !idade) {
+      if (!peso)   document.getElementById('obPeso').focus();
+      else if (!altura) document.getElementById('obAltura').focus();
+      else         document.getElementById('obIdade').focus();
+      return;
+    }
+    const ativ = OB_ATIV_VALS[obAtivSel];
+    const obj  = OB_OBJ_VALS[obObjetivoSel];
+    const tmb  = obSexoSel === 'M'
+      ? 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * idade)
+      : 447.6 + (9.2  * peso) + (3.1 * altura) - (4.3 * idade);
+    const get  = Math.round(tmb * ativ);
+    const meta = Math.round(get * obj);
+    const prot = Math.round(peso * 2);
+    const nome = document.getElementById('obNome').value.trim();
+
+    document.getElementById('obResultTitle').textContent = 'Tudo pronto, ' + nome + '!';
+    document.getElementById('obResultDesc').textContent  = 'O Ananias Jr calculou seu protocolo:';
+    document.getElementById('obRkcal').textContent = meta;
+    document.getElementById('obRprot').textContent = prot;
+    document.getElementById('obRtmb').textContent  = Math.round(tmb);
+    document.getElementById('obRget').textContent  = get;
+
+    // Save to localStorage
+    localStorage.setItem('maj_nome',  nome);
+    localStorage.setItem('maj_kcal',  meta);
+    localStorage.setItem('maj_prot',  prot);
+    localStorage.setItem('maj_tmb_form', JSON.stringify({
+      dPeso:peso, dAltura:altura, dIdade:idade,
+      sex:obSexoSel, ativ:String(ativ), obj:String(obj),
+      tmb:Math.round(tmb), get:get
+    }));
+
+    document.getElementById('obStep1').classList.remove('active');
+    document.getElementById('obStep2').classList.add('active');
+    document.getElementById('obDot1').classList.remove('active');
+    document.getElementById('obDot2').classList.add('active');
+  }
+}
+
+function obFinish() {
+  localStorage.setItem('maj_onboarding_done', '1');
+  document.getElementById('onboarding').classList.remove('open');
+  const email = localStorage.getItem('maj_email') || '';
+  const nome  = localStorage.getItem('maj_nome')  || 'Atleta';
+  bootApp(email, nome);
+}
+
+function maybeShowOnboarding() {
+  if (!localStorage.getItem('maj_onboarding_done')) {
+    document.getElementById('onboarding').classList.add('open');
+  }
+}
+
 /* ── AUTH ─────────────────────────────────────────── */
 async function tryLogin() {
   const email = document.getElementById('emailInp').value.trim();
@@ -1514,25 +1805,34 @@ async function tryLogin() {
     localStorage.setItem('maj_email', email);
     localStorage.setItem('maj_name', name);
     localStorage.setItem('maj_auth', '1');
+    // nome from onboarding takes priority; only set fallback if not yet set
+    if (!localStorage.getItem('maj_nome')) localStorage.setItem('maj_nome', name);
   }
   bootApp(email, name);
 }
 
-function bootApp(email, name) {
+function bootApp(email, rawName) {
+  const nome = localStorage.getItem('maj_nome') || rawName;
   document.getElementById('lockScreen').style.display = 'none';
   document.getElementById('appShell').style.display = 'block';
 
-  const initials = name.slice(0,2).toUpperCase();
+  const initials = nome.slice(0,2).toUpperCase();
   document.getElementById('sidebarInitials').textContent = initials;
-  document.getElementById('sidebarName').textContent = name;
+  document.getElementById('sidebarName').textContent = nome;
   document.getElementById('perfilAvatar').textContent = initials;
-  document.getElementById('perfilName').textContent = name;
+  document.getElementById('perfilName').textContent = nome;
   document.getElementById('perfilEmail').textContent = email;
 
-  setGreeting();
+  // Restore calculated stats
+  const k=localStorage.getItem('maj_kcal'), p=localStorage.getItem('maj_prot');
+  if(k) document.getElementById('statKcal').textContent=k;
+  if(p) document.getElementById('statProt').textContent=p;
+
+  setGreeting(nome);
   buildMiniGrid();
   buildExLists();
   buildHistorico();
+  maybeShowOnboarding();
 }
 
 function logout() { if(!confirm('Sair da conta?')) return; localStorage.removeItem('maj_auth'); location.reload(); }
@@ -1551,8 +1851,8 @@ document.getElementById('passInp').addEventListener('keydown', e => {
 /* ── AUTO LOGIN ───────────────────────────────────── */
 (function() {
   if (localStorage.getItem('maj_auth') === '1') {
-    const email = localStorage.getItem('maj_email') || 'atleta@aj.com';
-    const name  = localStorage.getItem('maj_name')  || 'Atleta';
+    const email = localStorage.getItem('maj_email') || 'atleta@metodo.com';
+    const name  = localStorage.getItem('maj_nome') || localStorage.getItem('maj_name') || 'Atleta';
     bootApp(email, name);
   }
 })();
@@ -1598,19 +1898,16 @@ function closeSidebar() {
 }
 
 /* ── GREETING ─────────────────────────────────────── */
-function setGreeting() {
+function setGreeting(nome) {
   const now  = new Date();
   const h    = now.getHours();
   const days = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
   const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const dayStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-
-  let msg = h < 12 ? 'Bom dia, Atleta!'
-           : h < 18 ? 'Boa tarde, Atleta!'
-           : 'Boa noite, Atleta!';
-
+  const n = nome || localStorage.getItem('maj_nome') || 'Atleta';
+  const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
   document.getElementById('greetDay').textContent = dayStr;
-  document.getElementById('greetMsg').textContent = msg;
+  document.getElementById('greetMsg').textContent = greeting + ', ' + n + '!';
 }
 
 /* ── MINI GRID ────────────────────────────────────── */
