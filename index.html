@@ -792,6 +792,97 @@ input, select { font-family: inherit; }
 .bn-icon { font-size: 20px; line-height: 1; }
 .bn-lbl { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
 
+
+/* ── DADOS MODAL ──────────────────────────────────── */
+let dSexoSel = 'M', dAtivSelM = 1, dObjSelM = 0;
+
+function dSelSexo(s){
+  dSexoSel=s;
+  document.getElementById('dSexMM').classList.toggle('sel',s==='M');
+  document.getElementById('dSexFM').classList.toggle('sel',s==='F');
+}
+function dSelAtiv(n){
+  dAtivSelM=n;
+  [0,1,2].forEach(i=>document.getElementById('dAtivM'+i).classList.toggle('sel',i===n));
+}
+function dSelObj(n){
+  dObjSelM=n;
+  [0,1,2].forEach(i=>document.getElementById('dObjM'+i).classList.toggle('sel',i===n));
+}
+
+function dadosOpen(){
+  // Pre-fill with saved data
+  const saved = JSON.parse(localStorage.getItem('maj_tmb_form')||'{}');
+  document.getElementById('dNome').value    = localStorage.getItem('maj_nome')||'';
+  document.getElementById('dPesoM').value   = saved.dPeso||'';
+  document.getElementById('dAlturaM').value = saved.dAltura||'';
+  document.getElementById('dIdadeM').value  = saved.dIdade||'';
+  // sex
+  const sex = saved.sex||'M'; dSexoSel=sex;
+  document.getElementById('dSexMM').classList.toggle('sel',sex==='M');
+  document.getElementById('dSexFM').classList.toggle('sel',sex==='F');
+  // ativ
+  const ativVals = [1.2,1.375,1.725];
+  const ativIdx = ativVals.indexOf(+saved.ativ);
+  dAtivSelM = ativIdx>=0 ? ativIdx : 1;
+  [0,1,2].forEach(i=>document.getElementById('dAtivM'+i).classList.toggle('sel',i===dAtivSelM));
+  // obj
+  const objVals = [0.8,1.0,1.1];
+  const objIdx = objVals.indexOf(+saved.obj);
+  dObjSelM = objIdx>=0 ? objIdx : 0;
+  [0,1,2].forEach(i=>document.getElementById('dObjM'+i).classList.toggle('sel',i===dObjSelM));
+
+  document.getElementById('dadosModal').classList.add('open');
+}
+
+function dadosClose(){
+  document.getElementById('dadosModal').classList.remove('open');
+}
+
+function dadosSave(){
+  const nome   = document.getElementById('dNome').value.trim();
+  const peso   = +document.getElementById('dPesoM').value;
+  const altura = +document.getElementById('dAlturaM').value;
+  const idade  = +document.getElementById('dIdadeM').value;
+  if(!nome||!peso||!altura||!idade){
+    if(!nome)   document.getElementById('dNome').focus();
+    else if(!peso)   document.getElementById('dPesoM').focus();
+    else if(!altura) document.getElementById('dAlturaM').focus();
+    else             document.getElementById('dIdadeM').focus();
+    return;
+  }
+  const ativVals = [1.2,1.375,1.725];
+  const objVals  = [0.8,1.0,1.1];
+  const ativ = ativVals[dAtivSelM];
+  const obj  = objVals[dObjSelM];
+  const tmb  = dSexoSel==='M'
+    ? 88.36+(13.4*peso)+(4.8*altura)-(5.7*idade)
+    : 447.6+(9.2*peso)+(3.1*altura)-(4.3*idade);
+  const get  = Math.round(tmb*ativ);
+  const meta = Math.round(get*obj);
+  const prot = Math.round(peso*2);
+
+  localStorage.setItem('maj_nome', nome);
+  localStorage.setItem('maj_kcal', meta);
+  localStorage.setItem('maj_prot', prot);
+  localStorage.setItem('maj_tmb_form', JSON.stringify({
+    dPeso:peso, dAltura:altura, dIdade:idade,
+    sex:dSexoSel, ativ:String(ativ), obj:String(obj),
+    tmb:Math.round(tmb), get:get
+  }));
+
+  // Update UI live
+  document.getElementById('statKcal').textContent = meta;
+  document.getElementById('statProt').textContent = prot;
+  document.getElementById('sidebarName').textContent = nome;
+  document.getElementById('sidebarInitials').textContent = nome.slice(0,2).toUpperCase();
+  document.getElementById('perfilName').textContent = nome;
+  document.getElementById('perfilAvatar').textContent = nome.slice(0,2).toUpperCase();
+  const sub = document.getElementById('perfilDadosSub');
+  if(sub) sub.textContent = peso+'kg · '+altura+'cm · '+['Secar','Manter','Ganhar'][dObjSelM];
+  setGreeting(nome);
+  dadosClose();
+}
 /* ── ONBOARDING ───────────────────────────────────── */
 #onboarding {
   position: fixed; inset: 0; z-index: 9998;
@@ -891,6 +982,78 @@ input, select { font-family: inherit; }
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 10px; color: var(--faint); letter-spacing: 2px; margin-top: 2px;
 }
+
+/* ── EDIT DATA SHORTCUT ───────────────────────────── */
+.edit-data-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--faint); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; padding: 5px 12px; cursor: pointer;
+  transition: all .2s; margin-top: 8px;
+}
+.edit-data-btn:hover { border-color: var(--red); color: var(--red2); }
+
+/* ── MEUS DADOS MODAL ─────────────────────────────── */
+#dadosModal {
+  display: none; position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,.88); align-items: center;
+  justify-content: center; padding: 20px;
+}
+#dadosModal.open { display: flex; }
+.dados-box {
+  background: var(--card); border: 1px solid rgba(232,0,42,.3);
+  border-top: 2px solid var(--red);
+  padding: 28px 24px; width: 100%; max-width: 400px;
+  max-height: 90vh; overflow-y: auto;
+}
+.dados-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 24px; letter-spacing: 2px; margin-bottom: 4px;
+}
+.dados-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.dados-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.dados-field { display: flex; flex-direction: column; gap: 5px; }
+.dados-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted);
+}
+.dados-inp {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--white); font-family: 'Bebas Neue', cursive;
+  font-size: 22px; padding: 8px 10px; outline: none;
+  transition: border-color .2s; -moz-appearance: textfield;
+  min-height: 44px;
+}
+.dados-inp::-webkit-outer-spin-button,
+.dados-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
+.dados-inp:focus { border-color: var(--red); }
+.dados-inp.text { font-family: 'Barlow', sans-serif; font-size: 16px; }
+.dados-btn-group { display: flex; gap: 6px; margin-bottom: 12px; }
+.dados-choice {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; padding: 11px 6px; text-align: center;
+  transition: all .2s; cursor: pointer; min-height: 44px;
+}
+.dados-choice.sel { background: rgba(232,0,42,.12); border-color: var(--red); color: var(--red2); }
+.dados-actions { display: flex; gap: 8px; margin-top: 20px; }
+.dados-save {
+  flex: 2; background: var(--red); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; padding: 14px; min-height: 48px; transition: background .2s;
+}
+.dados-save:hover { background: var(--red2); }
+.dados-cancel {
+  flex: 1; background: transparent; border: 1px solid var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 14px; min-height: 48px; transition: all .2s;
+}
+.dados-cancel:hover { color: var(--white); border-color: var(--border2); }
 </style>
 </head>
 <body>
@@ -938,7 +1101,7 @@ input, select { font-family: inherit; }
       <div class="ob-desc">Seu primeiro nome, como o Ananias vai te chamar.</div>
       <div class="ob-field">
         <div class="ob-lbl">Seu Nome</div>
-        <input class="ob-inp" id="obNome" type="text" placeholder="Ex: João" autocomplete="given-name" maxlength="30">
+        <input class="ob-inp" id="obNome" type="text" autocomplete="given-name" maxlength="30">
       </div>
       <div class="ob-field">
         <div class="ob-lbl">Seu Objetivo</div>
@@ -958,17 +1121,17 @@ input, select { font-family: inherit; }
       <div class="ob-grid">
         <div class="ob-field">
           <div class="ob-lbl">Peso (kg)</div>
-          <input class="ob-inp" id="obPeso" type="number" placeholder="75" min="40" max="200">
+          <input class="ob-inp" id="obPeso" type="number" min="40" max="200">
         </div>
         <div class="ob-field">
           <div class="ob-lbl">Altura (cm)</div>
-          <input class="ob-inp" id="obAltura" type="number" placeholder="175" min="140" max="220">
+          <input class="ob-inp" id="obAltura" type="number" min="140" max="220">
         </div>
       </div>
       <div class="ob-grid">
         <div class="ob-field">
           <div class="ob-lbl">Idade</div>
-          <input class="ob-inp" id="obIdade" type="number" placeholder="30" min="15" max="80">
+          <input class="ob-inp" id="obIdade" type="number" min="15" max="80">
         </div>
         <div class="ob-field">
           <div class="ob-lbl">Sexo</div>
@@ -1191,8 +1354,11 @@ input, select { font-family: inherit; }
     <div class="page" id="pageTreino">
       <div class="page-hdr">
         <div class="page-eyebrow">Módulo · Treino</div>
-        <div class="page-title">Treinos 30 Dias</div>
-        <div class="page-sub">Selecione o tipo de treino e marque os exercícios concluídos</div>
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div class="page-title">Treinos 30 Dias</div>
+          <button class="edit-data-btn" onclick="dadosOpen()">✏ Meus Dados</button>
+        </div>
+        <div class="page-sub">Selecione o tipo e marque os exercícios concluídos</div>
       </div>
       <div class="wrap">
 
@@ -1272,8 +1438,11 @@ input, select { font-family: inherit; }
     <div class="page" id="pageDieta">
       <div class="page-hdr">
         <div class="page-eyebrow">Módulo · Nutrição</div>
-        <div class="page-title">Plano Alimentar</div>
-        <div class="page-sub">Calcule suas metas e visualize o plano Seca Barriga</div>
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div class="page-title">Plano Alimentar</div>
+          <button class="edit-data-btn" onclick="dadosOpen()">✏ Meus Dados</button>
+        </div>
+        <div class="page-sub">Plano personalizado · altere seus dados a qualquer momento</div>
       </div>
       <div class="wrap">
 
@@ -1466,6 +1635,13 @@ input, select { font-family: inherit; }
         <div class="section-hdr">Configurações</div>
 
         <div class="perfil-actions">
+          <div class="perfil-action" onclick="dadosOpen()">
+            <div>
+              <div class="action-lbl">Meus Dados de Treino</div>
+              <div class="action-sub" id="perfilDadosSub">Peso · Altura · Objetivo · Frequência</div>
+            </div>
+            <div class="action-arrow">›</div>
+          </div>
           <div class="perfil-action">
             <div>
               <div class="action-lbl">Alterar Senha</div>
@@ -1632,6 +1808,63 @@ input, select { font-family: inherit; }
 </div>
 </div>
 
+<!-- DADOS MODAL -->
+<div id="dadosModal">
+  <div class="dados-box">
+    <div class="dados-title">Meus Dados</div>
+    <div class="dados-sub">Altere e salve — seu plano será recalculado.</div>
+
+    <div class="dados-field" style="margin-bottom:12px;">
+      <div class="dados-lbl">Seu Nome</div>
+      <input class="dados-inp text" id="dNome" type="text" maxlength="30">
+    </div>
+
+    <div class="dados-row">
+      <div class="dados-field">
+        <div class="dados-lbl">Peso (kg)</div>
+        <input class="dados-inp" id="dPesoM" type="number" min="40" max="200">
+      </div>
+      <div class="dados-field">
+        <div class="dados-lbl">Altura (cm)</div>
+        <input class="dados-inp" id="dAlturaM" type="number" min="140" max="220">
+      </div>
+    </div>
+
+    <div class="dados-row">
+      <div class="dados-field">
+        <div class="dados-lbl">Idade</div>
+        <input class="dados-inp" id="dIdadeM" type="number" min="15" max="80">
+      </div>
+      <div class="dados-field">
+        <div class="dados-lbl">Sexo</div>
+        <div class="dados-btn-group" style="margin-bottom:0;">
+          <button class="dados-choice sel" id="dSexMM" onclick="dSelSexo('M')">M</button>
+          <button class="dados-choice" id="dSexFM" onclick="dSelSexo('F')">F</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dados-lbl" style="margin-bottom:6px;">Frequência de Treino</div>
+    <div class="dados-btn-group">
+      <button class="dados-choice" id="dAtivM0" onclick="dSelAtiv(0)">Não treino</button>
+      <button class="dados-choice sel" id="dAtivM1" onclick="dSelAtiv(1)">1–3x / sem</button>
+      <button class="dados-choice" id="dAtivM2" onclick="dSelAtiv(2)">4x ou mais</button>
+    </div>
+
+    <div class="dados-lbl" style="margin:12px 0 6px;">Objetivo</div>
+    <div class="dados-btn-group">
+      <button class="dados-choice sel" id="dObjM0" onclick="dSelObj(0)">Secar</button>
+      <button class="dados-choice" id="dObjM1" onclick="dSelObj(1)">Manter</button>
+      <button class="dados-choice" id="dObjM2" onclick="dSelObj(2)">Ganhar</button>
+    </div>
+
+    <div class="dados-actions">
+      <button class="dados-save" onclick="dadosSave()">Salvar e Recalcular</button>
+      <button class="dados-cancel" onclick="dadosClose()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- TIMER MODAL -->
 <div id="timerModal">
   <div class="timer-box">
@@ -1700,6 +1933,97 @@ let completedDays = JSON.parse(localStorage.getItem('maj_days') || '[]');
 let sexSel = 'M';
 
 
+
+/* ── DADOS MODAL ──────────────────────────────────── */
+let dSexoSel = 'M', dAtivSelM = 1, dObjSelM = 0;
+
+function dSelSexo(s){
+  dSexoSel=s;
+  document.getElementById('dSexMM').classList.toggle('sel',s==='M');
+  document.getElementById('dSexFM').classList.toggle('sel',s==='F');
+}
+function dSelAtiv(n){
+  dAtivSelM=n;
+  [0,1,2].forEach(i=>document.getElementById('dAtivM'+i).classList.toggle('sel',i===n));
+}
+function dSelObj(n){
+  dObjSelM=n;
+  [0,1,2].forEach(i=>document.getElementById('dObjM'+i).classList.toggle('sel',i===n));
+}
+
+function dadosOpen(){
+  // Pre-fill with saved data
+  const saved = JSON.parse(localStorage.getItem('maj_tmb_form')||'{}');
+  document.getElementById('dNome').value    = localStorage.getItem('maj_nome')||'';
+  document.getElementById('dPesoM').value   = saved.dPeso||'';
+  document.getElementById('dAlturaM').value = saved.dAltura||'';
+  document.getElementById('dIdadeM').value  = saved.dIdade||'';
+  // sex
+  const sex = saved.sex||'M'; dSexoSel=sex;
+  document.getElementById('dSexMM').classList.toggle('sel',sex==='M');
+  document.getElementById('dSexFM').classList.toggle('sel',sex==='F');
+  // ativ
+  const ativVals = [1.2,1.375,1.725];
+  const ativIdx = ativVals.indexOf(+saved.ativ);
+  dAtivSelM = ativIdx>=0 ? ativIdx : 1;
+  [0,1,2].forEach(i=>document.getElementById('dAtivM'+i).classList.toggle('sel',i===dAtivSelM));
+  // obj
+  const objVals = [0.8,1.0,1.1];
+  const objIdx = objVals.indexOf(+saved.obj);
+  dObjSelM = objIdx>=0 ? objIdx : 0;
+  [0,1,2].forEach(i=>document.getElementById('dObjM'+i).classList.toggle('sel',i===dObjSelM));
+
+  document.getElementById('dadosModal').classList.add('open');
+}
+
+function dadosClose(){
+  document.getElementById('dadosModal').classList.remove('open');
+}
+
+function dadosSave(){
+  const nome   = document.getElementById('dNome').value.trim();
+  const peso   = +document.getElementById('dPesoM').value;
+  const altura = +document.getElementById('dAlturaM').value;
+  const idade  = +document.getElementById('dIdadeM').value;
+  if(!nome||!peso||!altura||!idade){
+    if(!nome)   document.getElementById('dNome').focus();
+    else if(!peso)   document.getElementById('dPesoM').focus();
+    else if(!altura) document.getElementById('dAlturaM').focus();
+    else             document.getElementById('dIdadeM').focus();
+    return;
+  }
+  const ativVals = [1.2,1.375,1.725];
+  const objVals  = [0.8,1.0,1.1];
+  const ativ = ativVals[dAtivSelM];
+  const obj  = objVals[dObjSelM];
+  const tmb  = dSexoSel==='M'
+    ? 88.36+(13.4*peso)+(4.8*altura)-(5.7*idade)
+    : 447.6+(9.2*peso)+(3.1*altura)-(4.3*idade);
+  const get  = Math.round(tmb*ativ);
+  const meta = Math.round(get*obj);
+  const prot = Math.round(peso*2);
+
+  localStorage.setItem('maj_nome', nome);
+  localStorage.setItem('maj_kcal', meta);
+  localStorage.setItem('maj_prot', prot);
+  localStorage.setItem('maj_tmb_form', JSON.stringify({
+    dPeso:peso, dAltura:altura, dIdade:idade,
+    sex:dSexoSel, ativ:String(ativ), obj:String(obj),
+    tmb:Math.round(tmb), get:get
+  }));
+
+  // Update UI live
+  document.getElementById('statKcal').textContent = meta;
+  document.getElementById('statProt').textContent = prot;
+  document.getElementById('sidebarName').textContent = nome;
+  document.getElementById('sidebarInitials').textContent = nome.slice(0,2).toUpperCase();
+  document.getElementById('perfilName').textContent = nome;
+  document.getElementById('perfilAvatar').textContent = nome.slice(0,2).toUpperCase();
+  const sub = document.getElementById('perfilDadosSub');
+  if(sub) sub.textContent = peso+'kg · '+altura+'cm · '+['Secar','Manter','Ganhar'][dObjSelM];
+  setGreeting(nome);
+  dadosClose();
+}
 /* ── ONBOARDING ───────────────────────────────────── */
 let obObjetivoSel = 0; // 0=secar 1=manter 2=ganhar
 let obSexoSel = 'M';
