@@ -793,6 +793,176 @@ input, select { font-family: inherit; }
 .bn-lbl { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
 
 
+
+/* ── VÍDEOS ───────────────────────────────────────── */
+// Para adicionar vídeos: copie o ID do YouTube (parte depois de ?v= ou youtu.be/)
+// Exemplo: https://youtu.be/dQw4w9WgXcQ → id: 'dQw4w9WgXcQ'
+const VIDEOS = [
+  // premium: false → todos os alunos acessam
+  // premium: true  → mostra cadeado, exige upgrade
+  {
+    id: 'PLACEHOLDER_1',
+    title: 'Flexão de Braços — Técnica Perfeita',
+    cat: 'Peito', dur: '2:14',
+    desc: 'Posição das mãos, cotovelos e amplitude correta',
+    premium: false
+  },
+  {
+    id: 'PLACEHOLDER_2',
+    title: 'Agachamento Livre — Do Zero ao Correto',
+    cat: 'Pernas', dur: '3:02',
+    desc: 'Joelhos, quadril e postura — os erros mais comuns',
+    premium: false
+  },
+  {
+    id: 'PLACEHOLDER_3',
+    title: 'Remada Curvada — Costas sem Lesão',
+    cat: 'Costas', dur: '1:58',
+    desc: 'Ativação correta do dorsal e proteção lombar',
+    premium: false
+  },
+  {
+    id: 'PLACEHOLDER_4',
+    title: 'Desenvolvimento com Halteres',
+    cat: 'Ombro', dur: '2:30',
+    desc: 'Amplitude, rotação e proteção do manguito',
+    premium: true
+  },
+  {
+    id: 'PLACEHOLDER_5',
+    title: 'Rosca Direta — Bíceps de Verdade',
+    cat: 'Bíceps', dur: '1:45',
+    desc: 'Como isolar o bíceps e não usar o ombro',
+    premium: true
+  },
+  {
+    id: 'PLACEHOLDER_6',
+    title: 'Prancha Isométrica — Core Total',
+    cat: 'Abdômen', dur: '1:20',
+    desc: 'Ativação do transverso e respiração correta',
+    premium: true
+  },
+];
+
+let activeVideoCat = 'Todos';
+
+function buildVideoPage() {
+  const cats = ['Todos', ...new Set(VIDEOS.map(v => v.cat))];
+  const catsEl = document.getElementById('videoCats');
+  if (!catsEl) return;
+  catsEl.innerHTML = '';
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'video-cat' + (cat === activeVideoCat ? ' active' : '');
+    btn.textContent = cat;
+    btn.onclick = () => {
+      activeVideoCat = cat;
+      catsEl.querySelectorAll('.video-cat').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderVideoGrid();
+    };
+    catsEl.appendChild(btn);
+  });
+  renderVideoGrid();
+}
+
+function renderVideoGrid() {
+  const grid = document.getElementById('videoGrid');
+  if (!grid) return;
+  const filtered = activeVideoCat === 'Todos'
+    ? VIDEOS
+    : VIDEOS.filter(v => v.cat === activeVideoCat);
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="video-empty"><div class="video-empty-icon">🎬</div>Nenhum vídeo nesta categoria ainda.</div>';
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  filtered.forEach(v => {
+    const isPlaceholder = v.id.startsWith('PLACEHOLDER');
+    const isPremium     = !!v.premium;
+    const thumbUrl = isPlaceholder
+      ? null
+      : `https://img.youtube.com/vi/${v.id}/mqdefault.jpg`;
+
+    const card = document.createElement('div');
+    card.className = 'video-card' + (isPremium ? ' premium-card' : '');
+
+    const thumbInner = thumbUrl
+      ? `<img class="video-thumb-img" src="${thumbUrl}" alt="${v.title}" loading="lazy">`
+      : `<div class="video-thumb-img" style="display:flex;align-items:center;justify-content:center;background:var(--card2);"><span style="font-size:32px;opacity:.3;">🎬</span></div>`;
+
+    const playOrLock = isPremium
+      ? `<div class="video-play-btn"><div class="video-lock-icon">🔒</div></div>
+         <div class="video-lock-badge">⭐ Premium</div>`
+      : `<div class="video-play-btn"><div class="video-play-icon">▶</div></div>`;
+
+    card.innerHTML = `
+      <div class="video-thumb">
+        ${thumbInner}
+        ${playOrLock}
+      </div>
+      <div class="video-info">
+        <div class="video-tag ${isPremium ? 'premium-tag' : ''}">${isPremium ? '⭐ ' : ''}${v.cat}</div>
+        <div class="video-title">${v.title}</div>
+        <div class="video-meta">
+          <span class="video-dur">⏱ ${v.dur}</span>
+          <span>${v.desc}</span>
+        </div>
+      </div>
+    `;
+    card.onclick = () => openVideo(v);
+    frag.appendChild(card);
+  });
+  grid.innerHTML = '';
+  grid.appendChild(frag);
+}
+
+function openVideo(v) {
+  // Premium gate
+  if (v.premium) {
+    document.getElementById('pmVideoName').textContent = v.title;
+    document.getElementById('premiumModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    return;
+  }
+  // Placeholder
+  if (v.id.startsWith('PLACEHOLDER')) {
+    alert('Vídeo em breve! O Ananias está gravando.');
+    return;
+  }
+  const frame = document.getElementById('vpFrame');
+  frame.src = `https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&modestbranding=1`;
+  document.getElementById('vpTitle').textContent = v.title;
+  document.getElementById('vpSub').textContent = v.cat + ' · ' + v.dur;
+  document.getElementById('videoPlayer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePremiumModal() {
+  document.getElementById('premiumModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function pmContact() {
+  closePremiumModal();
+  navigate('suporte');
+}
+
+function closeVideo(e) {
+  if (e && e.target !== document.getElementById('videoPlayer') && !e.target.classList.contains('vp-close')) return;
+  document.getElementById('vpFrame').src = '';
+  document.getElementById('videoPlayer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Build on navigate
+const _origNavigate = navigate;
+function navigate(page) {
+  _origNavigate(page);
+  if (page === 'videos') buildVideoPage();
+}
 /* ── DADOS MODAL ──────────────────────────────────── */
 let dSexoSel = 'M', dAtivSelM = 1, dObjSelM = 0;
 
@@ -1054,6 +1224,195 @@ function dadosSave(){
   text-transform: uppercase; padding: 14px; min-height: 48px; transition: all .2s;
 }
 .dados-cancel:hover { color: var(--white); border-color: var(--border2); }
+
+/* ── VÍDEOS ───────────────────────────────────────── */
+.video-cats { display: flex; gap: 2px; flex-wrap: wrap; margin-bottom: 16px; }
+.video-cat {
+  background: var(--card2); border: 1px solid var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; padding: 9px 14px; cursor: pointer;
+  transition: all .2s; min-height: 40px;
+}
+.video-cat.active { background: var(--red); border-color: var(--red); color: #fff; }
+.video-cat:hover:not(.active) { color: var(--white); }
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2px;
+}
+@media (max-width: 600px) {
+  .video-grid { grid-template-columns: 1fr; }
+}
+
+.video-card {
+  background: var(--card); border: 1px solid var(--border);
+  cursor: pointer; transition: border-color .2s; position: relative;
+  overflow: hidden;
+}
+.video-card:hover { border-color: rgba(232,0,42,.4); }
+.video-card:hover .video-play-btn { opacity: 1; transform: scale(1); }
+
+.video-thumb {
+  position: relative; width: 100%; padding-top: 56.25%;
+  background: #000; overflow: hidden;
+}
+.video-thumb iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: none; pointer-events: none;
+}
+.video-thumb-img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; background: var(--card2);
+}
+.video-play-btn {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.45);
+  opacity: 0; transform: scale(1.04);
+  transition: opacity .2s, transform .2s;
+}
+.video-play-icon {
+  width: 52px; height: 52px;
+  background: var(--red); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; padding-left: 4px;
+  box-shadow: 0 0 24px rgba(232,0,42,.5);
+}
+.video-card:hover .video-thumb-img { filter: brightness(.7); }
+.video-info { padding: 14px 14px 16px; }
+.video-tag {
+  display: inline-block; margin-bottom: 7px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 3px 8px;
+  color: var(--red2); background: rgba(232,0,42,.1);
+  border: 1px solid rgba(232,0,42,.25);
+}
+.video-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--white); margin-bottom: 5px;
+  line-height: 1.3;
+}
+.video-meta {
+  font-size: 12px; color: var(--faint);
+  display: flex; gap: 12px; align-items: center;
+}
+.video-dur {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; letter-spacing: 1px;
+}
+
+/* lightbox / player overlay */
+#videoPlayer {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,.94);
+  align-items: center; justify-content: center;
+  padding: 16px; flex-direction: column;
+}
+#videoPlayer.open { display: flex; }
+.vp-close {
+  position: fixed; top: 16px; right: 16px;
+  width: 44px; height: 44px; background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15); color: var(--white);
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .2s; z-index: 501;
+}
+.vp-close:hover { background: var(--red); border-color: var(--red); }
+.vp-wrap {
+  width: 100%; max-width: 860px; position: relative;
+}
+.vp-ratio {
+  position: relative; padding-top: 56.25%; background: #000;
+}
+.vp-ratio iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+}
+.vp-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 20px; letter-spacing: 2px;
+  color: var(--white); margin-top: 14px; text-align: center;
+}
+.vp-sub {
+  font-size: 12px; color: var(--muted); text-align: center; margin-top: 4px;
+}
+
+.video-empty {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 40px 20px; text-align: center; color: var(--muted); font-size: 14px;
+}
+.video-empty-icon { font-size: 36px; margin-bottom: 12px; }
+
+/* ── VIDEO PREMIUM ────────────────────────────────── */
+.video-card.premium-card .video-thumb-img { filter: brightness(.35); }
+.video-card.premium-card .video-play-btn  { opacity: 1 !important; transform: scale(1) !important; }
+.video-card.premium-card:hover .video-thumb-img { filter: brightness(.35); }
+.video-lock-badge {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(255,179,0,.15); border: 1px solid rgba(255,179,0,.4);
+  color: #ffb300; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 4px 10px;
+  display: flex; align-items: center; gap: 5px;
+}
+.video-lock-icon {
+  width: 52px; height: 52px; background: rgba(255,179,0,.2);
+  border: 1px solid rgba(255,179,0,.4); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.video-tag.premium-tag {
+  color: #ffb300;
+  background: rgba(255,179,0,.1);
+  border-color: rgba(255,179,0,.3);
+}
+
+/* premium upgrade modal */
+#premiumModal {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,.88);
+  align-items: center; justify-content: center; padding: 20px;
+}
+#premiumModal.open { display: flex; }
+.pm-box {
+  background: var(--card);
+  border: 1px solid rgba(255,179,0,.35);
+  border-top: 2px solid #ffb300;
+  padding: 32px 24px; width: 100%; max-width: 340px; text-align: center;
+}
+.pm-icon { font-size: 40px; margin-bottom: 16px; }
+.pm-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 28px; letter-spacing: 2px; color: var(--white); margin-bottom: 6px;
+}
+.pm-video-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: #ffb300;
+  background: rgba(255,179,0,.08); border: 1px solid rgba(255,179,0,.2);
+  padding: 6px 14px; display: inline-block; margin-bottom: 16px;
+}
+.pm-desc {
+  font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 24px;
+}
+.pm-cta {
+  width: 100%; background: #ffb300; color: #000;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; padding: 15px; min-height: 48px;
+  transition: background .2s; margin-bottom: 10px;
+}
+.pm-cta:hover { background: #ffc933; }
+.pm-skip {
+  background: transparent; border: none; color: var(--faint);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; padding: 10px; cursor: pointer;
+  transition: color .2s;
+}
+.pm-skip:hover { color: var(--text); }
 </style>
 </head>
 <body>
@@ -1212,6 +1571,9 @@ function dadosSave(){
       </div>
       <div class="nav-item" onclick="navigate('progresso')">
         <span class="nav-icon">📈</span> Progresso
+      </div>
+      <div class="nav-item" data-page="videos" onclick="navigate('videos')">
+        <span class="nav-icon">🎬</span> Vídeos
       </div>
     </div>
 
@@ -1794,6 +2156,9 @@ function dadosSave(){
   <button class="bn-item" data-page="treino" onclick="navigate('treino');setBottomNav(this)">
     <span class="bn-icon">💪</span><span class="bn-lbl">Treino</span>
   </button>
+  <button class="bn-item" data-page="videos" onclick="navigate('videos');setBottomNav(this)">
+    <span class="bn-icon">🎬</span><span class="bn-lbl">Vídeos</span>
+  </button>
   <button class="bn-item" data-page="dieta" onclick="navigate('dieta');setBottomNav(this)">
     <span class="bn-icon">🥗</span><span class="bn-lbl">Nutrição</span>
   </button>
@@ -1806,6 +2171,34 @@ function dadosSave(){
 </div>
 
 </div>
+</div>
+
+<!-- VIDEO PLAYER -->
+<div id="videoPlayer" onclick="closeVideo(event)">
+  <button class="vp-close" onclick="closeVideo()">✕</button>
+  <div class="vp-wrap">
+    <div class="vp-ratio">
+      <iframe id="vpFrame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    </div>
+    <div class="vp-title" id="vpTitle"></div>
+    <div class="vp-sub" id="vpSub"></div>
+  </div>
+</div>
+
+<!-- PREMIUM MODAL -->
+<div id="premiumModal">
+  <div class="pm-box">
+    <div class="pm-icon">🔒</div>
+    <div class="pm-title">Conteúdo Premium</div>
+    <div class="pm-video-name" id="pmVideoName">Vídeo Premium</div>
+    <div class="pm-desc">
+      Este vídeo faz parte do <strong style="color:var(--white);">Pacote Premium</strong>
+      do Método Ananias Jr.<br><br>
+      Desbloqueie todos os vídeos de técnica, protocolos avançados e acompanhamento direto.
+    </div>
+    <button class="pm-cta" onclick="pmContact()">Quero o Premium →</button>
+    <button class="pm-skip" onclick="closePremiumModal()">Agora não</button>
+  </div>
 </div>
 
 <!-- DADOS MODAL -->
@@ -1934,6 +2327,176 @@ let sexSel = 'M';
 
 
 
+
+/* ── VÍDEOS ───────────────────────────────────────── */
+// Para adicionar vídeos: copie o ID do YouTube (parte depois de ?v= ou youtu.be/)
+// Exemplo: https://youtu.be/dQw4w9WgXcQ → id: 'dQw4w9WgXcQ'
+const VIDEOS = [
+  // premium: false → todos os alunos acessam
+  // premium: true  → mostra cadeado, exige upgrade
+  {
+    id: 'PLACEHOLDER_1',
+    title: 'Flexão de Braços — Técnica Perfeita',
+    cat: 'Peito', dur: '2:14',
+    desc: 'Posição das mãos, cotovelos e amplitude correta',
+    premium: false
+  },
+  {
+    id: 'PLACEHOLDER_2',
+    title: 'Agachamento Livre — Do Zero ao Correto',
+    cat: 'Pernas', dur: '3:02',
+    desc: 'Joelhos, quadril e postura — os erros mais comuns',
+    premium: false
+  },
+  {
+    id: 'PLACEHOLDER_3',
+    title: 'Remada Curvada — Costas sem Lesão',
+    cat: 'Costas', dur: '1:58',
+    desc: 'Ativação correta do dorsal e proteção lombar',
+    premium: false
+  },
+  {
+    id: 'PLACEHOLDER_4',
+    title: 'Desenvolvimento com Halteres',
+    cat: 'Ombro', dur: '2:30',
+    desc: 'Amplitude, rotação e proteção do manguito',
+    premium: true
+  },
+  {
+    id: 'PLACEHOLDER_5',
+    title: 'Rosca Direta — Bíceps de Verdade',
+    cat: 'Bíceps', dur: '1:45',
+    desc: 'Como isolar o bíceps e não usar o ombro',
+    premium: true
+  },
+  {
+    id: 'PLACEHOLDER_6',
+    title: 'Prancha Isométrica — Core Total',
+    cat: 'Abdômen', dur: '1:20',
+    desc: 'Ativação do transverso e respiração correta',
+    premium: true
+  },
+];
+
+let activeVideoCat = 'Todos';
+
+function buildVideoPage() {
+  const cats = ['Todos', ...new Set(VIDEOS.map(v => v.cat))];
+  const catsEl = document.getElementById('videoCats');
+  if (!catsEl) return;
+  catsEl.innerHTML = '';
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'video-cat' + (cat === activeVideoCat ? ' active' : '');
+    btn.textContent = cat;
+    btn.onclick = () => {
+      activeVideoCat = cat;
+      catsEl.querySelectorAll('.video-cat').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderVideoGrid();
+    };
+    catsEl.appendChild(btn);
+  });
+  renderVideoGrid();
+}
+
+function renderVideoGrid() {
+  const grid = document.getElementById('videoGrid');
+  if (!grid) return;
+  const filtered = activeVideoCat === 'Todos'
+    ? VIDEOS
+    : VIDEOS.filter(v => v.cat === activeVideoCat);
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="video-empty"><div class="video-empty-icon">🎬</div>Nenhum vídeo nesta categoria ainda.</div>';
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  filtered.forEach(v => {
+    const isPlaceholder = v.id.startsWith('PLACEHOLDER');
+    const isPremium     = !!v.premium;
+    const thumbUrl = isPlaceholder
+      ? null
+      : `https://img.youtube.com/vi/${v.id}/mqdefault.jpg`;
+
+    const card = document.createElement('div');
+    card.className = 'video-card' + (isPremium ? ' premium-card' : '');
+
+    const thumbInner = thumbUrl
+      ? `<img class="video-thumb-img" src="${thumbUrl}" alt="${v.title}" loading="lazy">`
+      : `<div class="video-thumb-img" style="display:flex;align-items:center;justify-content:center;background:var(--card2);"><span style="font-size:32px;opacity:.3;">🎬</span></div>`;
+
+    const playOrLock = isPremium
+      ? `<div class="video-play-btn"><div class="video-lock-icon">🔒</div></div>
+         <div class="video-lock-badge">⭐ Premium</div>`
+      : `<div class="video-play-btn"><div class="video-play-icon">▶</div></div>`;
+
+    card.innerHTML = `
+      <div class="video-thumb">
+        ${thumbInner}
+        ${playOrLock}
+      </div>
+      <div class="video-info">
+        <div class="video-tag ${isPremium ? 'premium-tag' : ''}">${isPremium ? '⭐ ' : ''}${v.cat}</div>
+        <div class="video-title">${v.title}</div>
+        <div class="video-meta">
+          <span class="video-dur">⏱ ${v.dur}</span>
+          <span>${v.desc}</span>
+        </div>
+      </div>
+    `;
+    card.onclick = () => openVideo(v);
+    frag.appendChild(card);
+  });
+  grid.innerHTML = '';
+  grid.appendChild(frag);
+}
+
+function openVideo(v) {
+  // Premium gate
+  if (v.premium) {
+    document.getElementById('pmVideoName').textContent = v.title;
+    document.getElementById('premiumModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    return;
+  }
+  // Placeholder
+  if (v.id.startsWith('PLACEHOLDER')) {
+    alert('Vídeo em breve! O Ananias está gravando.');
+    return;
+  }
+  const frame = document.getElementById('vpFrame');
+  frame.src = `https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&modestbranding=1`;
+  document.getElementById('vpTitle').textContent = v.title;
+  document.getElementById('vpSub').textContent = v.cat + ' · ' + v.dur;
+  document.getElementById('videoPlayer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePremiumModal() {
+  document.getElementById('premiumModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function pmContact() {
+  closePremiumModal();
+  navigate('suporte');
+}
+
+function closeVideo(e) {
+  if (e && e.target !== document.getElementById('videoPlayer') && !e.target.classList.contains('vp-close')) return;
+  document.getElementById('vpFrame').src = '';
+  document.getElementById('videoPlayer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Build on navigate
+const _origNavigate = navigate;
+function navigate(page) {
+  _origNavigate(page);
+  if (page === 'videos') buildVideoPage();
+}
 /* ── DADOS MODAL ──────────────────────────────────── */
 let dSexoSel = 'M', dAtivSelM = 1, dObjSelM = 0;
 
@@ -2186,6 +2749,7 @@ const PAGE_MAP = {
   dashboard:'pageDashboard', treino:'pageTreino', dieta:'pageDieta',
   progresso:'pageProgresso', perfil:'pagePerfil', modulos:'pageModulos',
   ciencia:'pageCiencia', ananias:'pageAnanias', suporte:'pageSuporte', notif:'pageNotif',
+  videos:'pageVideos',
 };
 function navigate(page) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -2447,6 +3011,13 @@ function saveMedidas() {
   if (k) document.getElementById('statKcal').textContent = k;
   if (p) document.getElementById('statProt').textContent = p;
 })();
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeVideo({target: document.getElementById('videoPlayer')});
+    closePremiumModal();
+  }
+});
 </script>
 </body>
 </html>
