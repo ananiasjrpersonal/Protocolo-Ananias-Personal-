@@ -1413,6 +1413,35 @@ function dadosSave(){
   transition: color .2s;
 }
 .pm-skip:hover { color: var(--text); }
+
+/* ── MEAL TABS ────────────────────────────────────── */
+.meal-tabs { display: flex; gap: 2px; flex-wrap: wrap; }
+.meal-tab {
+  flex: 1; background: var(--card2); border: 1px solid var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; padding: 12px 8px; text-align: center;
+  transition: all .2s; min-height: 52px; min-width: 60px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer;
+}
+.meal-tab .meal-tab-icon { font-size: 18px; }
+.meal-tab .meal-tab-lbl  { font-size: 9px; }
+.meal-tab.active { background: var(--card); border-color: var(--red); color: var(--white); }
+.meal-tab:hover:not(.active) { color: var(--white); }
+.meal-panel { display: none; }
+.meal-panel.active { display: block; }
+.meal-meta-row { display: flex; gap: 16px; margin-top: 6px; flex-wrap: wrap; }
+.meal-meta-item { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+.meal-meta-item.kcal { color: var(--red2); }
+.meal-meta-item.prot { color: var(--green); }
+.meal-meta-item.tip  { color: var(--muted); }
+.meal-col-lbl.c { text-align: center; }
+.meal-col-lbl.r { text-align: right; }
+.meal-col-lbl.g { color: var(--green); text-align: right; }
+.meal-total-row { display: flex; justify-content: flex-end; gap: 20px; padding: 10px 16px; background: var(--card2); border-top: 1px solid var(--border); }
+.meal-total-item { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+.meal-total-item.kcal { color: var(--red2); }
+.meal-total-item.prot { color: var(--green); }
 </style>
 </head>
 <body>
@@ -1862,59 +1891,91 @@ function dadosSave(){
           </div>
         </div>
 
-        <!-- PLANO ALIMENTAR -->
+        <!-- PLANO ALIMENTAR COM ABAS -->
         <div class="section-hdr" style="margin-top:20px;">Plano Seca Barriga</div>
 
-        <div class="meal-block">
-          <div class="meal-hdr">
-            <div class="meal-title">☀️ Café da Manhã</div>
-            <div class="meal-meta">~450 kcal · <strong>Proteína Alta</strong></div>
-          </div>
-          <div class="meal-cols">
-            <div class="meal-col-lbl">Alimento</div>
-            <div class="meal-col-lbl" style="text-align:center">Qtd</div>
-            <div class="meal-col-lbl" style="text-align:right">kcal</div>
-            <div class="meal-col-lbl" style="text-align:right;color:var(--green)">Prot</div>
-          </div>
-          <div class="food-row"><div class="food-name">Ovos mexidos</div><div class="food-qty">3 un</div><div class="food-kcal">210</div><div class="food-prot">18g</div></div>
-          <div class="food-row"><div class="food-name">Aveia em flocos</div><div class="food-qty">50g</div><div class="food-kcal">187</div><div class="food-prot">6g</div></div>
-          <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
-          <div class="food-row"><div class="food-name">Café preto sem açúcar</div><div class="food-qty">200ml</div><div class="food-kcal">5</div><div class="food-prot">0g</div></div>
+        <div class="meal-tabs" id="mealTabsRow">
+          <div class="meal-tab active" onclick="setMealTab(this,'m1')"><span class="meal-tab-icon">☀️</span><span class="meal-tab-lbl">Café</span></div>
+          <div class="meal-tab" onclick="setMealTab(this,'m2')"><span class="meal-tab-icon">🌞</span><span class="meal-tab-lbl">Almoço</span></div>
+          <div class="meal-tab" onclick="setMealTab(this,'m3')"><span class="meal-tab-icon">🍎</span><span class="meal-tab-lbl">Lanche</span></div>
+          <div class="meal-tab" onclick="setMealTab(this,'m4')"><span class="meal-tab-icon">🌙</span><span class="meal-tab-lbl">Jantar</span></div>
+          <div class="meal-tab" onclick="setMealTab(this,'m5')"><span class="meal-tab-icon">⚡</span><span class="meal-tab-lbl">Pós-Treino</span></div>
         </div>
 
-        <div class="meal-block">
-          <div class="meal-hdr">
-            <div class="meal-title">🌞 Almoço</div>
-            <div class="meal-meta">~620 kcal · <strong>Maior Refeição</strong></div>
+        <div class="meal-panel active" id="m1">
+          <div class="meal-block">
+            <div class="meal-hdr">
+              <div class="meal-title">☀️ Café da Manhã</div>
+              <div class="meal-meta-row"><span class="meal-meta-item kcal">491 kcal</span><span class="meal-meta-item prot">25g proteína</span><span class="meal-meta-item tip">Energético · Proteico</span></div>
+            </div>
+            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+            <div class="food-row"><div class="food-name">Ovos mexidos</div><div class="food-qty">3 un</div><div class="food-kcal">210</div><div class="food-prot">18g</div></div>
+            <div class="food-row"><div class="food-name">Aveia em flocos</div><div class="food-qty">50g</div><div class="food-kcal">187</div><div class="food-prot">6g</div></div>
+            <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
+            <div class="food-row"><div class="food-name">Café preto sem açúcar</div><div class="food-qty">200ml</div><div class="food-kcal">5</div><div class="food-prot">0g</div></div>
+            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 491 kcal</span><span class="meal-total-item prot">25g prot</span></div>
           </div>
-          <div class="meal-cols">
-            <div class="meal-col-lbl">Alimento</div>
-            <div class="meal-col-lbl" style="text-align:center">Qtd</div>
-            <div class="meal-col-lbl" style="text-align:right">kcal</div>
-            <div class="meal-col-lbl" style="text-align:right;color:var(--green)">Prot</div>
-          </div>
-          <div class="food-row"><div class="food-name">Frango grelhado (peito)</div><div class="food-qty">200g</div><div class="food-kcal">330</div><div class="food-prot">62g</div></div>
-          <div class="food-row"><div class="food-name">Arroz integral</div><div class="food-qty">100g</div><div class="food-kcal">124</div><div class="food-prot">3g</div></div>
-          <div class="food-row"><div class="food-name">Feijão carioca</div><div class="food-qty">80g</div><div class="food-kcal">91</div><div class="food-prot">6g</div></div>
-          <div class="food-row"><div class="food-name">Salada verde (à vontade)</div><div class="food-qty">—</div><div class="food-kcal">25</div><div class="food-prot">2g</div></div>
-          <div class="food-row"><div class="food-name">Azeite extra virgem</div><div class="food-qty">1 col.sopa</div><div class="food-kcal">90</div><div class="food-prot">0g</div></div>
         </div>
 
-        <div class="meal-block">
-          <div class="meal-hdr">
-            <div class="meal-title">🌙 Jantar</div>
-            <div class="meal-meta">~420 kcal · <strong>Leve e Proteico</strong></div>
+        <div class="meal-panel" id="m2">
+          <div class="meal-block">
+            <div class="meal-hdr">
+              <div class="meal-title">🌞 Almoço</div>
+              <div class="meal-meta-row"><span class="meal-meta-item kcal">660 kcal</span><span class="meal-meta-item prot">73g proteína</span><span class="meal-meta-item tip">Maior refeição do dia</span></div>
+            </div>
+            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+            <div class="food-row"><div class="food-name">Frango grelhado (peito)</div><div class="food-qty">200g</div><div class="food-kcal">330</div><div class="food-prot">62g</div></div>
+            <div class="food-row"><div class="food-name">Arroz integral</div><div class="food-qty">100g</div><div class="food-kcal">124</div><div class="food-prot">3g</div></div>
+            <div class="food-row"><div class="food-name">Feijão carioca</div><div class="food-qty">80g</div><div class="food-kcal">91</div><div class="food-prot">6g</div></div>
+            <div class="food-row"><div class="food-name">Salada verde (à vontade)</div><div class="food-qty">—</div><div class="food-kcal">25</div><div class="food-prot">2g</div></div>
+            <div class="food-row"><div class="food-name">Azeite extra virgem</div><div class="food-qty">1 col.sopa</div><div class="food-kcal">90</div><div class="food-prot">0g</div></div>
+            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 660 kcal</span><span class="meal-total-item prot">73g prot</span></div>
           </div>
-          <div class="meal-cols">
-            <div class="meal-col-lbl">Alimento</div>
-            <div class="meal-col-lbl" style="text-align:center">Qtd</div>
-            <div class="meal-col-lbl" style="text-align:right">kcal</div>
-            <div class="meal-col-lbl" style="text-align:right;color:var(--green)">Prot</div>
+        </div>
+
+        <div class="meal-panel" id="m3">
+          <div class="meal-block">
+            <div class="meal-hdr">
+              <div class="meal-title">🍎 Lanche da Tarde</div>
+              <div class="meal-meta-row"><span class="meal-meta-item kcal">368 kcal</span><span class="meal-meta-item prot">39g proteína</span><span class="meal-meta-item tip">Leve · Anti-catabólico</span></div>
+            </div>
+            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+            <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">170g</div><div class="food-kcal">100</div><div class="food-prot">17g</div></div>
+            <div class="food-row"><div class="food-name">Castanha do Pará</div><div class="food-qty">3 un</div><div class="food-kcal">90</div><div class="food-prot">2g</div></div>
+            <div class="food-row"><div class="food-name">Maçã</div><div class="food-qty">1 un</div><div class="food-kcal">81</div><div class="food-prot">0g</div></div>
+            <div class="food-row"><div class="food-name">Whey Protein</div><div class="food-qty">25g</div><div class="food-kcal">97</div><div class="food-prot">20g</div></div>
+            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 368 kcal</span><span class="meal-total-item prot">39g prot</span></div>
           </div>
-          <div class="food-row"><div class="food-name">Atum em água</div><div class="food-qty">2 latas</div><div class="food-kcal">160</div><div class="food-prot">36g</div></div>
-          <div class="food-row"><div class="food-name">Batata doce assada</div><div class="food-qty">150g</div><div class="food-kcal">129</div><div class="food-prot">3g</div></div>
-          <div class="food-row"><div class="food-name">Brócolis cozido</div><div class="food-qty">120g</div><div class="food-kcal">41</div><div class="food-prot">3g</div></div>
-          <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">200g</div><div class="food-kcal">118</div><div class="food-prot">17g</div></div>
+        </div>
+
+        <div class="meal-panel" id="m4">
+          <div class="meal-block">
+            <div class="meal-hdr">
+              <div class="meal-title">🌙 Jantar</div>
+              <div class="meal-meta-row"><span class="meal-meta-item kcal">448 kcal</span><span class="meal-meta-item prot">59g proteína</span><span class="meal-meta-item tip">Leve · Proteico · Sem carboidrato pesado</span></div>
+            </div>
+            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+            <div class="food-row"><div class="food-name">Atum em água</div><div class="food-qty">2 latas</div><div class="food-kcal">160</div><div class="food-prot">36g</div></div>
+            <div class="food-row"><div class="food-name">Batata doce assada</div><div class="food-qty">150g</div><div class="food-kcal">129</div><div class="food-prot">3g</div></div>
+            <div class="food-row"><div class="food-name">Brócolis cozido</div><div class="food-qty">120g</div><div class="food-kcal">41</div><div class="food-prot">3g</div></div>
+            <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">200g</div><div class="food-kcal">118</div><div class="food-prot">17g</div></div>
+            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 448 kcal</span><span class="meal-total-item prot">59g prot</span></div>
+          </div>
+        </div>
+
+        <div class="meal-panel" id="m5">
+          <div class="meal-block">
+            <div class="meal-hdr">
+              <div class="meal-title">⚡ Pós-Treino</div>
+              <div class="meal-meta-row"><span class="meal-meta-item kcal">268 kcal</span><span class="meal-meta-item prot">25g proteína</span><span class="meal-meta-item tip">30min após treino</span></div>
+            </div>
+            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+            <div class="food-row"><div class="food-name">Whey Protein</div><div class="food-qty">30g</div><div class="food-kcal">120</div><div class="food-prot">24g</div></div>
+            <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
+            <div class="food-row"><div class="food-name">Mel</div><div class="food-qty">1 col.chá</div><div class="food-kcal">21</div><div class="food-prot">0g</div></div>
+            <div class="food-row"><div class="food-name">Água de coco</div><div class="food-qty">200ml</div><div class="food-kcal">38</div><div class="food-prot">0g</div></div>
+            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 268 kcal</span><span class="meal-total-item prot">25g prot</span></div>
+          </div>
         </div>
 
       </div>
@@ -2084,6 +2145,19 @@ function dadosSave(){
             <div style="font-size:14px;color:var(--muted);line-height:1.7;">Nenhum protocolo funciona sem adesão. 30 dias aplicados vale mais do que 6 meses de início e parada. O sistema de gamificação e streak foi desenhado especificamente para criar o hábito.</div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- VÍDEOS -->
+    <div class="page" id="pageVideos">
+      <div class="page-hdr">
+        <div class="page-eyebrow">Módulo · Técnica</div>
+        <div class="page-title">Vídeos</div>
+        <div class="page-sub">Execução correta de cada exercício com o Ananias</div>
+      </div>
+      <div class="wrap">
+        <div class="video-cats" id="videoCats"></div>
+        <div class="video-grid" id="videoGrid"></div>
       </div>
     </div>
 
@@ -2845,6 +2919,12 @@ function calcStreak() {
 }
 
 /* ── TABS ─────────────────────────────────────────── */
+function setMealTab(el, panelId){
+  document.querySelectorAll('#mealTabsRow .meal-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.meal-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
 function setTab(btn, panelId) {
   btn.closest('.wrap').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.closest('.wrap').querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
