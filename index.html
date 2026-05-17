@@ -1462,6 +1462,79 @@ function dadosSave(){
 .dieta-resumo {
   margin-bottom: 20px;
 }
+
+/* ── CALENDÁRIO ───────────────────────────────────── */
+.cal-wrap { background: var(--card); border: 1px solid var(--border); margin-bottom: 20px; }
+
+.cal-month-tabs {
+  display: flex; overflow-x: auto; border-bottom: 1px solid var(--border);
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.cal-month-tabs::-webkit-scrollbar { display: none; }
+.cal-month-tab {
+  flex-shrink: 0; padding: 11px 16px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+  border-right: 1px solid var(--border); cursor: pointer;
+  transition: all .15s; white-space: nowrap; background: transparent; border-top: none; border-left: none;
+}
+.cal-month-tab.active { color: var(--white); background: rgba(232,0,42,.08); border-bottom: 2px solid var(--red); }
+.cal-month-tab:hover:not(.active) { color: var(--white); }
+
+.cal-grid-wrap { padding: 16px; }
+.cal-dow-row {
+  display: grid; grid-template-columns: repeat(7,1fr);
+  margin-bottom: 4px;
+}
+.cal-dow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--faint);
+  text-align: center; padding: 4px 0;
+}
+.cal-days {
+  display: grid; grid-template-columns: repeat(7,1fr); gap: 3px;
+}
+.cal-day {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; border: 1px solid transparent; transition: all .15s;
+  border-radius: 2px; position: relative; user-select: none;
+  -webkit-user-select: none;
+}
+.cal-day.empty { opacity: 0; pointer-events: none; }
+.cal-day.other-month { opacity: .18; pointer-events: none; }
+.cal-day.future { color: var(--faint); cursor: default; pointer-events: none; }
+.cal-day.today { border-color: rgba(232,0,42,.5); color: var(--red2); }
+.cal-day:hover:not(.future):not(.empty):not(.other-month) {
+  border-color: var(--border2); background: rgba(255,255,255,.05);
+}
+
+/* states */
+.cal-day.done  { background: #00c853; border-color: #00c853; color: #000; }
+.cal-day.typeA { background: var(--red);   border-color: var(--red);   color: #fff; }
+.cal-day.typeB { background: #ffb300;      border-color: #ffb300;      color: #000; }
+.cal-day.typeC { background: #29b6f6;      border-color: #29b6f6;      color: #000; }
+
+.cal-day.done:hover,
+.cal-day.typeA:hover,
+.cal-day.typeB:hover,
+.cal-day.typeC:hover { filter: brightness(1.15); }
+
+.cal-legend {
+  display: flex; gap: 12px; padding: 10px 16px 14px;
+  border-top: 1px solid var(--border); flex-wrap: wrap;
+}
+.cal-legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--muted);
+}
+.cal-legend-dot {
+  width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0;
+}
 </style>
 </head>
 <body>
@@ -1613,7 +1686,7 @@ function dadosSave(){
       </div>
       <div class="nav-item" onclick="navigate('treino')">
         <span class="nav-icon">💪</span> Treino
-        <span class="nav-badge" id="navDiaBadge">Dia 1</span>
+        <span class="nav-badge" id="navDiaBadge">0 dias</span>
       </div>
       <div class="nav-item" onclick="navigate('dieta')">
         <span class="nav-icon">🥗</span> Nutrição
@@ -1668,7 +1741,7 @@ function dadosSave(){
     <!-- ── DASHBOARD ──────────────────────────────── -->
     <div class="page active" id="pageDashboard">
       <div class="page-hdr">
-        <div class="page-eyebrow"><span class="badge-dot"></span> Protocolo Ativo — Dia <span id="dDia">8</span>/30</div>
+        <div class="page-eyebrow"><span class="badge-dot"></span> Método Ananias Jr · <span id="dDia">2026</span></div>
         <div class="page-title">Início</div>
       </div>
       <div class="wrap">
@@ -1681,38 +1754,45 @@ function dadosSave(){
 
         <div class="stats-row">
           <div class="stat-card">
-            <div class="stat-lbl">Dias Completos</div>
-            <div class="stat-val red" id="statDias">7</div>
-            <div class="stat-unit">de 30 dias</div>
-            <div class="stat-bar"><div class="stat-bar-fill" style="width:23%"></div></div>
+            <div class="stat-lbl">Dias Treinados</div>
+            <div class="stat-val red" id="statDias">0</div>
+            <div class="stat-unit">em 2026</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Sem Treinar</div>
+            <div class="stat-val" id="statSemTreinar">0</div>
+            <div class="stat-unit">dias perdidos</div>
           </div>
           <div class="stat-card">
             <div class="stat-lbl">Sequência Atual</div>
-            <div class="stat-val red" id="statSequencia">5</div>
+            <div class="stat-val red" id="statSequencia">0</div>
             <div class="stat-unit">dias seguidos</div>
-            <div class="stat-bar"><div class="stat-bar-fill" style="width:17%"></div></div>
           </div>
           <div class="stat-card">
-            <div class="stat-lbl">Meta Kcal</div>
-            <div class="stat-val" id="statKcal">1830</div>
-            <div class="stat-unit">kcal / dia</div>
-            <div class="stat-bar"><div class="stat-bar-fill green" style="width:78%"></div></div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-lbl">Proteína</div>
-            <div class="stat-val green" id="statProt">142</div>
-            <div class="stat-unit">g / dia</div>
-            <div class="stat-bar"><div class="stat-bar-fill green" style="width:85%"></div></div>
+            <div class="stat-lbl">Melhor Sequência</div>
+            <div class="stat-val green" id="statMelhor">0</div>
+            <div class="stat-unit">recorde pessoal</div>
           </div>
         </div>
 
-        <div class="mini-grid-wrap">
-          <div class="mini-grid-hdr">
-            <div class="mini-grid-title">30 Dias do Protocolo</div>
-            <div class="mini-grid-prog" id="miniProg">7/30</div>
+        <!-- CALENDÁRIO -->
+        <div class="cal-wrap">
+          <div class="cal-month-tabs" id="calMonthTabs"></div>
+          <div class="cal-grid-wrap">
+            <div class="cal-dow-row">
+              <div class="cal-dow">Dom</div><div class="cal-dow">Seg</div>
+              <div class="cal-dow">Ter</div><div class="cal-dow">Qua</div>
+              <div class="cal-dow">Qui</div><div class="cal-dow">Sex</div>
+              <div class="cal-dow">Sáb</div>
+            </div>
+            <div class="cal-days" id="calDays"></div>
           </div>
-          <div class="days-mini" id="miniGrid"></div>
-          <div class="prog-bar"><div class="prog-bar-fill" id="miniProgBar" style="width:0%"></div></div>
+          <div class="cal-legend">
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#00c853"></div>Treinou</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--red)"></div>Treino A</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#ffb300"></div>Treino B</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#29b6f6"></div>Treino C</div>
+          </div>
         </div>
 
         <div class="modules-hdr">Módulos Disponíveis</div>
@@ -2326,7 +2406,7 @@ function dadosSave(){
 <script>
 /* ── DATA ─────────────────────────────────────────── */
 const PASS_HASH = '4f9113a740f2e6b3b5f0e33ab512c4cfa6242870554adcf5d6b807b6f352a2f2';
-const LS_VERSION = 2;
+const LS_VERSION = 3;
 (function migrateLS(){
   const v=parseInt(localStorage.getItem('maj_version')||'0');
   if(v<LS_VERSION){
@@ -2786,6 +2866,7 @@ function bootApp(email, rawName) {
   updateDietaSummary();
 
   setGreeting(nome);
+  calLoad();
   buildMiniGrid();
   buildExLists();
   buildHistorico();
@@ -2838,12 +2919,7 @@ function setBottomNav(el){
   document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
 }
-function resetProtocol(){
-  if(!confirm('Reiniciar os 30 dias do zero?')) return;
-  completedDays=[];
-  ['maj_days','maj_ex_exListCasa','maj_ex_exListAca','maj_ex_exListAdv'].forEach(k=>localStorage.removeItem(k));
-  buildMiniGrid(); buildExLists();
-}
+/* resetProtocol moved to calendar engine */
 function toggleSidebar() {
   sidebarOpen = !sidebarOpen;
   document.getElementById('sidebar').classList.toggle('open', sidebarOpen);
@@ -2868,53 +2944,227 @@ function setGreeting(nome) {
   document.getElementById('greetMsg').textContent = greeting + ', ' + n + '!';
 }
 
-/* ── MINI GRID ────────────────────────────────────── */
-function buildMiniGrid() {
-  const grid = document.getElementById('miniGrid');
-  grid.innerHTML = '';
-  const today = Math.min(new Date().getDate(), 30);
-  const done  = completedDays.length;
+/* ── CALENDÁRIO ───────────────────────────────────── */
+// Storage: maj_cal = { "2026-05-01": "done"/"A"/"B"/"C" }
+const CAL_MONTHS = [
+  {y:2026,m:4,label:'Mai'},  // month is 0-indexed
+  {y:2026,m:5,label:'Jun'},
+  {y:2026,m:6,label:'Jul'},
+  {y:2026,m:7,label:'Ago'},
+  {y:2026,m:8,label:'Set'},
+  {y:2026,m:9,label:'Out'},
+  {y:2026,m:10,label:'Nov'},
+  {y:2026,m:11,label:'Dez'},
+];
+const CAL_STATES = [null, 'done', 'A', 'B', 'C'];
+const CAL_LABELS = { done:'✓', A:'A', B:'B', C:'C' };
+let calData = {};
+let calActiveMonth = 0;
+let longPressTimer = null;
 
-  for (let i = 1; i <= 30; i++) {
-    const d = document.createElement('div');
-    d.className = 'day-mini';
-    d.textContent = i;
-    if (completedDays.includes(i)) d.classList.add('done');
-    else if (i === today)          d.classList.add('today');
-    d.onclick = () => toggleDay(i, d);
-    grid.appendChild(d);
+function calLoad() {
+  const raw = localStorage.getItem('maj_cal');
+  calData = raw ? JSON.parse(raw) : {};
+  // Migrate legacy maj_days (array of day numbers, assumed May 2026)
+  const legacy = localStorage.getItem('maj_days');
+  if (legacy) {
+    try {
+      const days = JSON.parse(legacy);
+      days.forEach(d => {
+        const key = `2026-05-${String(d).padStart(2,'0')}`;
+        if (!calData[key]) calData[key] = 'done';
+      });
+      calSave();
+      localStorage.removeItem('maj_days');
+    } catch(e) {}
+  }
+}
+
+function calSave() {
+  localStorage.setItem('maj_cal', JSON.stringify(calData));
+}
+
+function calKey(y, m, d) {
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function calCycleDay(key) {
+  const cur = calData[key] || null;
+  const idx = CAL_STATES.indexOf(cur);
+  const next = CAL_STATES[(idx + 1) % CAL_STATES.length];
+  if (next === null) delete calData[key];
+  else calData[key] = next;
+  calSave();
+}
+
+function calClearDay(key) {
+  delete calData[key];
+  calSave();
+}
+
+function buildCalTabs() {
+  const tabs = document.getElementById('calMonthTabs');
+  if (!tabs) return;
+  tabs.innerHTML = '';
+  const now = new Date();
+  CAL_MONTHS.forEach((mo, i) => {
+    // Auto-select current month
+    if (mo.y === now.getFullYear() && mo.m === now.getMonth()) calActiveMonth = i;
+    const btn = document.createElement('button');
+    btn.className = 'cal-month-tab' + (i === calActiveMonth ? ' active' : '');
+    btn.textContent = mo.label;
+    btn.onclick = () => { calActiveMonth = i; buildCalTabs(); renderCalDays(); };
+    tabs.appendChild(btn);
+  });
+}
+
+function renderCalDays() {
+  const grid = document.getElementById('calDays');
+  if (!grid) return;
+  const mo = CAL_MONTHS[calActiveMonth];
+  const now = new Date();
+  const todayStr = calKey(now.getFullYear(), now.getMonth(), now.getDate());
+  const firstDay = new Date(mo.y, mo.m, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(mo.y, mo.m + 1, 0).getDate();
+
+  const frag = document.createDocumentFragment();
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cal-day empty';
+    frag.appendChild(empty);
   }
 
-  document.getElementById('miniProg').textContent = `${done}/30`;
-  document.getElementById('miniProgBar').style.width = (done/30*100) + '%';
-  document.getElementById('statDias').textContent  = done;
-  document.getElementById('statSequencia').textContent = calcStreak();
-  document.getElementById('sequenciaNum').textContent  = calcStreak();
-  document.getElementById('dDia').textContent = today;
-  const nb=document.getElementById('navDiaBadge'); if(nb) nb.textContent='Dia '+today;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const key = calKey(mo.y, mo.m, d);
+    const dayDate = new Date(mo.y, mo.m, d);
+    const isFuture = dayDate > now && key !== todayStr;
+    const isToday  = key === todayStr;
+    const state    = calData[key] || null;
+
+    const el = document.createElement('div');
+    el.className = 'cal-day';
+    if (isFuture)      el.classList.add('future');
+    else if (isToday)  el.classList.add('today');
+    if (state === 'done') el.classList.add('done');
+    else if (state === 'A') el.classList.add('typeA');
+    else if (state === 'B') el.classList.add('typeB');
+    else if (state === 'C') el.classList.add('typeC');
+
+    el.innerHTML = state ? `<span>${CAL_LABELS[state]}</span>` : `<span>${d}</span>`;
+
+    if (!isFuture) {
+      // Click cycle
+      el.addEventListener('click', () => {
+        calCycleDay(key);
+        renderCalDays();
+        updateCalStats();
+      });
+      // Long press = clear
+      el.addEventListener('pointerdown', () => {
+        longPressTimer = setTimeout(() => {
+          calClearDay(key);
+          renderCalDays();
+          updateCalStats();
+        }, 500);
+      });
+      el.addEventListener('pointerup',    () => clearTimeout(longPressTimer));
+      el.addEventListener('pointerleave', () => clearTimeout(longPressTimer));
+    }
+    frag.appendChild(el);
+  }
+
+  grid.innerHTML = '';
+  grid.appendChild(frag);
+  updateCalStats();
 }
 
-function toggleDay(n, el) {
-  const idx = completedDays.indexOf(n);
-  if (idx === -1) completedDays.push(n);
-  else completedDays.splice(idx, 1);
-  localStorage.setItem('maj_days', JSON.stringify(completedDays));
-  el.classList.toggle('done');
-  buildMiniGrid();
+function updateCalStats() {
+  const now = new Date();
+  const todayStr = calKey(now.getFullYear(), now.getMonth(), now.getDate());
+  const keys = Object.keys(calData);
+
+  // Total trained days (any state)
+  const totalTrained = keys.length;
+
+  // Days passed in 2026 up to today (from May 1)
+  const start = new Date(2026, 4, 1);
+  const msDay = 86400000;
+  const daysPassed = Math.max(0, Math.floor((now - start) / msDay) + 1);
+  const semTreinar = Math.max(0, daysPassed - totalTrained);
+
+  // Streak — consecutive days up to today
+  let streak = 0;
+  const d = new Date(now);
+  while (true) {
+    const k = calKey(d.getFullYear(), d.getMonth(), d.getDate());
+    if (calData[k]) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+
+  // Best streak
+  let best = 0, cur2 = 0;
+  const allKeys = Object.keys(calData).sort();
+  allKeys.forEach((k, i) => {
+    if (i === 0) { cur2 = 1; best = 1; return; }
+    const prev = new Date(allKeys[i-1]);
+    const curr = new Date(k);
+    const diff = (curr - prev) / msDay;
+    cur2 = diff === 1 ? cur2 + 1 : 1;
+    best = Math.max(best, cur2);
+  });
+
+  // Update dashboard stats
+  const setEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  setEl('statDias',      totalTrained);
+  setEl('statSequencia', streak);
+  const seqEl = document.getElementById('sequenciaNum'); if(seqEl) seqEl.textContent=streak;
+  const statSeqEl = document.getElementById('statSequencia'); if(statSeqEl) statSeqEl.textContent=streak;
+  const nb = document.getElementById('navDiaBadge'); if(nb) nb.textContent=totalTrained+' dias';
+
+  // Extra stat cards if present
+  setEl('statSemTreinar', semTreinar);
+  setEl('statMelhor',     best);
 }
+
+function buildMiniGrid() {
+  // Legacy stub — replaced by calendar
+  calLoad(); buildCalTabs(); renderCalDays();
+}
+
+function toggleDay(n, el) { /* legacy stub */ }
 
 function calcStreak() {
-  if (!completedDays.length) return 0;
-  const sorted = [...completedDays].sort((a,b)=>b-a);
-  let streak = 0, cur = sorted[0];
-  for (const d of sorted) {
-    if (d === cur) { streak++; cur--; }
+  // Used by legacy code — return from calData
+  const now = new Date();
+  let streak = 0;
+  const d = new Date(now);
+  while (true) {
+    const k = calKey(d.getFullYear(), d.getMonth(), d.getDate());
+    if (calData[k]) { streak++; d.setDate(d.getDate() - 1); }
     else break;
   }
   return streak;
 }
 
-/* ── TABS ─────────────────────────────────────────── */
+function resetProtocol() {
+  const mo = CAL_MONTHS[calActiveMonth];
+  const label = mo.label + ' ' + mo.y;
+  if (!confirm('Limpar todos os dias marcados em ' + label + '?')) return;
+  Object.keys(calData).forEach(k => {
+    if (k.startsWith(mo.y + '-' + String(mo.m+1).padStart(2,'0'))) delete calData[k];
+  });
+  calSave();
+  renderCalDays();
+  updateCalStats();
+  // Also clear exercise done state for this month
+  ['exListCasa','exListAca','exListAdv'].forEach(id => localStorage.removeItem('maj_ex_'+id));
+  buildExLists();
+}
+
+/* ── LEGACY STUB (calcStreak was here) ─────────────── */
+/* legacy calcStreak removed */
 function setMealTab(el, panelId){
   document.querySelectorAll('#mealTabsRow .meal-tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.meal-panel').forEach(p=>p.classList.remove('active'));
