@@ -581,21 +581,21 @@ input, select { font-family: inherit; }
 .meal-col-lbl:nth-child(3) { text-align: right; }
 
 /* ── PROGRESSO PAGE ───────────────────────────────── */
-.streak-block {
+.sequencia-block {
   background: var(--card); border: 1px solid rgba(232,0,42,.2);
   border-top: 2px solid var(--red); padding: 20px 16px; margin-bottom: 2px;
   display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
 }
-.streak-num {
+.sequencia-num {
   font-family: 'Bebas Neue', cursive; font-size: 72px;
   color: var(--red); line-height: 1; text-shadow: 0 0 30px rgba(232,0,42,.3);
 }
-.streak-lbl {
+.sequencia-lbl {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 12px; font-weight: 700; letter-spacing: 4px;
   text-transform: uppercase; color: var(--muted);
 }
-.streak-msg { font-size: 14px; color: var(--text); margin-top: 4px; line-height: 1.5; }
+.sequencia-msg { font-size: 14px; color: var(--text); margin-top: 4px; line-height: 1.5; }
 
 .medidas-block {
   background: var(--card); border: 1px solid var(--border);
@@ -963,6 +963,20 @@ function navigate(page) {
   _origNavigate(page);
   if (page === 'videos') buildVideoPage();
 }
+
+function updateDietaSummary() {
+  const k = localStorage.getItem('maj_kcal');
+  const p = localStorage.getItem('maj_prot');
+  const saved = JSON.parse(localStorage.getItem('maj_tmb_form')||'{}');
+  const metaEl = document.getElementById('rMeta');
+  const protEl = document.getElementById('rProt');
+  const tmbEl  = document.getElementById('rTMB');
+  const getEl  = document.getElementById('rGET');
+  if (metaEl && k) metaEl.textContent = k;
+  if (protEl && p) protEl.textContent = p;
+  if (tmbEl && saved.tmb) tmbEl.textContent = saved.tmb;
+  if (getEl && saved.get) getEl.textContent = saved.get;
+}
 /* ── DADOS MODAL ──────────────────────────────────── */
 let dSexoSel = 'M', dAtivSelM = 1, dObjSelM = 0;
 
@@ -1049,8 +1063,9 @@ function dadosSave(){
   document.getElementById('perfilName').textContent = nome;
   document.getElementById('perfilAvatar').textContent = nome.slice(0,2).toUpperCase();
   const sub = document.getElementById('perfilDadosSub');
-  if(sub) sub.textContent = peso+'kg · '+altura+'cm · '+['Secar','Manter','Ganhar'][dObjSelM];
+  if (sub) sub.textContent = peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM];
   setGreeting(nome);
+  updateDietaSummary();
   dadosClose();
 }
 /* ── ONBOARDING ───────────────────────────────────── */
@@ -1442,6 +1457,11 @@ function dadosSave(){
 .meal-total-item { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
 .meal-total-item.kcal { color: var(--red2); }
 .meal-total-item.prot { color: var(--green); }
+
+/* ── DIETA RESUMO ─────────────────────────────────── */
+.dieta-resumo {
+  margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
@@ -1589,7 +1609,7 @@ function dadosSave(){
     <div class="sidebar-section">
       <div class="sidebar-section-lbl">Principal</div>
       <div class="nav-item active" onclick="navigate('dashboard')">
-        <span class="nav-icon">🏠</span> Dashboard
+        <span class="nav-icon">🏠</span> Início
       </div>
       <div class="nav-item" onclick="navigate('treino')">
         <span class="nav-icon">💪</span> Treino
@@ -1649,7 +1669,7 @@ function dadosSave(){
     <div class="page active" id="pageDashboard">
       <div class="page-hdr">
         <div class="page-eyebrow"><span class="badge-dot"></span> Protocolo Ativo — Dia <span id="dDia">8</span>/30</div>
-        <div class="page-title">Dashboard</div>
+        <div class="page-title">Início</div>
       </div>
       <div class="wrap">
 
@@ -1667,8 +1687,8 @@ function dadosSave(){
             <div class="stat-bar"><div class="stat-bar-fill" style="width:23%"></div></div>
           </div>
           <div class="stat-card">
-            <div class="stat-lbl">Streak Atual</div>
-            <div class="stat-val red" id="statStreak">5</div>
+            <div class="stat-lbl">Sequência Atual</div>
+            <div class="stat-val red" id="statSequencia">5</div>
             <div class="stat-unit">dias seguidos</div>
             <div class="stat-bar"><div class="stat-bar-fill" style="width:17%"></div></div>
           </div>
@@ -1833,61 +1853,17 @@ function dadosSave(){
           <div class="page-title">Plano Alimentar</div>
           <button class="edit-data-btn" onclick="dadosOpen()">✏ Meus Dados</button>
         </div>
-        <div class="page-sub">Plano personalizado · altere seus dados a qualquer momento</div>
+        <div class="page-sub">Baseado nos seus dados · <button onclick="dadosOpen()" style="background:none;border:none;color:var(--red2);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;padding:0;">alterar informações</button></div>
       </div>
       <div class="wrap">
 
-        <div class="dieta-setup">
-          <div class="section-hdr">Seus Dados</div>
-          <div class="setup-row">
-            <div class="setup-field">
-              <div class="setup-lbl">Peso (kg)</div>
-              <input class="setup-inp" id="dPeso" type="number" min="40" max="200" placeholder="75">
-            </div>
-            <div class="setup-field">
-              <div class="setup-lbl">Altura (cm)</div>
-              <input class="setup-inp" id="dAltura" type="number" min="140" max="220" placeholder="175">
-            </div>
-            <div class="setup-field">
-              <div class="setup-lbl">Idade</div>
-              <input class="setup-inp" id="dIdade" type="number" min="15" max="80" placeholder="30">
-            </div>
-            <div class="setup-field">
-              <div class="setup-lbl">Sexo</div>
-              <div class="sex-row">
-                <button class="sex-btn" id="sexM" onclick="setSex('M')">M</button>
-                <button class="sex-btn" id="sexF" onclick="setSex('F')">F</button>
-              </div>
-            </div>
-            <div class="setup-field">
-              <div class="setup-lbl">Atividade</div>
-              <select class="setup-sel" id="dAtiv">
-                <option value="1.2">Sedentário</option>
-                <option value="1.375">Leve (1-3x/sem)</option>
-                <option value="1.55" selected>Moderado (3-5x)</option>
-                <option value="1.725">Intenso (6-7x)</option>
-                <option value="1.9">Atleta</option>
-              </select>
-            </div>
-            <div class="setup-field">
-              <div class="setup-lbl">Objetivo</div>
-              <select class="setup-sel" id="dObj">
-                <option value="0.8" selected>Secar (-20%)</option>
-                <option value="0.9">Secar Leve (-10%)</option>
-                <option value="1.0">Manter</option>
-                <option value="1.1">Ganhar (+10%)</option>
-              </select>
-            </div>
-          </div>
-          <button class="calc-btn" onclick="calcTMB()">Calcular Minhas Metas</button>
-
-          <div class="result-block" id="resultBlock">
-            <div class="result-cards">
-              <div class="result-card"><div class="rc-lbl">TMB</div><div class="rc-val" id="rTMB">—</div><div class="rc-unit">kcal base</div></div>
-              <div class="result-card"><div class="rc-lbl">GET</div><div class="rc-val" id="rGET">—</div><div class="rc-unit">kcal total</div></div>
-              <div class="result-card hl"><div class="rc-lbl">Meta Kcal</div><div class="rc-val red" id="rMeta">—</div><div class="rc-unit">kcal/dia</div></div>
-              <div class="result-card hl-g"><div class="rc-lbl">Proteína</div><div class="rc-val green" id="rProt">—</div><div class="rc-unit">g/dia</div></div>
-            </div>
+        <!-- Resumo dos dados calculados no onboarding -->
+        <div class="dieta-resumo" id="dietaResumo">
+          <div class="result-cards">
+            <div class="result-card hl"><div class="rc-lbl">Meta Kcal</div><div class="rc-val red" id="rMeta">—</div><div class="rc-unit">kcal/dia</div></div>
+            <div class="result-card hl-g"><div class="rc-lbl">Proteína</div><div class="rc-val green" id="rProt">—</div><div class="rc-unit">g/dia</div></div>
+            <div class="result-card"><div class="rc-lbl">Gasto Total</div><div class="rc-val" id="rGET">—</div><div class="rc-unit">kcal total</div></div>
+            <div class="result-card"><div class="rc-lbl">TMB</div><div class="rc-val" id="rTMB">—</div><div class="rc-unit">kcal base</div></div>
           </div>
         </div>
 
@@ -1985,16 +1961,19 @@ function dadosSave(){
     <div class="page" id="pageProgresso">
       <div class="page-hdr">
         <div class="page-eyebrow">Módulo · Acompanhamento</div>
-        <div class="page-title">Progresso</div>
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div class="page-title">Progresso</div>
+          <button class="edit-data-btn" onclick="dadosOpen()">✏ Meus Dados</button>
+        </div>
         <div class="page-sub">Registre suas medidas semanalmente</div>
       </div>
       <div class="wrap">
 
-        <div class="streak-block">
-          <div class="streak-num" id="streakNum">5</div>
+        <div class="sequencia-block">
+          <div class="sequencia-num" id="sequenciaNum">5</div>
           <div>
-            <div class="streak-lbl">Dias Seguidos</div>
-            <div class="streak-msg">Continue assim!<br>Sua consistência está construindo o resultado.</div>
+            <div class="seq-lbl">Dias Seguidos</div>
+            <div class="sequencia-msg">Continue assim!<br>Sua consistência está construindo o resultado.</div>
           </div>
         </div>
 
@@ -2109,7 +2088,7 @@ function dadosSave(){
         <div class="modules-grid">
           <div class="mod-card" onclick="navigate('treino')"><div class="mod-icon">💪</div><div class="mod-name">Treino 30 Dias</div><div class="mod-desc">Protocolo completo casa ou academia com progressão semanal integrada.</div><div class="mod-tag free">Incluído</div></div>
           <div class="mod-card" onclick="navigate('dieta')"><div class="mod-icon">🥗</div><div class="mod-name">Plano Alimentar</div><div class="mod-desc">Calculadora TMB + plano seca barriga personalizado com macros.</div><div class="mod-tag free">Incluído</div></div>
-          <div class="mod-card" onclick="navigate('progresso')"><div class="mod-icon">📈</div><div class="mod-name">Progresso</div><div class="mod-desc">Medidas, peso e streak semanal para manter a motivação alta.</div><div class="mod-tag free">Incluído</div></div>
+          <div class="mod-card" onclick="navigate('progresso')"><div class="mod-icon">📈</div><div class="mod-name">Progresso</div><div class="mod-desc">Medidas, peso e sequência semanal para manter a motivação alta.</div><div class="mod-tag free">Incluído</div></div>
           <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🏃</div><div class="mod-name">Cardio Protocolo</div><div class="mod-desc">HIIT e steady-state. Protocolos específicos por fase do protocolo.</div><div class="mod-tag premium">Em breve</div></div>
           <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🎯</div><div class="mod-name">Desafio 15 Dias</div><div class="mod-desc">Protocolo intensivo pré-evento. Resultado máximo em curto prazo.</div><div class="mod-tag premium">Premium</div></div>
           <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🎬</div><div class="mod-name">Vídeo-Aulas</div><div class="mod-desc">Execução de cada exercício com o Ananias. Técnica perfeita.</div><div class="mod-tag premium">Premium</div></div>
@@ -2142,7 +2121,7 @@ function dadosSave(){
           </div>
           <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--amber);padding:20px 16px;">
             <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Consistência como Variável</div>
-            <div style="font-size:14px;color:var(--muted);line-height:1.7;">Nenhum protocolo funciona sem adesão. 30 dias aplicados vale mais do que 6 meses de início e parada. O sistema de gamificação e streak foi desenhado especificamente para criar o hábito.</div>
+            <div style="font-size:14px;color:var(--muted);line-height:1.7;">Nenhum protocolo funciona sem adesão. 30 dias aplicados vale mais do que 6 meses de início e parada. O sistema de sequência e consistência foi criado especificamente para construir o hábito.</div>
           </div>
         </div>
       </div>
@@ -2571,6 +2550,20 @@ function navigate(page) {
   _origNavigate(page);
   if (page === 'videos') buildVideoPage();
 }
+
+function updateDietaSummary() {
+  const k = localStorage.getItem('maj_kcal');
+  const p = localStorage.getItem('maj_prot');
+  const saved = JSON.parse(localStorage.getItem('maj_tmb_form')||'{}');
+  const metaEl = document.getElementById('rMeta');
+  const protEl = document.getElementById('rProt');
+  const tmbEl  = document.getElementById('rTMB');
+  const getEl  = document.getElementById('rGET');
+  if (metaEl && k) metaEl.textContent = k;
+  if (protEl && p) protEl.textContent = p;
+  if (tmbEl && saved.tmb) tmbEl.textContent = saved.tmb;
+  if (getEl && saved.get) getEl.textContent = saved.get;
+}
 /* ── DADOS MODAL ──────────────────────────────────── */
 let dSexoSel = 'M', dAtivSelM = 1, dObjSelM = 0;
 
@@ -2657,8 +2650,9 @@ function dadosSave(){
   document.getElementById('perfilName').textContent = nome;
   document.getElementById('perfilAvatar').textContent = nome.slice(0,2).toUpperCase();
   const sub = document.getElementById('perfilDadosSub');
-  if(sub) sub.textContent = peso+'kg · '+altura+'cm · '+['Secar','Manter','Ganhar'][dObjSelM];
+  if (sub) sub.textContent = peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM];
   setGreeting(nome);
+  updateDietaSummary();
   dadosClose();
 }
 /* ── ONBOARDING ───────────────────────────────────── */
@@ -2788,6 +2782,8 @@ function bootApp(email, rawName) {
   const k=localStorage.getItem('maj_kcal'), p=localStorage.getItem('maj_prot');
   if(k) document.getElementById('statKcal').textContent=k;
   if(p) document.getElementById('statProt').textContent=p;
+  // Populate dieta summary from saved TMB data
+  updateDietaSummary();
 
   setGreeting(nome);
   buildMiniGrid();
@@ -2892,8 +2888,8 @@ function buildMiniGrid() {
   document.getElementById('miniProg').textContent = `${done}/30`;
   document.getElementById('miniProgBar').style.width = (done/30*100) + '%';
   document.getElementById('statDias').textContent  = done;
-  document.getElementById('statStreak').textContent = calcStreak();
-  document.getElementById('streakNum').textContent  = calcStreak();
+  document.getElementById('statSequencia').textContent = calcStreak();
+  document.getElementById('sequenciaNum').textContent  = calcStreak();
   document.getElementById('dDia').textContent = today;
   const nb=document.getElementById('navDiaBadge'); if(nb) nb.textContent='Dia '+today;
 }
@@ -2996,42 +2992,10 @@ function closeTimer() {
 }
 
 /* ── TMB CALC ─────────────────────────────────────── */
-function setSex(s) {
-  sexSel = s;
-  document.getElementById('sexM').classList.toggle('sel', s === 'M');
-  document.getElementById('sexF').classList.toggle('sel', s === 'F');
-}
+function setSex(s) { sexSel = s; } // sexM/sexF removed from dieta HTML
 setSex('M');
 
-function calcTMB() {
-  const peso  = +document.getElementById('dPeso').value;
-  const alt   = +document.getElementById('dAltura').value;
-  const idade = +document.getElementById('dIdade').value;
-  const ativ  = +document.getElementById('dAtiv').value;
-  const obj   = +document.getElementById('dObj').value;
-
-  if (!peso || !alt || !idade) return;
-
-  const tmb = sexSel === 'M'
-    ? 88.36 + (13.4 * peso) + (4.8 * alt) - (5.7 * idade)
-    : 447.6 + (9.2  * peso) + (3.1 * alt) - (4.3 * idade);
-
-  const get  = Math.round(tmb * ativ);
-  const meta = Math.round(get * obj);
-  const prot = Math.round(peso * 2);
-
-  document.getElementById('rTMB').textContent  = Math.round(tmb);
-  document.getElementById('rGET').textContent  = get;
-  document.getElementById('rMeta').textContent = meta;
-  document.getElementById('rProt').textContent = prot;
-  document.getElementById('resultBlock').classList.add('show');
-
-  document.getElementById('statKcal').textContent = meta;
-  document.getElementById('statProt').textContent = prot;
-
-  localStorage.setItem('maj_kcal', meta);
-  localStorage.setItem('maj_prot', prot);
-}
+function calcTMB() { /* dieta form removed — calculations now in onboarding/dadosSave */ }
 
 /* ── MEDIDAS ──────────────────────────────────────── */
 function buildHistorico() {
