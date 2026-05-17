@@ -1727,7 +1727,8 @@ function desafioExcluir(id) {
 }
 
 function renderDesafios() {
-  const list = document.getElementById('desafioList');
+  // Target: perfil page list (primary) or dashboard fallback
+  const list = document.getElementById('desafioListPerfil') || document.getElementById('desafioList');
   if (!list) return;
   const now = new Date();
   now.setHours(0,0,0,0);
@@ -2631,6 +2632,27 @@ canvas#pesoChart {
           <p>Consistência é o que separa quem chega de quem desiste.</p>
         </div>
 
+        <!-- CALENDÁRIO -->
+        <div class="cal-wrap">
+          <div class="cal-month-tabs" id="calMonthTabs"></div>
+          <div class="cal-grid-wrap">
+            <div class="cal-dow-row">
+              <div class="cal-dow">Dom</div><div class="cal-dow">Seg</div>
+              <div class="cal-dow">Ter</div><div class="cal-dow">Qua</div>
+              <div class="cal-dow">Qui</div><div class="cal-dow">Sex</div>
+              <div class="cal-dow">Sáb</div>
+            </div>
+            <div class="cal-days" id="calDays"></div>
+          </div>
+          <div class="cal-legend">
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#00c853"></div>Treinou</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--red)"></div>Treino A</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#ffb300"></div>Treino B</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#29b6f6"></div>Treino C</div>
+          </div>
+        </div>
+
+
         <div class="stats-row">
           <div class="stat-card">
             <div class="stat-lbl">Dias Treinados</div>
@@ -2677,78 +2699,6 @@ canvas#pesoChart {
             <div class="stat-unit">dias marcados</div>
           </div>
         </div>
-
-        <!-- CALENDÁRIO -->
-        <div class="cal-wrap">
-          <div class="cal-month-tabs" id="calMonthTabs"></div>
-          <div class="cal-grid-wrap">
-            <div class="cal-dow-row">
-              <div class="cal-dow">Dom</div><div class="cal-dow">Seg</div>
-              <div class="cal-dow">Ter</div><div class="cal-dow">Qua</div>
-              <div class="cal-dow">Qui</div><div class="cal-dow">Sex</div>
-              <div class="cal-dow">Sáb</div>
-            </div>
-            <div class="cal-days" id="calDays"></div>
-          </div>
-          <div class="cal-legend">
-            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#00c853"></div>Treinou</div>
-            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--red)"></div>Treino A</div>
-            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#ffb300"></div>Treino B</div>
-            <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#29b6f6"></div>Treino C</div>
-          </div>
-        </div>
-
-
-        <!-- DESAFIOS 30 DIAS -->
-        <div class="desafio-wrap">
-          <div class="section-hdr" style="margin-bottom:8px;">Desafios</div>
-          <div id="desafioList"></div>
-          <button class="desafio-novo-btn" onclick="desafioNovoOpen()">+ Iniciar Desafio de 30 Dias</button>
-        </div>
-
-        <div class="modules-hdr">Módulos Disponíveis</div>
-        <div class="modules-grid">
-          <div class="mod-card" onclick="navigate('treino')">
-            <div class="mod-icon">💪</div>
-            <div class="mod-name">Treino 30 Dias</div>
-            <div class="mod-desc">Protocolo completo casa ou academia com progressão semanal.</div>
-            <div class="mod-tag free">Incluído</div>
-          </div>
-          <div class="mod-card" onclick="navigate('dieta')">
-            <div class="mod-icon">🥗</div>
-            <div class="mod-name">Plano Alimentar</div>
-            <div class="mod-desc">Calculadora + plano seca barriga com refeições detalhadas.</div>
-            <div class="mod-tag free">Incluído</div>
-          </div>
-          <div class="mod-card" onclick="navigate('progresso')">
-            <div class="mod-icon">📈</div>
-            <div class="mod-name">Rastreio de Progresso</div>
-            <div class="mod-desc">Medidas, peso e fotos comparativas semana a semana.</div>
-            <div class="mod-tag free">Incluído</div>
-          </div>
-          <div class="mod-card locked">
-            <div class="mod-lock-icon">🔒</div>
-            <div class="mod-icon">🏃</div>
-            <div class="mod-name">Módulo Cardio</div>
-            <div class="mod-desc">Protocolos HIIT e steady-state para acelerar o resultado.</div>
-            <div class="mod-tag locked">Em Breve</div>
-          </div>
-          <div class="mod-card locked">
-            <div class="mod-lock-icon">🔒</div>
-            <div class="mod-icon">🎯</div>
-            <div class="mod-name">Desafio 15 Dias</div>
-            <div class="mod-desc">Protocolo intensivo pré-evento. Corte máximo em 2 semanas.</div>
-            <div class="mod-tag premium">Premium</div>
-          </div>
-          <div class="mod-card locked">
-            <div class="mod-lock-icon">🔒</div>
-            <div class="mod-icon">🎬</div>
-            <div class="mod-name">Vídeos de Técnica</div>
-            <div class="mod-desc">Execução correta de cada exercício com o Ananias.</div>
-            <div class="mod-tag premium">Premium</div>
-          </div>
-        </div>
-
       </div>
     </div>
 
@@ -3017,17 +2967,17 @@ canvas#pesoChart {
             </div>
             <div class="action-arrow">›</div>
           </div>
-          <div class="perfil-action">
+          <div class="perfil-action" onclick="desafioNovoOpen()">
             <div>
-              <div class="action-lbl">Alterar Senha</div>
-              <div class="action-sub">Atualizar credenciais de acesso</div>
+              <div class="action-lbl">Desafios 30 Dias</div>
+              <div class="action-sub" id="perfilDesafioSub">Iniciar ou acompanhar desafios ativos</div>
             </div>
             <div class="action-arrow">›</div>
           </div>
-          <div class="perfil-action">
+          <div class="perfil-action" onclick="navigate('ciencia')">
             <div>
-              <div class="action-lbl">Notificações</div>
-              <div class="action-sub">Lembretes de treino e hidratação</div>
+              <div class="action-lbl">A Ciência do Método</div>
+              <div class="action-sub">Por que o protocolo funciona</div>
             </div>
             <div class="action-arrow">›</div>
           </div>
@@ -3045,6 +2995,12 @@ canvas#pesoChart {
             </div>
             <div class="action-arrow" style="color:var(--red)">›</div>
           </div>
+        </div>
+
+        <!-- DESAFIOS LIST — shown inside perfil -->
+        <div id="desafioListPerfil" style="margin-top:16px;"></div>
+        <div style="margin-top:2px;">
+          <button class="desafio-novo-btn" onclick="desafioNovoOpen()">+ Iniciar Desafio de 30 Dias</button>
         </div>
 
       </div>
@@ -4213,7 +4169,8 @@ function desafioExcluir(id) {
 }
 
 function renderDesafios() {
-  const list = document.getElementById('desafioList');
+  // Target: perfil page list (primary) or dashboard fallback
+  const list = document.getElementById('desafioListPerfil') || document.getElementById('desafioList');
   if (!list) return;
   const now = new Date();
   now.setHours(0,0,0,0);
