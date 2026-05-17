@@ -958,6 +958,25 @@ function closeVideo(e) {
 }
 
 
+
+function updatePerfilPlan() {
+  const saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
+  const objVals  = [0.8, 1.0, 1.1];
+  const objLabels = ['Seca Barriga', 'Manutenção', 'Ganho de Massa'];
+  const objIdx = objVals.indexOf(+saved.obj);
+  const label  = objIdx >= 0 ? objLabels[objIdx] : 'Método Ananias Jr';
+  const el = document.getElementById('perfilPlan');
+  if (el) el.textContent = label + ' · Ativo';
+  // Also update the sub text in meus dados button
+  const sub = document.getElementById('perfilDadosSub');
+  if (sub && saved.dPeso) {
+    const ativLabels = ['Não treino', '1–3x / sem', '4x ou mais'];
+    const ativVals   = [1.2, 1.375, 1.725];
+    const ativIdx    = ativVals.indexOf(+saved.ativ);
+    const ativLabel  = ativIdx >= 0 ? ativLabels[ativIdx] : '';
+    sub.textContent  = saved.dPeso + 'kg · ' + saved.dAltura + 'cm · ' + (objIdx >= 0 ? objLabels[objIdx] : '') + (ativLabel ? ' · ' + ativLabel : '');
+  }
+}
 function updateDietaSummary() {
   const k = localStorage.getItem('maj_kcal');
   const p = localStorage.getItem('maj_prot');
@@ -1060,6 +1079,7 @@ function dadosSave(){
   if (sub) sub.textContent = peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM];
   setGreeting(nome);
   updateDietaSummary();
+  updatePerfilPlan();
   calcWater();
   dadosClose();
 }
@@ -1460,6 +1480,119 @@ function dadosSave(){
 
 
 
+
+/* ── GRÁFICO PESO ─────────────────────────────────── */
+function buildPesoChart() {
+  const saved = JSON.parse(localStorage.getItem('maj_medidas') || '[]');
+  const all   = [...saved, ...HIST_MOCK].reverse(); // oldest first
+
+  const pesoAtualEl = document.getElementById('pesoAtual');
+  const pesoDeltaEl = document.getElementById('pesoDelta');
+  const emptyEl     = document.getElementById('pesoChartEmpty');
+  const canvas      = document.getElementById('pesoChart');
+  if (!canvas) return;
+
+  const valid = all.filter(r => r.peso && !isNaN(+r.peso));
+
+  // Update header
+  if (valid.length > 0) {
+    const last = +valid[valid.length - 1].peso;
+    if (pesoAtualEl) pesoAtualEl.textContent = last.toFixed(1);
+    if (valid.length > 1 && pesoDeltaEl) {
+      const first = +valid[0].peso;
+      const diff  = +(last - first).toFixed(1);
+      pesoDeltaEl.textContent = (diff > 0 ? '+' : '') + diff + ' kg';
+      pesoDeltaEl.className   = 'peso-chart-delta ' + (diff <= 0 ? 'down' : 'up');
+      pesoDeltaEl.style.display = 'inline';
+    }
+  }
+
+  if (valid.length < 2) {
+    if (emptyEl)  emptyEl.style.display  = 'block';
+    canvas.style.display = 'none';
+    return;
+  }
+
+  if (emptyEl)  emptyEl.style.display  = 'none';
+  canvas.style.display = 'block';
+
+  // Draw chart
+  const ctx    = canvas.getContext('2d');
+  const dpr    = window.devicePixelRatio || 1;
+  const W      = canvas.offsetWidth  || canvas.parentElement.offsetWidth || 300;
+  const H      = 160;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  const pesos  = valid.map(r => +r.peso);
+  const labels = valid.map(r => r.data.slice(0,5)); // DD/Mon
+  const minP   = Math.min(...pesos) - 1;
+  const maxP   = Math.max(...pesos) + 1;
+  const padL   = 36, padR = 12, padT = 12, padB = 28;
+  const cW     = W - padL - padR;
+  const cH     = H - padT - padB;
+
+  const xOf = i  => padL + (i / (pesos.length - 1)) * cW;
+  const yOf = v  => padT + (1 - (v - minP) / (maxP - minP)) * cH;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,.06)';
+  ctx.lineWidth   = 1;
+  [0, 0.25, 0.5, 0.75, 1].forEach(t => {
+    const y = padT + t * cH;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    const val = (maxP - t * (maxP - minP)).toFixed(1);
+    ctx.fillStyle   = 'rgba(255,255,255,.3)';
+    ctx.font        = `${10 * dpr / dpr}px Barlow Condensed, sans-serif`;
+    ctx.textAlign   = 'right';
+    ctx.fillText(val, padL - 4, y + 4);
+  });
+
+  // Fill area
+  const grad = ctx.createLinearGradient(0, padT, 0, padT + cH);
+  grad.addColorStop(0,   'rgba(232,0,42,.25)');
+  grad.addColorStop(1,   'rgba(232,0,42,0)');
+  ctx.beginPath();
+  ctx.moveTo(xOf(0), yOf(pesos[0]));
+  pesos.forEach((p, i) => { if (i > 0) ctx.lineTo(xOf(i), yOf(p)); });
+  ctx.lineTo(xOf(pesos.length - 1), padT + cH);
+  ctx.lineTo(xOf(0), padT + cH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.strokeStyle = '#e8002a';
+  ctx.lineWidth   = 2;
+  ctx.lineJoin    = 'round';
+  ctx.beginPath();
+  pesos.forEach((p, i) => i === 0 ? ctx.moveTo(xOf(i), yOf(p)) : ctx.lineTo(xOf(i), yOf(p)));
+  ctx.stroke();
+
+  // Dots + labels
+  pesos.forEach((p, i) => {
+    // dot
+    ctx.beginPath();
+    ctx.arc(xOf(i), yOf(p), 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#e8002a';
+    ctx.fill();
+    ctx.strokeStyle = '#0a0a0a';
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+
+    // x-axis label (show first, last, and evenly spaced)
+    const step = Math.max(1, Math.floor(pesos.length / 4));
+    if (i === 0 || i === pesos.length - 1 || i % step === 0) {
+      ctx.fillStyle  = 'rgba(255,255,255,.4)';
+      ctx.font       = '10px Barlow Condensed, sans-serif';
+      ctx.textAlign  = i === 0 ? 'left' : i === pesos.length - 1 ? 'right' : 'center';
+      ctx.fillText(labels[i], xOf(i), H - 6);
+    }
+  });
+}
 /* ── HIDRATAÇÃO ───────────────────────────────────── */
 let waterCupsState = [];
 
@@ -1736,6 +1869,119 @@ function renderDesafios() {
 }
 
 
+
+/* ── GRÁFICO PESO ─────────────────────────────────── */
+function buildPesoChart() {
+  const saved = JSON.parse(localStorage.getItem('maj_medidas') || '[]');
+  const all   = [...saved, ...HIST_MOCK].reverse(); // oldest first
+
+  const pesoAtualEl = document.getElementById('pesoAtual');
+  const pesoDeltaEl = document.getElementById('pesoDelta');
+  const emptyEl     = document.getElementById('pesoChartEmpty');
+  const canvas      = document.getElementById('pesoChart');
+  if (!canvas) return;
+
+  const valid = all.filter(r => r.peso && !isNaN(+r.peso));
+
+  // Update header
+  if (valid.length > 0) {
+    const last = +valid[valid.length - 1].peso;
+    if (pesoAtualEl) pesoAtualEl.textContent = last.toFixed(1);
+    if (valid.length > 1 && pesoDeltaEl) {
+      const first = +valid[0].peso;
+      const diff  = +(last - first).toFixed(1);
+      pesoDeltaEl.textContent = (diff > 0 ? '+' : '') + diff + ' kg';
+      pesoDeltaEl.className   = 'peso-chart-delta ' + (diff <= 0 ? 'down' : 'up');
+      pesoDeltaEl.style.display = 'inline';
+    }
+  }
+
+  if (valid.length < 2) {
+    if (emptyEl)  emptyEl.style.display  = 'block';
+    canvas.style.display = 'none';
+    return;
+  }
+
+  if (emptyEl)  emptyEl.style.display  = 'none';
+  canvas.style.display = 'block';
+
+  // Draw chart
+  const ctx    = canvas.getContext('2d');
+  const dpr    = window.devicePixelRatio || 1;
+  const W      = canvas.offsetWidth  || canvas.parentElement.offsetWidth || 300;
+  const H      = 160;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  const pesos  = valid.map(r => +r.peso);
+  const labels = valid.map(r => r.data.slice(0,5)); // DD/Mon
+  const minP   = Math.min(...pesos) - 1;
+  const maxP   = Math.max(...pesos) + 1;
+  const padL   = 36, padR = 12, padT = 12, padB = 28;
+  const cW     = W - padL - padR;
+  const cH     = H - padT - padB;
+
+  const xOf = i  => padL + (i / (pesos.length - 1)) * cW;
+  const yOf = v  => padT + (1 - (v - minP) / (maxP - minP)) * cH;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,.06)';
+  ctx.lineWidth   = 1;
+  [0, 0.25, 0.5, 0.75, 1].forEach(t => {
+    const y = padT + t * cH;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    const val = (maxP - t * (maxP - minP)).toFixed(1);
+    ctx.fillStyle   = 'rgba(255,255,255,.3)';
+    ctx.font        = `${10 * dpr / dpr}px Barlow Condensed, sans-serif`;
+    ctx.textAlign   = 'right';
+    ctx.fillText(val, padL - 4, y + 4);
+  });
+
+  // Fill area
+  const grad = ctx.createLinearGradient(0, padT, 0, padT + cH);
+  grad.addColorStop(0,   'rgba(232,0,42,.25)');
+  grad.addColorStop(1,   'rgba(232,0,42,0)');
+  ctx.beginPath();
+  ctx.moveTo(xOf(0), yOf(pesos[0]));
+  pesos.forEach((p, i) => { if (i > 0) ctx.lineTo(xOf(i), yOf(p)); });
+  ctx.lineTo(xOf(pesos.length - 1), padT + cH);
+  ctx.lineTo(xOf(0), padT + cH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.strokeStyle = '#e8002a';
+  ctx.lineWidth   = 2;
+  ctx.lineJoin    = 'round';
+  ctx.beginPath();
+  pesos.forEach((p, i) => i === 0 ? ctx.moveTo(xOf(i), yOf(p)) : ctx.lineTo(xOf(i), yOf(p)));
+  ctx.stroke();
+
+  // Dots + labels
+  pesos.forEach((p, i) => {
+    // dot
+    ctx.beginPath();
+    ctx.arc(xOf(i), yOf(p), 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#e8002a';
+    ctx.fill();
+    ctx.strokeStyle = '#0a0a0a';
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+
+    // x-axis label (show first, last, and evenly spaced)
+    const step = Math.max(1, Math.floor(pesos.length / 4));
+    if (i === 0 || i === pesos.length - 1 || i % step === 0) {
+      ctx.fillStyle  = 'rgba(255,255,255,.4)';
+      ctx.font       = '10px Barlow Condensed, sans-serif';
+      ctx.textAlign  = i === 0 ? 'left' : i === pesos.length - 1 ? 'right' : 'center';
+      ctx.fillText(labels[i], xOf(i), H - 6);
+    }
+  });
+}
 /* ── HIDRATAÇÃO ───────────────────────────────────── */
 let waterCupsState = [];
 
@@ -2123,6 +2369,42 @@ html, body { overflow-x: hidden; width: 100%; }
   font-size: 12px; color: var(--muted); line-height: 1.5;
   border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px;
 }
+
+/* already */
+.peso-chart-wrap {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 18px 16px; margin-bottom: 2px;
+}
+.peso-chart-hdr {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+}
+.peso-chart-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--muted);
+}
+.peso-chart-val {
+  font-family: 'Bebas Neue', cursive; font-size: 22px; color: var(--white);
+}
+.peso-chart-delta {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  padding: 3px 8px; margin-left: 8px;
+}
+.peso-chart-delta.down { color: var(--green); background: rgba(0,230,118,.1); border: 1px solid rgba(0,230,118,.25); }
+.peso-chart-delta.up   { color: var(--red2);  background: rgba(232,0,42,.1);  border: 1px solid rgba(232,0,42,.25); }
+.peso-chart-empty {
+  font-size: 13px; color: var(--faint); text-align: center;
+  padding: 24px 0;
+}
+.chart-canvas-wrap {
+  position: relative; width: 100%; overflow: hidden;
+}
+canvas#pesoChart {
+  width: 100% !important; height: 160px !important;
+  display: block;
+}
 </style>
 </head>
 <body>
@@ -2472,11 +2754,10 @@ html, body { overflow-x: hidden; width: 100%; }
       </div>
       <div class="wrap">
 
-        <!-- MODALIDADE: Casa / Academia / Avançado -->
+        <!-- MODALIDADE: Casa / Academia -->
         <div class="tabs" id="treino-modal-tabs">
           <button class="tab active" onclick="setModalidade(this,'casa')">🏠 Casa</button>
           <button class="tab"        onclick="setModalidade(this,'academia')">🏋️ Academia</button>
-          <button class="tab"        onclick="setModalidade(this,'avancado')">💪 Avançado</button>
         </div>
 
         <!-- DIA: A / B / C -->
@@ -2491,7 +2772,6 @@ html, body { overflow-x: hidden; width: 100%; }
           <div>
             <h2 id="treinoTitulo">—</h2>
             <p id="treinoGrupo">—</p>
-            <div class="day-tags" id="treinoDias"></div>
           </div>
           <div class="treino-meta">
             <div class="meta"><span class="v" id="treinoQtEx">—</span><span class="l">Exercícios</span></div>
@@ -2645,15 +2925,22 @@ html, body { overflow-x: hidden; width: 100%; }
       </div>
       <div class="wrap">
 
-        <div class="sequencia-block">
-          <div class="sequencia-num" id="sequenciaNum">5</div>
-          <div>
-            <div class="seq-lbl">Dias Seguidos</div>
-            <div class="sequencia-msg">Continue assim!<br>Sua consistência está construindo o resultado.</div>
+
+        <!-- GRÁFICO EVOLUÇÃO DE PESO -->
+        <div class="peso-chart-wrap" id="pesoChartWrap">
+          <div class="peso-chart-hdr">
+            <div class="peso-chart-title">Evolução de Peso</div>
+            <div>
+              <span class="peso-chart-val" id="pesoAtual">—</span>
+              <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:var(--faint);letter-spacing:2px;"> kg</span>
+              <span class="peso-chart-delta" id="pesoDelta" style="display:none;"></span>
+            </div>
+          </div>
+          <div class="chart-canvas-wrap">
+            <canvas id="pesoChart"></canvas>
+            <div class="peso-chart-empty" id="pesoChartEmpty">Registre ao menos 2 pesagens para ver o gráfico</div>
           </div>
         </div>
-
-        <div class="divider"></div>
 
         <div class="section-hdr">Registrar Medidas</div>
         <div class="medidas-block">
@@ -2704,7 +2991,7 @@ html, body { overflow-x: hidden; width: 100%; }
             <div class="perfil-email" id="perfilEmail">—</div>
             <div class="perfil-plan">
               <span class="plan-dot"></span>
-              Protocolo Seca Barriga · Ativo
+              <span id="perfilPlan">Método Ananias Jr · Ativo</span>
             </div>
           </div>
         </div>
@@ -2762,7 +3049,7 @@ html, body { overflow-x: hidden; width: 100%; }
       </div>
       <div class="wrap">
         <div class="modules-grid">
-          <div class="mod-card" onclick="navigate('treino')"><div class="mod-icon">💪</div><div class="mod-name">Treino 30 Dias</div><div class="mod-desc">Protocolo completo casa ou academia com progressão semanal integrada.</div><div class="mod-tag free">Incluído</div></div>
+          <div class="mod-card" onclick="navigate('treino')"><div class="mod-icon">💪</div><div class="mod-name">Treino 30 Dias</div><div class="mod-desc">Protocolo completo casa ou academia com progressão semanal.</div><div class="mod-tag free">Incluído</div></div>
           <div class="mod-card" onclick="navigate('dieta')"><div class="mod-icon">🥗</div><div class="mod-name">Plano Alimentar</div><div class="mod-desc">Calculadora TMB + plano seca barriga personalizado com macros.</div><div class="mod-tag free">Incluído</div></div>
           <div class="mod-card" onclick="navigate('progresso')"><div class="mod-icon">📈</div><div class="mod-name">Progresso</div><div class="mod-desc">Medidas, peso e sequência semanal para manter a motivação alta.</div><div class="mod-tag free">Incluído</div></div>
           <div class="mod-card locked"><div class="mod-lock-icon">🔒</div><div class="mod-icon">🏃</div><div class="mod-name">Cardio Protocolo</div><div class="mod-desc">HIIT e steady-state. Protocolos específicos por fase do protocolo.</div><div class="mod-tag premium">Em breve</div></div>
@@ -3090,7 +3377,7 @@ const LS_VERSION = 3;
 
 const TREINOS = {
   casa: {
-    A: { titulo:'Treino A — Casa', grupo:'Peito, Ombro e Tríceps · Peso Corporal', dias:['Seg','Qua','Sex'], meta:{ex:6,min:40,series:'4×12'}, ex:[
+    A: { titulo:'Treino A — Casa', grupo:'Peito, Ombro e Tríceps · Peso Corporal', meta:{ex:6,min:40,series:'4×12'}, ex:[
       {n:'Flexão de Braços',     d:'4 × 15 reps · 40s descanso', rest:40},
       {n:'Flexão Inclinada',     d:'4 × 12 reps · 40s descanso', rest:40},
       {n:'Mergulho entre Cadeiras',   d:'3 × 12 reps · 45s descanso', rest:45},
@@ -3098,7 +3385,7 @@ const TREINOS = {
       {n:'Tríceps Testa no Solo',d:'3 × 15 reps · 30s descanso', rest:30},
       {n:'Elevação Lateral Solo',d:'3 × 15 reps · 30s descanso', rest:30},
     ]},
-    B: { titulo:'Treino B — Casa', grupo:'Costas, Bíceps e Core · Peso Corporal', dias:['Ter','Qui'], meta:{ex:6,min:40,series:'3×15'}, ex:[
+    B: { titulo:'Treino B — Casa', grupo:'Costas, Bíceps e Core · Peso Corporal', meta:{ex:6,min:40,series:'3×15'}, ex:[
       {n:'Remada com Mochila',   d:'4 × 12 reps · 45s descanso', rest:45},
       {n:'Flexão com Rotação',   d:'3 × 10 reps · 40s descanso', rest:40},
       {n:'Super-Homem',             d:'3 × 15 reps · 30s descanso', rest:30},
@@ -3106,7 +3393,7 @@ const TREINOS = {
       {n:'Prancha',              d:'3 × 40s · 30s descanso',     rest:30},
       {n:'Abdominal Remador',    d:'3 × 20 reps · 30s descanso', rest:30},
     ]},
-    C: { titulo:'Treino C — Casa', grupo:'Pernas e Glúteos · Peso Corporal', dias:['Sáb'], meta:{ex:6,min:45,series:'4×15'}, ex:[
+    C: { titulo:'Treino C — Casa', grupo:'Pernas e Glúteos · Peso Corporal', meta:{ex:6,min:45,series:'4×15'}, ex:[
       {n:'Agachamento Livre',    d:'4 × 20 reps · 45s descanso', rest:45},
       {n:'Avanço Alternado',     d:'3 × 12 cada · 40s descanso', rest:40},
       {n:'Terra Romeno Unilateral',     d:'3 × 12 cada · 40s descanso', rest:40},
@@ -3116,7 +3403,7 @@ const TREINOS = {
     ]}
   },
   academia: {
-    A: { titulo:'Treino A — Academia', grupo:'Peito, Ombro e Tríceps · Com Pesos', dias:['Seg','Qui'], meta:{ex:7,min:55,series:'4×10'}, ex:[
+    A: { titulo:'Treino A — Academia', grupo:'Peito, Ombro e Tríceps · Com Pesos', meta:{ex:7,min:55,series:'4×10'}, ex:[
       {n:'Supino Reto',          d:'4 × 10 reps · 60s descanso', rest:60},
       {n:'Supino Inclinado',     d:'4 × 10 reps · 60s descanso', rest:60},
       {n:'Crucifixo Reto',       d:'3 × 12 reps · 45s descanso', rest:45},
@@ -3125,7 +3412,7 @@ const TREINOS = {
       {n:'Tríceps Pulley',       d:'4 × 12 reps · 40s descanso', rest:40},
       {n:'Tríceps Francês',      d:'3 × 12 reps · 40s descanso', rest:40},
     ]},
-    B: { titulo:'Treino B — Academia', grupo:'Costas, Bíceps e Core · Com Pesos', dias:['Ter','Sex'], meta:{ex:7,min:55,series:'4×10'}, ex:[
+    B: { titulo:'Treino B — Academia', grupo:'Costas, Bíceps e Core · Com Pesos', meta:{ex:7,min:55,series:'4×10'}, ex:[
       {n:'Puxada Frontal',       d:'4 × 10 reps · 60s descanso', rest:60},
       {n:'Remada Curvada',       d:'4 × 10 reps · 60s descanso', rest:60},
       {n:'Remada Unilateral',    d:'3 × 12 reps · 45s descanso', rest:45},
@@ -3134,7 +3421,7 @@ const TREINOS = {
       {n:'Rosca Martelo',        d:'3 × 12 reps · 40s descanso', rest:40},
       {n:'Prancha',              d:'3 × 45s · 30s descanso',     rest:30},
     ]},
-    C: { titulo:'Treino C — Academia', grupo:'Pernas e Glúteos · Com Pesos', dias:['Qua','Sáb'], meta:{ex:7,min:60,series:'4×12'}, ex:[
+    C: { titulo:'Treino C — Academia', grupo:'Pernas e Glúteos · Com Pesos', meta:{ex:7,min:60,series:'4×12'}, ex:[
       {n:'Agachamento Livre',    d:'4 × 10 reps · 90s descanso', rest:90},
       {n:'Leg Press',            d:'4 × 12 reps · 60s descanso', rest:60},
       {n:'Cadeira Extensora',    d:'3 × 15 reps · 45s descanso', rest:45},
@@ -3143,44 +3430,11 @@ const TREINOS = {
       {n:'Abdução de Quadril',   d:'3 × 20 reps · 30s descanso', rest:30},
       {n:'Panturrilha na Máquina',  d:'4 × 20 reps · 30s descanso', rest:30},
     ]}
-  },
-  avancado: {
-    A: { titulo:'Treino A — Avançado', grupo:'Peito, Ombro e Tríceps · Alta Intensidade', dias:['Seg','Qui'], meta:{ex:8,min:70,series:'5×8'}, ex:[
-      {n:'Supino Reto Pesado',   d:'5 × 8 reps · 90s descanso',  rest:90},
-      {n:'Supino Inclinado',     d:'4 × 8 reps · 75s descanso',  rest:75},
-      {n:'Crucifixo Inclinado',  d:'4 × 10 reps · 60s descanso', rest:60},
-      {n:'Desenvolvimento Arnold',         d:'4 × 10 reps · 60s descanso', rest:60},
-      {n:'Elevação Lateral',     d:'5 × 12 reps · 45s descanso', rest:45},
-      {n:'Tríceps Pulley',       d:'4 × 10 reps · 45s descanso', rest:45},
-      {n:'Mergulho Paralelas',   d:'4 × 10 reps · 60s descanso', rest:60},
-      {n:'Tríceps Coice',             d:'3 × 15 reps · 30s descanso', rest:30},
-    ]},
-    B: { titulo:'Treino B — Avançado', grupo:'Costas e Bíceps · Alta Intensidade', dias:['Ter','Sex'], meta:{ex:8,min:70,series:'5×8'}, ex:[
-      {n:'Barra Fixa',           d:'5 × máx · 90s descanso',     rest:90},
-      {n:'Remada Curvada Pesada',d:'5 × 8 reps · 90s descanso',  rest:90},
-      {n:'Puxada Fechada',       d:'4 × 10 reps · 60s descanso', rest:60},
-      {n:'Remada Alta',     d:'4 × 10 reps · 60s descanso', rest:60},
-      {n:'Rosca Direta Pesada',  d:'4 × 8 reps · 60s descanso',  rest:60},
-      {n:'Rosca Concentrada',    d:'3 × 12 reps · 45s descanso', rest:45},
-      {n:'Rosca 21',             d:'3 × 21 reps · 60s descanso', rest:60},
-      {n:'Abdominal Infra',      d:'4 × 20 reps · 30s descanso', rest:30},
-    ]},
-    C: { titulo:'Treino C — Avançado', grupo:'Pernas · Alta Intensidade', dias:['Qua','Sáb'], meta:{ex:8,min:75,series:'5×10'}, ex:[
-      {n:'Agachamento Livre',    d:'5 × 8 reps · 120s descanso', rest:120},
-      {n:'Leg Press 45°',        d:'4 × 12 reps · 90s descanso', rest:90},
-      {n:'Agachamento Hack',           d:'4 × 10 reps · 75s descanso', rest:75},
-      {n:'Terra Romeno Pesado',         d:'4 × 10 reps · 75s descanso', rest:75},
-      {n:'Mesa Flexora',         d:'4 × 12 reps · 60s descanso', rest:60},
-      {n:'Cadeira Adutora',      d:'3 × 20 reps · 45s descanso', rest:45},
-      {n:'Panturrilha em Pé',    d:'5 × 20 reps · 30s descanso', rest:30},
-      {n:'Avanço com Barra',     d:'3 × 10 cada · 60s descanso', rest:60},
-    ]}
   }
 };
 // Legacy compat
 const TREINOS_CASA = TREINOS.casa.A.ex;
 const TREINOS_ACA  = TREINOS.academia.A.ex;
-const TREINOS_ADV  = TREINOS.avancado.A.ex;
 
 const HIST_MOCK = [
   {data:'25/05/2026', peso:'76.5', cintura:'82', abdomen:'89', quadril:'96', delta:-0.8},
@@ -3364,6 +3618,25 @@ function closeVideo(e) {
 }
 
 
+
+function updatePerfilPlan() {
+  const saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
+  const objVals  = [0.8, 1.0, 1.1];
+  const objLabels = ['Seca Barriga', 'Manutenção', 'Ganho de Massa'];
+  const objIdx = objVals.indexOf(+saved.obj);
+  const label  = objIdx >= 0 ? objLabels[objIdx] : 'Método Ananias Jr';
+  const el = document.getElementById('perfilPlan');
+  if (el) el.textContent = label + ' · Ativo';
+  // Also update the sub text in meus dados button
+  const sub = document.getElementById('perfilDadosSub');
+  if (sub && saved.dPeso) {
+    const ativLabels = ['Não treino', '1–3x / sem', '4x ou mais'];
+    const ativVals   = [1.2, 1.375, 1.725];
+    const ativIdx    = ativVals.indexOf(+saved.ativ);
+    const ativLabel  = ativIdx >= 0 ? ativLabels[ativIdx] : '';
+    sub.textContent  = saved.dPeso + 'kg · ' + saved.dAltura + 'cm · ' + (objIdx >= 0 ? objLabels[objIdx] : '') + (ativLabel ? ' · ' + ativLabel : '');
+  }
+}
 function updateDietaSummary() {
   const k = localStorage.getItem('maj_kcal');
   const p = localStorage.getItem('maj_prot');
@@ -3466,6 +3739,7 @@ function dadosSave(){
   if (sub) sub.textContent = peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM];
   setGreeting(nome);
   updateDietaSummary();
+  updatePerfilPlan();
   calcWater();
   dadosClose();
 }
@@ -3548,6 +3822,7 @@ function obNext(step) {
 
 function obFinish() {
   localStorage.setItem('maj_onboarding_done', '1');
+  setTimeout(updatePerfilPlan, 100);
   document.getElementById('onboarding').classList.remove('open');
   const email = localStorage.getItem('maj_email') || '';
   const nome  = localStorage.getItem('maj_nome')  || 'Atleta';
@@ -3608,12 +3883,14 @@ function bootApp(email, rawName) {
   updateDietaSummary();
 
   setGreeting(nome);
+  updatePerfilPlan();
   calLoad();
   desafioLoad();
   buildMiniGrid();
   calcWater();
   buildExLists();
   buildHistorico();
+  buildPesoChart();
   maybeShowOnboarding();
 }
 
@@ -3647,6 +3924,7 @@ function navigate(page) {
   // Page-specific init
   if(page === 'videos') buildVideoPage();
   if(page === 'dieta')  calcWater();
+  if(page === 'progresso') { buildPesoChart(); }
 }
 
 /* ── SIDEBAR ──────────────────────────────────────── */
@@ -3682,6 +3960,119 @@ function setGreeting(nome) {
 
 
 
+
+/* ── GRÁFICO PESO ─────────────────────────────────── */
+function buildPesoChart() {
+  const saved = JSON.parse(localStorage.getItem('maj_medidas') || '[]');
+  const all   = [...saved, ...HIST_MOCK].reverse(); // oldest first
+
+  const pesoAtualEl = document.getElementById('pesoAtual');
+  const pesoDeltaEl = document.getElementById('pesoDelta');
+  const emptyEl     = document.getElementById('pesoChartEmpty');
+  const canvas      = document.getElementById('pesoChart');
+  if (!canvas) return;
+
+  const valid = all.filter(r => r.peso && !isNaN(+r.peso));
+
+  // Update header
+  if (valid.length > 0) {
+    const last = +valid[valid.length - 1].peso;
+    if (pesoAtualEl) pesoAtualEl.textContent = last.toFixed(1);
+    if (valid.length > 1 && pesoDeltaEl) {
+      const first = +valid[0].peso;
+      const diff  = +(last - first).toFixed(1);
+      pesoDeltaEl.textContent = (diff > 0 ? '+' : '') + diff + ' kg';
+      pesoDeltaEl.className   = 'peso-chart-delta ' + (diff <= 0 ? 'down' : 'up');
+      pesoDeltaEl.style.display = 'inline';
+    }
+  }
+
+  if (valid.length < 2) {
+    if (emptyEl)  emptyEl.style.display  = 'block';
+    canvas.style.display = 'none';
+    return;
+  }
+
+  if (emptyEl)  emptyEl.style.display  = 'none';
+  canvas.style.display = 'block';
+
+  // Draw chart
+  const ctx    = canvas.getContext('2d');
+  const dpr    = window.devicePixelRatio || 1;
+  const W      = canvas.offsetWidth  || canvas.parentElement.offsetWidth || 300;
+  const H      = 160;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  const pesos  = valid.map(r => +r.peso);
+  const labels = valid.map(r => r.data.slice(0,5)); // DD/Mon
+  const minP   = Math.min(...pesos) - 1;
+  const maxP   = Math.max(...pesos) + 1;
+  const padL   = 36, padR = 12, padT = 12, padB = 28;
+  const cW     = W - padL - padR;
+  const cH     = H - padT - padB;
+
+  const xOf = i  => padL + (i / (pesos.length - 1)) * cW;
+  const yOf = v  => padT + (1 - (v - minP) / (maxP - minP)) * cH;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,.06)';
+  ctx.lineWidth   = 1;
+  [0, 0.25, 0.5, 0.75, 1].forEach(t => {
+    const y = padT + t * cH;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    const val = (maxP - t * (maxP - minP)).toFixed(1);
+    ctx.fillStyle   = 'rgba(255,255,255,.3)';
+    ctx.font        = `${10 * dpr / dpr}px Barlow Condensed, sans-serif`;
+    ctx.textAlign   = 'right';
+    ctx.fillText(val, padL - 4, y + 4);
+  });
+
+  // Fill area
+  const grad = ctx.createLinearGradient(0, padT, 0, padT + cH);
+  grad.addColorStop(0,   'rgba(232,0,42,.25)');
+  grad.addColorStop(1,   'rgba(232,0,42,0)');
+  ctx.beginPath();
+  ctx.moveTo(xOf(0), yOf(pesos[0]));
+  pesos.forEach((p, i) => { if (i > 0) ctx.lineTo(xOf(i), yOf(p)); });
+  ctx.lineTo(xOf(pesos.length - 1), padT + cH);
+  ctx.lineTo(xOf(0), padT + cH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.strokeStyle = '#e8002a';
+  ctx.lineWidth   = 2;
+  ctx.lineJoin    = 'round';
+  ctx.beginPath();
+  pesos.forEach((p, i) => i === 0 ? ctx.moveTo(xOf(i), yOf(p)) : ctx.lineTo(xOf(i), yOf(p)));
+  ctx.stroke();
+
+  // Dots + labels
+  pesos.forEach((p, i) => {
+    // dot
+    ctx.beginPath();
+    ctx.arc(xOf(i), yOf(p), 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#e8002a';
+    ctx.fill();
+    ctx.strokeStyle = '#0a0a0a';
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+
+    // x-axis label (show first, last, and evenly spaced)
+    const step = Math.max(1, Math.floor(pesos.length / 4));
+    if (i === 0 || i === pesos.length - 1 || i % step === 0) {
+      ctx.fillStyle  = 'rgba(255,255,255,.4)';
+      ctx.font       = '10px Barlow Condensed, sans-serif';
+      ctx.textAlign  = i === 0 ? 'left' : i === pesos.length - 1 ? 'right' : 'center';
+      ctx.fillText(labels[i], xOf(i), H - 6);
+    }
+  });
+}
 /* ── HIDRATAÇÃO ───────────────────────────────────── */
 let waterCupsState = [];
 
@@ -4155,15 +4546,7 @@ function renderTreino() {
   setEl('treinoQtEx',    t.meta.ex);
   setEl('treinoMin',     t.meta.min);
   setEl('treinoSeries',  t.meta.series);
-  const diasEl = document.getElementById('treinoDias');
-  if (diasEl) {
-    diasEl.innerHTML = '';
-    t.dias.forEach(d => {
-      const span = document.createElement('span');
-      span.className = 'day-tag'; span.textContent = d;
-      diasEl.appendChild(span);
-    });
-  }
+
   const listId = 'exListAtivo';
   renderEx(listId, t.ex, treinoModalidade + treinoDia);
 }
