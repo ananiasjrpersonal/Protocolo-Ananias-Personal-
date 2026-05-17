@@ -1825,6 +1825,152 @@ function renderDesafios() {
   transition: all .2s; cursor: pointer;
 }
 .desafio-modal-cancel:hover { color: var(--white); border-color: var(--border2); }
+
+/* ── QUEM É ANANIAS ───────────────────────────────── */
+.ananias-hero-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-top: 3px solid var(--red);
+  padding: 28px 20px; margin-bottom: 2px;
+  position: relative; overflow: hidden;
+}
+.ananias-bg-text {
+  position: absolute; right: -20px; bottom: -30px;
+  font-family: 'Bebas Neue', cursive; font-size: clamp(80px,20vw,180px);
+  color: rgba(232,0,42,.04); pointer-events: none; line-height: 1;
+  user-select: none;
+}
+.ananias-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--red2);
+  background: rgba(232,0,42,.08); border: 1px solid rgba(232,0,42,.25);
+  padding: 5px 14px; margin-bottom: 16px;
+}
+.ananias-nome {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(32px,8vw,64px); letter-spacing: 3px;
+  line-height: 1; color: var(--white); margin-bottom: 4px;
+}
+.ananias-nome em { color: var(--red); font-style: normal; }
+.ananias-cargo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 600; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
+}
+.ananias-frase {
+  font-family: 'Bebas Neue', cursive; font-size: clamp(16px,4vw,20px);
+  letter-spacing: 2px; color: var(--text);
+  border-left: 3px solid var(--red); padding-left: 16px; line-height: 1.4;
+}
+.ananias-nums {
+  display: grid; grid-template-columns: repeat(2,1fr); gap: 2px; margin-bottom: 2px;
+}
+@media (min-width: 500px) { .ananias-nums { grid-template-columns: repeat(4,1fr); } }
+.ananias-num-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 18px 12px; text-align: center;
+}
+.ananias-num-val {
+  font-family: 'Bebas Neue', cursive; font-size: 40px; line-height: 1;
+  color: var(--red); text-shadow: 0 0 20px rgba(232,0,42,.2);
+}
+.ananias-num-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted); margin-top: 4px;
+}
+.filo-grid {
+  display: grid; grid-template-columns: 1fr; gap: 2px;
+}
+@media (min-width: 600px) { .filo-grid { grid-template-columns: repeat(3,1fr); } }
+.filo-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 3px solid var(--red); padding: 18px 16px;
+}
+.filo-card.verde { border-left-color: var(--green); }
+.filo-card.azul  { border-left-color: var(--blue); }
+.filo-card-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--white); margin-bottom: 8px;
+}
+.filo-card-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── MOBILE FIXES ─────────────────────────────────── */
+* { box-sizing: border-box; }
+html, body { overflow-x: hidden; width: 100%; }
+
+/* Prevent any element from causing horizontal scroll */
+.wrap { overflow-x: hidden; }
+
+/* Page header on mobile */
+@media (max-width: 500px) {
+  .page-hdr { padding: 20px 16px 0; }
+  .page-title { font-size: clamp(28px,8vw,56px); }
+  .wrap { padding: 16px 16px 80px; }
+
+  /* Treino meta — stack on very small screens */
+  .treino-hdr { flex-direction: column; gap: 10px; }
+  .treino-meta { justify-content: flex-start; }
+
+  /* Exercise list — fix timer button overflow */
+  .ex-item { grid-template-columns: 36px 1fr 60px; }
+  .ex-timer-btn { min-width: 60px; font-size: 9px; padding: 0 4px; }
+  .ex-n { width: 36px; font-size: 14px; }
+
+  /* Stats row — 2 cols on mobile */
+  .stats-row { grid-template-columns: 1fr 1fr; }
+
+  /* Meal tabs — allow wrap */
+  .meal-tabs { gap: 1px; }
+  .meal-tab { min-width: 56px; padding: 10px 4px; }
+  .meal-tab .meal-tab-icon { font-size: 16px; }
+
+  /* Calendar days */
+  .cal-day { font-size: 11px; }
+
+  /* Food table — hide protein on tiny screens */
+  .food-row { grid-template-columns: 1fr 64px 48px; }
+  .food-prot { display: none; }
+  .meal-col-lbl.g { display: none; }
+
+  /* Tabs */
+  .tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { min-width: 80px; flex-shrink: 0; }
+
+  /* Onboarding */
+  .ob-grid { grid-template-columns: 1fr 1fr; }
+  .ob-grid3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* Desafio cards */
+  .desafio-progress-row { flex-wrap: wrap; }
+}
+
+/* Fix sidebar-user overflow */
+.sidebar-user { min-width: 0; }
+.sidebar-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px; }
+
+/* Fix tab overflow on medium screens */
+@media (max-width: 700px) {
+  .treino-meta .meta { min-width: 0; }
+  .treino-meta .meta .v { font-size: 18px; }
+}
+
+/* Fix bottom nav safe area on iPhone */
+#bottomNav {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: calc(60px + env(safe-area-inset-bottom, 0px));
+}
+@media (max-width: 899px) {
+  #mainArea { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* Ensure modals don't overflow on mobile */
+.ob-card, .dados-box, .timer-box, .desafio-modal-box, .pm-box {
+  max-height: 90vh; overflow-y: auto;
+}
 </style>
 </head>
 <body>
@@ -1962,7 +2108,6 @@ function renderDesafios() {
   <div id="topbar">
     <div class="topbar-logo">Método <span>Ananias Jr</span><small>Plataforma de Performance</small></div>
     <div class="topbar-right">
-      <button class="topbar-btn" onclick="navigate('notif')" data-page="notif" title="Notificações">🔔</button>
       <button class="topbar-btn" id="menuBtn" onclick="toggleSidebar()">☰</button>
     </div>
   </div>
@@ -2168,81 +2313,41 @@ function renderDesafios() {
       <div class="page-hdr">
         <div class="page-eyebrow">Módulo · Treino</div>
         <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <div class="page-title">Treinos 30 Dias</div>
+          <div class="page-title">Treinos</div>
           <button class="edit-data-btn" onclick="dadosOpen()">✏ Meus Dados</button>
         </div>
-        <div class="page-sub">Selecione o tipo e marque os exercícios concluídos</div>
+        <div class="page-sub">Selecione o local e o treino do dia</div>
       </div>
       <div class="wrap">
 
-        <div class="tabs">
-          <button class="tab active" onclick="setTab(this,'t1')">🏠 Casa</button>
-          <button class="tab"        onclick="setTab(this,'t2')">🏋️ Academia</button>
-          <button class="tab"        onclick="setTab(this,'t3')">💪 Avançado</button>
+        <!-- MODALIDADE: Casa / Academia / Avançado -->
+        <div class="tabs" id="treino-modal-tabs">
+          <button class="tab active" onclick="setModalidade(this,'casa')">🏠 Casa</button>
+          <button class="tab"        onclick="setModalidade(this,'academia')">🏋️ Academia</button>
+          <button class="tab"        onclick="setModalidade(this,'avancado')">💪 Avançado</button>
         </div>
 
-        <!-- TREINO CASA -->
-        <div class="panel active" id="t1">
-          <div class="treino-hdr">
-            <div>
-              <h2>Treino A — Casa</h2>
-              <p>Peito, Ombro e Tríceps · Peso Corporal</p>
-              <div class="day-tags">
-                <span class="day-tag">Seg</span>
-                <span class="day-tag">Qua</span>
-                <span class="day-tag">Sex</span>
-              </div>
-            </div>
-            <div class="treino-meta">
-              <div class="meta"><span class="v">6</span><span class="l">Exercícios</span></div>
-              <div class="meta"><span class="v">40</span><span class="l">min</span></div>
-              <div class="meta"><span class="v">4×12</span><span class="l">Séries</span></div>
-            </div>
-          </div>
-          <div class="ex-list" id="exListCasa"></div>
+        <!-- DIA: A / B / C -->
+        <div class="tabs" id="treino-dia-tabs" style="margin-top:2px;">
+          <button class="tab active" onclick="setDiaTreino(this,'A')">Treino A</button>
+          <button class="tab"        onclick="setDiaTreino(this,'B')">Treino B</button>
+          <button class="tab"        onclick="setDiaTreino(this,'C')">Treino C</button>
         </div>
 
-        <!-- TREINO ACADEMIA -->
-        <div class="panel" id="t2">
-          <div class="treino-hdr">
-            <div>
-              <h2>Treino A — Academia</h2>
-              <p>Peito, Ombro e Tríceps · Com Pesos</p>
-              <div class="day-tags">
-                <span class="day-tag">Seg</span>
-                <span class="day-tag">Qua</span>
-                <span class="day-tag">Sex</span>
-              </div>
-            </div>
-            <div class="treino-meta">
-              <div class="meta"><span class="v">7</span><span class="l">Exercícios</span></div>
-              <div class="meta"><span class="v">55</span><span class="l">min</span></div>
-              <div class="meta"><span class="v">4×10</span><span class="l">Séries</span></div>
-            </div>
+        <!-- TREINO HEADER + LIST -->
+        <div class="treino-hdr" id="treinoHdr">
+          <div>
+            <h2 id="treinoTitulo">—</h2>
+            <p id="treinoGrupo">—</p>
+            <div class="day-tags" id="treinoDias"></div>
           </div>
-          <div class="ex-list" id="exListAca"></div>
-        </div>
-
-        <!-- TREINO AVANÇADO -->
-        <div class="panel" id="t3">
-          <div class="treino-hdr">
-            <div>
-              <h2>Treino A — Avançado</h2>
-              <p>Hipertrofia + Força · Alta Intensidade</p>
-              <div class="day-tags">
-                <span class="day-tag">Seg</span>
-                <span class="day-tag">Qua</span>
-                <span class="day-tag">Sex</span>
-              </div>
-            </div>
-            <div class="treino-meta">
-              <div class="meta"><span class="v">8</span><span class="l">Exercícios</span></div>
-              <div class="meta"><span class="v">70</span><span class="l">min</span></div>
-              <div class="meta"><span class="v">5×8</span><span class="l">Séries</span></div>
-            </div>
+          <div class="treino-meta">
+            <div class="meta"><span class="v" id="treinoQtEx">—</span><span class="l">Exercícios</span></div>
+            <div class="meta"><span class="v" id="treinoMin">—</span><span class="l">min</span></div>
+            <div class="meta"><span class="v" id="treinoSeries">—</span><span class="l">Séries</span></div>
           </div>
-          <div class="ex-list" id="exListAdv"></div>
         </div>
+        <div class="ex-list" id="exListAtivo"></div>
 
       </div>
     </div>
@@ -2460,10 +2565,10 @@ function renderDesafios() {
             </div>
             <div class="action-arrow">›</div>
           </div>
-          <div class="perfil-action">
+          <div class="perfil-action" onclick="window.open('https://instagram.com/ananiasjr_personal','_blank')">
             <div>
               <div class="action-lbl">Suporte</div>
-              <div class="action-sub">Falar com o Ananias</div>
+              <div class="action-sub">@ananiasjr_personal no Instagram</div>
             </div>
             <div class="action-arrow">›</div>
           </div>
@@ -2579,26 +2684,70 @@ function renderDesafios() {
         <div class="page-title">Quem é Ananias</div>
       </div>
       <div class="wrap">
-        <div style="background:var(--card);border:1px solid var(--border);border-top:3px solid var(--red);padding:32px 24px;margin-bottom:2px;position:relative;overflow:hidden;">
-          <div style="position:absolute;right:-20px;bottom:-30px;font-family:'Bebas Neue',cursive;font-size:180px;color:rgba(232,0,42,.04);pointer-events:none;line-height:1;">AJ</div>
-          <div style="display:inline-flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--red2);background:rgba(232,0,42,.08);border:1px solid rgba(232,0,42,.25);padding:5px 14px;margin-bottom:16px;"><span style="width:6px;height:6px;background:var(--red2);border-radius:50%;animation:pulse 1.5s infinite;display:inline-block;"></span> Personal Trainer · Sinop, MT</div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:clamp(36px,8vw,64px);letter-spacing:3px;line-height:1;color:var(--white);margin-bottom:4px;">Ananias <span style="color:var(--red);">Júnior</span></div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:20px;">Personal Trainer · @ananiasjr_personal</div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--text);border-left:3px solid var(--red);padding-left:16px;line-height:1.3;">"Consistência vence intensidade.<br>Apareça todos os dias e o resultado vem."</div>
+
+        <div class="ananias-hero-box">
+          <div class="ananias-bg-text">AJ</div>
+          <div class="ananias-badge">
+            <span class="badge-dot"></span> Personal Trainer · Sinop, MT
+          </div>
+          <div class="ananias-nome">Ananias <em>Júnior</em></div>
+          <div class="ananias-cargo">Personal Trainer · @ananiasjr_personal</div>
+          <div class="ananias-frase">
+            "Consistência vence intensidade.<br>
+            Apareça todos os dias e o resultado vem."
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:2px;margin-bottom:2px;">
-          <div style="background:var(--card);border:1px solid var(--border);padding:20px 14px;text-align:center;"><div style="font-family:'Bebas Neue',cursive;font-size:44px;line-height:1;color:var(--red);text-shadow:0 0 20px rgba(232,0,42,.25);">+10</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Anos de Experiência</div></div>
-          <div style="background:var(--card);border:1px solid var(--border);padding:20px 14px;text-align:center;"><div style="font-family:'Bebas Neue',cursive;font-size:44px;line-height:1;color:var(--red);text-shadow:0 0 20px rgba(232,0,42,.25);">+500</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Alunos Transformados</div></div>
-          <div style="background:var(--card);border:1px solid var(--border);padding:20px 14px;text-align:center;"><div style="font-family:'Bebas Neue',cursive;font-size:44px;line-height:1;color:var(--red);text-shadow:0 0 20px rgba(232,0,42,.25);">30</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Dias do Protocolo</div></div>
-          <div style="background:var(--card);border:1px solid var(--border);padding:20px 14px;text-align:center;"><div style="font-family:'Bebas Neue',cursive;font-size:44px;line-height:1;color:var(--red);text-shadow:0 0 20px rgba(232,0,42,.25);">MT</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Sinop, Mato Grosso</div></div>
+
+        <div class="ananias-nums">
+          <div class="ananias-num-card">
+            <div class="ananias-num-val">+10</div>
+            <div class="ananias-num-lbl">Anos de Experiência</div>
+          </div>
+          <div class="ananias-num-card">
+            <div class="ananias-num-val">+500</div>
+            <div class="ananias-num-lbl">Alunos Transformados</div>
+          </div>
+          <div class="ananias-num-card">
+            <div class="ananias-num-val">30</div>
+            <div class="ananias-num-lbl">Dias do Protocolo</div>
+          </div>
+          <div class="ananias-num-card">
+            <div class="ananias-num-val">MT</div>
+            <div class="ananias-num-lbl">Sinop, MT</div>
+          </div>
         </div>
-        <div style="height:1px;background:var(--border);margin:20px 0;"></div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Filosofia</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2px;">
-          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);padding:20px 16px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--white);margin-bottom:8px;">Sem atalhos</div><div style="font-size:13px;color:var(--muted);line-height:1.6;">Resultado real vem de processo real. O método não promete milagre — entrega estrutura para quem quer aparecer todo dia.</div></div>
-          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--green);padding:20px 16px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--white);margin-bottom:8px;">Ciência na prática</div><div style="font-size:13px;color:var(--muted);line-height:1.6;">Déficit calórico, proteína adequada, treino resistido. Três pilares que a ciência valida e que o Ananias aplica há mais de uma década.</div></div>
-          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--blue);padding:20px 16px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--white);margin-bottom:8px;">Acessível de verdade</div><div style="font-size:13px;color:var(--muted);line-height:1.6;">Casa ou academia. Com ou sem equipamento. Feito pra vida real de quem mora em Sinop, não pra quem treina em SP.</div></div>
+
+        <div class="divider"></div>
+        <div class="section-hdr">Filosofia</div>
+        <div class="filo-grid">
+          <div class="filo-card">
+            <div class="filo-card-title">Sem atalhos</div>
+            <div class="filo-card-desc">Resultado real vem de processo real. O método não promete milagre — entrega estrutura para quem quer aparecer todo dia.</div>
+          </div>
+          <div class="filo-card verde">
+            <div class="filo-card-title">Ciência na prática</div>
+            <div class="filo-card-desc">Déficit calórico, proteína adequada, treino resistido. Três pilares que a ciência valida e que o Ananias aplica há mais de uma década.</div>
+          </div>
+          <div class="filo-card azul">
+            <div class="filo-card-title">Acessível de verdade</div>
+            <div class="filo-card-desc">Casa ou academia, com ou sem equipamento. Feito pra vida real de quem mora em Sinop.</div>
+          </div>
         </div>
+
+        <div class="divider"></div>
+        <div class="section-hdr">Fale com o Ananias</div>
+        <a href="https://instagram.com/ananiasjr_personal" target="_blank"
+           style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);padding:16px;text-decoration:none;transition:border-color .2s;"
+           onmouseover="this.style.borderColor='rgba(232,0,42,.4)'"
+           onmouseout="this.style.borderColor='var(--border)'">
+          <span style="font-size:24px;">📸</span>
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--white);">@ananiasjr_personal</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">Instagram · Dúvidas e acompanhamento</div>
+          </div>
+          <span style="margin-left:auto;color:var(--faint);font-size:18px;">›</span>
+        </a>
+
       </div>
     </div>
 
@@ -2770,33 +2919,99 @@ const LS_VERSION = 3;
   }
 })(); // senha padrão
 
-const TREINOS_CASA = [
-  {n:'Flexão de Braços',     d:'4 × 15 reps · 40s descanso',   rest:40},
-  {n:'Flexão Inclinada',     d:'4 × 12 reps · 40s descanso',   rest:40},
-  {n:'Dip entre Cadeiras',   d:'3 × 12 reps · 45s descanso',   rest:45},
-  {n:'Pike Push-Up',         d:'3 × 10 reps · 45s descanso',   rest:45},
-  {n:'Tríceps Testa Solo',   d:'3 × 15 reps · 30s descanso',   rest:30},
-  {n:'Elevação Lateral Solo',d:'3 × 15 reps · 30s descanso',   rest:30},
-];
-const TREINOS_ACA = [
-  {n:'Supino Reto',          d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Supino Inclinado',     d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Crucifixo Reto',       d:'3 × 12 reps · 45s descanso',   rest:45},
-  {n:'Desenvolvimento Press',d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Elevação Lateral',     d:'4 × 12 reps · 45s descanso',   rest:45},
-  {n:'Tríceps Pulley',       d:'4 × 12 reps · 40s descanso',   rest:40},
-  {n:'Tríceps Francês',      d:'3 × 12 reps · 40s descanso',   rest:40},
-];
-const TREINOS_ADV = [
-  {n:'Supino Reto Pesado',   d:'5 × 8 reps · 90s descanso',    rest:90},
-  {n:'Supino Inclinado',     d:'4 × 8 reps · 75s descanso',    rest:75},
-  {n:'Crucifixo Inclinado',  d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Arnold Press',         d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Elevação Lateral',     d:'5 × 12 reps · 45s descanso',   rest:45},
-  {n:'Tríceps Pulley',       d:'4 × 10 reps · 45s descanso',   rest:45},
-  {n:'Mergulho Paralelas',   d:'4 × 10 reps · 60s descanso',   rest:60},
-  {n:'Kickback',             d:'3 × 15 reps · 30s descanso',   rest:30},
-];
+const TREINOS = {
+  casa: {
+    A: { titulo:'Treino A — Casa', grupo:'Peito, Ombro e Tríceps · Peso Corporal', dias:['Seg','Qua','Sex'], meta:{ex:6,min:40,series:'4×12'}, ex:[
+      {n:'Flexão de Braços',     d:'4 × 15 reps · 40s descanso', rest:40},
+      {n:'Flexão Inclinada',     d:'4 × 12 reps · 40s descanso', rest:40},
+      {n:'Dip entre Cadeiras',   d:'3 × 12 reps · 45s descanso', rest:45},
+      {n:'Pike Push-Up',         d:'3 × 10 reps · 45s descanso', rest:45},
+      {n:'Tríceps Testa no Solo',d:'3 × 15 reps · 30s descanso', rest:30},
+      {n:'Elevação Lateral Solo',d:'3 × 15 reps · 30s descanso', rest:30},
+    ]},
+    B: { titulo:'Treino B — Casa', grupo:'Costas, Bíceps e Core · Peso Corporal', dias:['Ter','Qui'], meta:{ex:6,min:40,series:'3×15'}, ex:[
+      {n:'Remada com Mochila',   d:'4 × 12 reps · 45s descanso', rest:45},
+      {n:'Flexão com Rotação',   d:'3 × 10 reps · 40s descanso', rest:40},
+      {n:'Superman',             d:'3 × 15 reps · 30s descanso', rest:30},
+      {n:'Rosca com Mochila',    d:'3 × 15 reps · 30s descanso', rest:30},
+      {n:'Prancha',              d:'3 × 40s · 30s descanso',     rest:30},
+      {n:'Abdominal Remador',    d:'3 × 20 reps · 30s descanso', rest:30},
+    ]},
+    C: { titulo:'Treino C — Casa', grupo:'Pernas e Glúteos · Peso Corporal', dias:['Sáb'], meta:{ex:6,min:45,series:'4×15'}, ex:[
+      {n:'Agachamento Livre',    d:'4 × 20 reps · 45s descanso', rest:45},
+      {n:'Avanço Alternado',     d:'3 × 12 cada · 40s descanso', rest:40},
+      {n:'Stiff Unilateral',     d:'3 × 12 cada · 40s descanso', rest:40},
+      {n:'Elevação Pélvica',     d:'4 × 20 reps · 30s descanso', rest:30},
+      {n:'Panturrilha em Pé',    d:'4 × 25 reps · 20s descanso', rest:20},
+      {n:'Agachamento Sumô',     d:'3 × 15 reps · 40s descanso', rest:40},
+    ]}
+  },
+  academia: {
+    A: { titulo:'Treino A — Academia', grupo:'Peito, Ombro e Tríceps · Com Pesos', dias:['Seg','Qui'], meta:{ex:7,min:55,series:'4×10'}, ex:[
+      {n:'Supino Reto',          d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Supino Inclinado',     d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Crucifixo Reto',       d:'3 × 12 reps · 45s descanso', rest:45},
+      {n:'Desenvolvimento Press',d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Elevação Lateral',     d:'4 × 12 reps · 45s descanso', rest:45},
+      {n:'Tríceps Pulley',       d:'4 × 12 reps · 40s descanso', rest:40},
+      {n:'Tríceps Francês',      d:'3 × 12 reps · 40s descanso', rest:40},
+    ]},
+    B: { titulo:'Treino B — Academia', grupo:'Costas, Bíceps e Core · Com Pesos', dias:['Ter','Sex'], meta:{ex:7,min:55,series:'4×10'}, ex:[
+      {n:'Puxada Frontal',       d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Remada Curvada',       d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Remada Unilateral',    d:'3 × 12 reps · 45s descanso', rest:45},
+      {n:'Pullover',             d:'3 × 12 reps · 45s descanso', rest:45},
+      {n:'Rosca Direta',         d:'4 × 12 reps · 40s descanso', rest:40},
+      {n:'Rosca Martelo',        d:'3 × 12 reps · 40s descanso', rest:40},
+      {n:'Prancha',              d:'3 × 45s · 30s descanso',     rest:30},
+    ]},
+    C: { titulo:'Treino C — Academia', grupo:'Pernas e Glúteos · Com Pesos', dias:['Qua','Sáb'], meta:{ex:7,min:60,series:'4×12'}, ex:[
+      {n:'Agachamento Livre',    d:'4 × 10 reps · 90s descanso', rest:90},
+      {n:'Leg Press',            d:'4 × 12 reps · 60s descanso', rest:60},
+      {n:'Cadeira Extensora',    d:'3 × 15 reps · 45s descanso', rest:45},
+      {n:'Mesa Flexora',         d:'3 × 15 reps · 45s descanso', rest:45},
+      {n:'Stiff',                d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Abdução de Quadril',   d:'3 × 20 reps · 30s descanso', rest:30},
+      {n:'Panturrilha no Hack',  d:'4 × 20 reps · 30s descanso', rest:30},
+    ]}
+  },
+  avancado: {
+    A: { titulo:'Treino A — Avançado', grupo:'Peito, Ombro e Tríceps · Alta Intensidade', dias:['Seg','Qui'], meta:{ex:8,min:70,series:'5×8'}, ex:[
+      {n:'Supino Reto Pesado',   d:'5 × 8 reps · 90s descanso',  rest:90},
+      {n:'Supino Inclinado',     d:'4 × 8 reps · 75s descanso',  rest:75},
+      {n:'Crucifixo Inclinado',  d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Arnold Press',         d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Elevação Lateral',     d:'5 × 12 reps · 45s descanso', rest:45},
+      {n:'Tríceps Pulley',       d:'4 × 10 reps · 45s descanso', rest:45},
+      {n:'Mergulho Paralelas',   d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Kickback',             d:'3 × 15 reps · 30s descanso', rest:30},
+    ]},
+    B: { titulo:'Treino B — Avançado', grupo:'Costas e Bíceps · Alta Intensidade', dias:['Ter','Sex'], meta:{ex:8,min:70,series:'5×8'}, ex:[
+      {n:'Barra Fixa',           d:'5 × máx · 90s descanso',     rest:90},
+      {n:'Remada Curvada Pesada',d:'5 × 8 reps · 90s descanso',  rest:90},
+      {n:'Puxada Fechada',       d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Remada Cavalinho',     d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Rosca Direta Pesada',  d:'4 × 8 reps · 60s descanso',  rest:60},
+      {n:'Rosca Concentrada',    d:'3 × 12 reps · 45s descanso', rest:45},
+      {n:'Rosca 21',             d:'3 × 21 reps · 60s descanso', rest:60},
+      {n:'Abdominal Infra',      d:'4 × 20 reps · 30s descanso', rest:30},
+    ]},
+    C: { titulo:'Treino C — Avançado', grupo:'Pernas · Alta Intensidade', dias:['Qua','Sáb'], meta:{ex:8,min:75,series:'5×10'}, ex:[
+      {n:'Agachamento Livre',    d:'5 × 8 reps · 120s descanso', rest:120},
+      {n:'Leg Press 45°',        d:'4 × 12 reps · 90s descanso', rest:90},
+      {n:'Hack Squat',           d:'4 × 10 reps · 75s descanso', rest:75},
+      {n:'Stiff Pesado',         d:'4 × 10 reps · 75s descanso', rest:75},
+      {n:'Mesa Flexora',         d:'4 × 12 reps · 60s descanso', rest:60},
+      {n:'Cadeira Adutora',      d:'3 × 20 reps · 45s descanso', rest:45},
+      {n:'Panturrilha em Pé',    d:'5 × 20 reps · 30s descanso', rest:30},
+      {n:'Avanço com Barra',     d:'3 × 10 cada · 60s descanso', rest:60},
+    ]}
+  }
+};
+// Legacy compat
+const TREINOS_CASA = TREINOS.casa.A.ex;
+const TREINOS_ACA  = TREINOS.academia.A.ex;
+const TREINOS_ADV  = TREINOS.avancado.A.ex;
 
 const HIST_MOCK = [
   {data:'25/05/2026', peso:'76.5', cintura:'82', abdomen:'89', quadril:'96', delta:-0.8},
@@ -3244,7 +3459,7 @@ function toggleEye() {
 const PAGE_MAP = {
   dashboard:'pageDashboard', treino:'pageTreino', dieta:'pageDieta',
   progresso:'pageProgresso', perfil:'pagePerfil', modulos:'pageModulos',
-  ciencia:'pageCiencia', ananias:'pageAnanias', suporte:'pageSuporte', notif:'pageNotif',
+  ciencia:'pageCiencia', ananias:'pageAnanias', suporte:'pageSuporte',
   videos:'pageVideos',
 };
 function navigate(page) {
@@ -3681,16 +3896,54 @@ function setTab(btn, panelId) {
 }
 
 /* ── EX LIST ──────────────────────────────────────── */
-function buildExLists() {
-  renderEx('exListCasa', TREINOS_CASA);
-  renderEx('exListAca',  TREINOS_ACA);
-  renderEx('exListAdv',  TREINOS_ADV);
+let treinoModalidade = 'casa';
+let treinoDia = 'A';
+
+function setModalidade(btn, mod) {
+  treinoModalidade = mod;
+  document.querySelectorAll('#treino-modal-tabs .tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderTreino();
 }
 
-function renderEx(containerId, treinos) {
+function setDiaTreino(btn, dia) {
+  treinoDia = dia;
+  document.querySelectorAll('#treino-dia-tabs .tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderTreino();
+}
+
+function renderTreino() {
+  const t = TREINOS[treinoModalidade][treinoDia];
+  if (!t) return;
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('treinoTitulo',  t.titulo);
+  setEl('treinoGrupo',   t.grupo);
+  setEl('treinoQtEx',    t.meta.ex);
+  setEl('treinoMin',     t.meta.min);
+  setEl('treinoSeries',  t.meta.series);
+  const diasEl = document.getElementById('treinoDias');
+  if (diasEl) {
+    diasEl.innerHTML = '';
+    t.dias.forEach(d => {
+      const span = document.createElement('span');
+      span.className = 'day-tag'; span.textContent = d;
+      diasEl.appendChild(span);
+    });
+  }
+  const listId = 'exListAtivo';
+  renderEx(listId, t.ex, treinoModalidade + treinoDia);
+}
+
+function buildExLists() {
+  renderTreino();
+}
+
+function renderEx(containerId, treinos, storageKey) {
+  const stKey = storageKey || containerId;
   const el = document.getElementById(containerId);
   el.innerHTML = '';
-  const done = JSON.parse(localStorage.getItem('maj_ex_'+containerId)||'[]');
+  const done = JSON.parse(localStorage.getItem('maj_ex_'+stKey)||'[]');
   const frag = document.createDocumentFragment();
   treinos.forEach((ex, i) => {
     const row = document.createElement('div');
@@ -3701,7 +3954,7 @@ function renderEx(containerId, treinos) {
       const cur = JSON.parse(localStorage.getItem('maj_ex_'+containerId)||'[]');
       const idx = cur.indexOf(i);
       if(idx===-1) cur.push(i); else cur.splice(idx,1);
-      localStorage.setItem('maj_ex_'+containerId, JSON.stringify(cur));
+      localStorage.setItem('maj_ex_'+stKey, JSON.stringify(cur));
     };
     frag.appendChild(row);
   });
