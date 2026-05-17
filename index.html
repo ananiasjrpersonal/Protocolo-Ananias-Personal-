@@ -2820,16 +2820,21 @@ async function tryLogin() {
   const inp   = document.getElementById('passInp');
   const err   = document.getElementById('lockErr');
   if (!email.includes('@')) { err.textContent='Email inválido'; inp.classList.add('error'); setTimeout(()=>inp.classList.remove('error'),600); return; }
-  const enc  = new TextEncoder().encode(pass);
-  const buf  = await crypto.subtle.digest('SHA-256', enc);
-  const hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  if (hash !== PASS_HASH) { err.textContent='Senha incorreta'; inp.classList.add('error'); setTimeout(()=>inp.classList.remove('error'),600); return; }
+  try {
+    const enc  = new TextEncoder().encode(pass);
+    const buf  = await crypto.subtle.digest('SHA-256', enc);
+    const hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    if (hash !== PASS_HASH) { err.textContent='Senha incorreta'; inp.classList.add('error'); setTimeout(()=>inp.classList.remove('error'),600); return; }
+  } catch(e) {
+    // crypto.subtle fallback (non-HTTPS or old browser)
+    console.warn('crypto.subtle unavailable, using fallback');
+    if (pass !== 'ESPORTESEMPRE') { err.textContent='Senha incorreta'; inp.classList.add('error'); setTimeout(()=>inp.classList.remove('error'),600); return; }
+  }
   const name = email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1);
   if (document.getElementById('rememberMe').checked) {
     localStorage.setItem('maj_email', email);
     localStorage.setItem('maj_name', name);
     localStorage.setItem('maj_auth', '1');
-    // nome from onboarding takes priority; only set fallback if not yet set
     if (!localStorage.getItem('maj_nome')) localStorage.setItem('maj_nome', name);
   }
   bootApp(email, name);
@@ -2872,18 +2877,7 @@ function toggleEye() {
   else { inp.type = 'password'; btn.textContent = '👁'; }
 }
 
-document.getElementById('passInp').addEventListener('keydown', e => {
-  if (e.key === 'Enter') tryLogin();
-});
-
-/* ── AUTO LOGIN ───────────────────────────────────── */
-(function() {
-  if (localStorage.getItem('maj_auth') === '1') {
-    const email = localStorage.getItem('maj_email') || 'atleta@metodo.com';
-    const name  = localStorage.getItem('maj_nome') || localStorage.getItem('maj_name') || 'Atleta';
-    bootApp(email, name);
-  }
-})();
+/* boot block moved to end of script */
 
 /* ── NAVIGATION ───────────────────────────────────── */
 const PAGE_MAP = {
@@ -3236,7 +3230,7 @@ function closeTimer() {
 
 /* ── TMB CALC ─────────────────────────────────────── */
 function setSex(s) { sexSel = s; } // sexM/sexF removed from dieta HTML
-setSex('M');
+// setSex init moved to DOMContentLoaded
 
 function calcTMB() { /* dieta form removed — calculations now in onboarding/dadosSave */ }
 
@@ -3299,10 +3293,25 @@ function saveMedidas() {
   const _protEl2=document.getElementById('statProt'); if(_protEl2&&p) _protEl2.textContent=p;
 })();
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeVideo({target: document.getElementById('videoPlayer')});
-    closePremiumModal();
+/* esc moved to DOMContentLoaded */
+
+/* ── BOOT ─────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+  const passInp = document.getElementById('passInp');
+  if (passInp) passInp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') tryLogin();
+  });
+  setSex('M');
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeVideo({target: document.getElementById('videoPlayer')});
+      closePremiumModal();
+    }
+  });
+  if (localStorage.getItem('maj_auth') === '1') {
+    const email = localStorage.getItem('maj_email') || 'atleta@metodo.com';
+    const name  = localStorage.getItem('maj_nome') || localStorage.getItem('maj_name') || 'Atleta';
+    bootApp(email, name);
   }
 });
 </script>
