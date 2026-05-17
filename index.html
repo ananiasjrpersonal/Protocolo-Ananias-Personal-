@@ -1457,6 +1457,151 @@ function dadosSave(){
   margin-bottom: 20px;
 }
 
+
+/* ── DESAFIO 30 DIAS ──────────────────────────────── */
+let desafios = [];
+let desafioFocoSel = 0;
+const DESAFIO_FOCOS = ['Secar — Déficit 20%', 'Manter — Equilíbrio', 'Ganhar — Superávit 10%'];
+const DESAFIO_FOCO_LABELS = ['🔥 Secar', '⚖️ Manter', '💪 Ganhar'];
+
+function desafioLoad() {
+  desafios = JSON.parse(localStorage.getItem('maj_desafios') || '[]');
+}
+
+function desafioSave() {
+  localStorage.setItem('maj_desafios', JSON.stringify(desafios));
+}
+
+function desafioNovoOpen() {
+  // Default date = today
+  const hoje = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('desafioInicio').value =
+    `${hoje.getFullYear()}-${pad(hoje.getMonth()+1)}-${pad(hoje.getDate())}`;
+  document.getElementById('desafioNome').value = '';
+  dSelFoco(0);
+  document.getElementById('desafioModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function desafioModalClose() {
+  document.getElementById('desafioModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function dSelFoco(n) {
+  desafioFocoSel = n;
+  [0,1,2].forEach(i =>
+    document.getElementById('dfoco'+i).classList.toggle('sel', i===n)
+  );
+}
+
+function desafioSalvar() {
+  const nome   = document.getElementById('desafioNome').value.trim();
+  const inicio = document.getElementById('desafioInicio').value;
+  if (!nome || !inicio) {
+    if (!nome) document.getElementById('desafioNome').focus();
+    else document.getElementById('desafioInicio').focus();
+    return;
+  }
+  const startDate = new Date(inicio + 'T00:00:00');
+  const endDate   = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 29);
+
+  desafios.push({
+    id:     Date.now(),
+    nome,
+    inicio,
+    foco:   desafioFocoSel,
+    status: 'ativo',  // ativo | concluido | abandonado
+  });
+  desafioSave();
+  desafioModalClose();
+  renderDesafios();
+}
+
+function desafioAbandonar(id) {
+  if (!confirm('Abandonar este desafio?')) return;
+  const d = desafios.find(d => d.id === id);
+  if (d) { d.status = 'abandonado'; desafioSave(); renderDesafios(); }
+}
+
+function desafioExcluir(id) {
+  if (!confirm('Excluir este desafio?')) return;
+  desafios = desafios.filter(d => d.id !== id);
+  desafioSave();
+  renderDesafios();
+}
+
+function renderDesafios() {
+  const list = document.getElementById('desafioList');
+  if (!list) return;
+  const now = new Date();
+  now.setHours(0,0,0,0);
+
+  // Auto-update status
+  desafios.forEach(d => {
+    if (d.status === 'ativo') {
+      const start = new Date(d.inicio + 'T00:00:00');
+      const end   = new Date(start); end.setDate(end.getDate() + 29);
+      if (now > end) { d.status = 'concluido'; }
+    }
+  });
+  desafioSave();
+
+  // Sort: ativo first, then by date desc
+  const sorted = [...desafios].sort((a,b) => {
+    const order = {ativo:0, concluido:1, abandonado:2};
+    if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status];
+    return new Date(b.inicio) - new Date(a.inicio);
+  });
+
+  const frag = document.createDocumentFragment();
+  sorted.forEach(d => {
+    const start   = new Date(d.inicio + 'T00:00:00');
+    const end     = new Date(start); end.setDate(end.getDate() + 29);
+    const elapsed = Math.max(0, Math.min(30, Math.floor((now - start) / 86400000) + 1));
+    const pct     = Math.round((elapsed / 30) * 100);
+    const meses   = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const fmtDate = dt => `${dt.getDate()} ${meses[dt.getMonth()]}`;
+
+    const statusLabel = { ativo:'● Ativo', concluido:'✓ Concluído', abandonado:'— Abandonado' };
+
+    const card = document.createElement('div');
+    card.className = `desafio-card ${d.status}`;
+    card.innerHTML = `
+      <div class="desafio-card-top">
+        <div class="desafio-nome">${d.nome}</div>
+        <div class="desafio-status-badge ${d.status}">${statusLabel[d.status]}</div>
+      </div>
+      <div class="desafio-progress-row">
+        <div class="desafio-dias">${elapsed}<span>/ 30</span></div>
+        <div class="desafio-bar-wrap">
+          <div class="desafio-bar">
+            <div class="desafio-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="desafio-pct">${pct}%</div>
+        </div>
+      </div>
+      <div class="desafio-meta">
+        <div class="desafio-meta-item">Início <strong>${fmtDate(start)}</strong></div>
+        <div class="desafio-meta-item">Término <strong>${fmtDate(end)}</strong></div>
+        <div class="desafio-meta-item">Foco <strong>${DESAFIO_FOCO_LABELS[d.foco]}</strong></div>
+      </div>
+      ${d.status === 'ativo' ? `
+      <div class="desafio-actions">
+        <button class="desafio-btn danger" onclick="desafioAbandonar(${d.id})">Abandonar</button>
+      </div>` : `
+      <div class="desafio-actions">
+        <button class="desafio-btn danger" onclick="desafioExcluir(${d.id})">Excluir</button>
+      </div>`}
+    `;
+    frag.appendChild(card);
+  });
+
+  list.innerHTML = '';
+  list.appendChild(frag);
+}
 /* ── CALENDÁRIO ───────────────────────────────────── */
 .cal-wrap { background: var(--card); border: 1px solid var(--border); margin-bottom: 20px; }
 
@@ -1529,6 +1674,157 @@ function dadosSave(){
 .cal-legend-dot {
   width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0;
 }
+
+/* ── DESAFIO 30 DIAS ──────────────────────────────── */
+.desafio-wrap { margin-bottom: 20px; }
+
+.desafio-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 3px solid var(--red); padding: 18px 16px;
+  margin-bottom: 2px; position: relative; overflow: hidden;
+  transition: border-color .2s;
+}
+.desafio-card.ativo { border-left-color: var(--red); border-top: 2px solid var(--red); }
+.desafio-card.concluido { border-left-color: var(--green); opacity: .7; }
+.desafio-card.abandonado { border-left-color: var(--faint); opacity: .5; }
+
+.desafio-card-top {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; gap: 12px; margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.desafio-nome {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 20px; letter-spacing: 2px; color: var(--white);
+}
+.desafio-status-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 4px 10px;
+  flex-shrink: 0;
+}
+.desafio-status-badge.ativo     { color: var(--red2);  background: rgba(232,0,42,.1);   border: 1px solid rgba(232,0,42,.3); }
+.desafio-status-badge.concluido { color: var(--green); background: rgba(0,230,118,.1); border: 1px solid rgba(0,230,118,.3); }
+.desafio-status-badge.abandonado{ color: var(--faint); background: rgba(255,255,255,.04); border: 1px solid var(--border); }
+
+.desafio-progress-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+}
+.desafio-dias {
+  font-family: 'Bebas Neue', cursive; font-size: 28px;
+  color: var(--white); line-height: 1; flex-shrink: 0;
+}
+.desafio-dias span {
+  font-size: 14px; color: var(--faint); font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 1px;
+}
+.desafio-bar-wrap { flex: 1; }
+.desafio-bar {
+  height: 4px; background: var(--border); overflow: hidden;
+}
+.desafio-bar-fill {
+  height: 100%; background: var(--red); transition: width .6s;
+}
+.desafio-card.concluido .desafio-bar-fill { background: var(--green); }
+.desafio-pct {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--faint);
+  letter-spacing: 1px; text-align: right; margin-top: 3px;
+}
+
+.desafio-meta {
+  display: flex; gap: 16px; flex-wrap: wrap;
+}
+.desafio-meta-item {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+}
+.desafio-meta-item strong { color: var(--text); }
+
+.desafio-actions { display: flex; gap: 6px; margin-top: 12px; }
+.desafio-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 8px 14px; cursor: pointer;
+  transition: all .2s; min-height: 36px;
+}
+.desafio-btn.danger {
+  background: transparent; border: 1px solid rgba(232,0,42,.3);
+  color: var(--red2);
+}
+.desafio-btn.danger:hover { background: rgba(232,0,42,.1); }
+
+.desafio-novo-btn {
+  width: 100%; background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 14px;
+  transition: all .2s; cursor: pointer; min-height: 48px;
+}
+.desafio-novo-btn:hover {
+  border-color: var(--red); color: var(--red2);
+  background: rgba(232,0,42,.04);
+}
+
+/* modal */
+#desafioModal {
+  display: none; position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,.88);
+  align-items: center; justify-content: center; padding: 20px;
+}
+#desafioModal.open { display: flex; }
+.desafio-modal-box {
+  background: var(--card); border: 1px solid rgba(232,0,42,.3);
+  border-top: 2px solid var(--red);
+  padding: 28px 24px; width: 100%; max-width: 380px;
+}
+.desafio-modal-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 24px; letter-spacing: 2px; margin-bottom: 20px;
+}
+.desafio-modal-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.desafio-modal-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted);
+}
+.desafio-modal-inp {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--white); padding: 12px 14px; outline: none;
+  font-family: 'Barlow', sans-serif; font-size: 16px;
+  transition: border-color .2s; -webkit-appearance: none;
+}
+.desafio-modal-inp:focus { border-color: var(--red); }
+.desafio-foco-row { display: flex; gap: 6px; }
+.desafio-foco-btn {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; padding: 11px 6px; text-align: center;
+  cursor: pointer; transition: all .2s; min-height: 44px;
+}
+.desafio-foco-btn.sel {
+  background: rgba(232,0,42,.12); border-color: var(--red); color: var(--red2);
+}
+.desafio-modal-actions { display: flex; gap: 8px; margin-top: 20px; }
+.desafio-modal-save {
+  flex: 2; background: var(--red); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; padding: 14px; min-height: 48px;
+  transition: background .2s;
+}
+.desafio-modal-save:hover { background: var(--red2); }
+.desafio-modal-cancel {
+  flex: 1; background: transparent; border: 1px solid var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 14px; min-height: 48px;
+  transition: all .2s; cursor: pointer;
+}
+.desafio-modal-cancel:hover { color: var(--white); border-color: var(--border2); }
 </style>
 </head>
 <body>
@@ -1811,6 +2107,14 @@ function dadosSave(){
             <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#ffb300"></div>Treino B</div>
             <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#29b6f6"></div>Treino C</div>
           </div>
+        </div>
+
+
+        <!-- DESAFIOS 30 DIAS -->
+        <div class="desafio-wrap">
+          <div class="section-hdr" style="margin-bottom:8px;">Desafios</div>
+          <div id="desafioList"></div>
+          <button class="desafio-novo-btn" onclick="desafioNovoOpen()">+ Iniciar Desafio de 30 Dias</button>
         </div>
 
         <div class="modules-hdr">Módulos Disponíveis</div>
@@ -2333,6 +2637,38 @@ function dadosSave(){
     </div>
     <div class="vp-title" id="vpTitle"></div>
     <div class="vp-sub" id="vpSub"></div>
+  </div>
+</div>
+
+<!-- DESAFIO MODAL -->
+<div id="desafioModal">
+  <div class="desafio-modal-box">
+    <div class="desafio-modal-title">Novo Desafio 30 Dias</div>
+
+    <div class="desafio-modal-field">
+      <div class="desafio-modal-lbl">Nome do Desafio</div>
+      <input class="desafio-modal-inp" id="desafioNome" type="text"
+             placeholder="Ex: Seca Barriga, Verão, Pré-Casamento" maxlength="40">
+    </div>
+
+    <div class="desafio-modal-field">
+      <div class="desafio-modal-lbl">Data de Início</div>
+      <input class="desafio-modal-inp" id="desafioInicio" type="date">
+    </div>
+
+    <div class="desafio-modal-field">
+      <div class="desafio-modal-lbl">Foco</div>
+      <div class="desafio-foco-row">
+        <button class="desafio-foco-btn sel" id="dfoco0" onclick="dSelFoco(0)">🔥 Secar</button>
+        <button class="desafio-foco-btn"     id="dfoco1" onclick="dSelFoco(1)">⚖️ Manter</button>
+        <button class="desafio-foco-btn"     id="dfoco2" onclick="dSelFoco(2)">💪 Ganhar</button>
+      </div>
+    </div>
+
+    <div class="desafio-modal-actions">
+      <button class="desafio-modal-save"   onclick="desafioSalvar()">Iniciar Desafio →</button>
+      <button class="desafio-modal-cancel" onclick="desafioModalClose()">Cancelar</button>
+    </div>
   </div>
 </div>
 
@@ -2886,6 +3222,7 @@ function bootApp(email, rawName) {
 
   setGreeting(nome);
   calLoad();
+  desafioLoad();
   buildMiniGrid();
   buildExLists();
   buildHistorico();
@@ -2954,6 +3291,151 @@ function setGreeting(nome) {
   document.getElementById('greetMsg').textContent = greeting + ', ' + n + '!';
 }
 
+
+/* ── DESAFIO 30 DIAS ──────────────────────────────── */
+let desafios = [];
+let desafioFocoSel = 0;
+const DESAFIO_FOCOS = ['Secar — Déficit 20%', 'Manter — Equilíbrio', 'Ganhar — Superávit 10%'];
+const DESAFIO_FOCO_LABELS = ['🔥 Secar', '⚖️ Manter', '💪 Ganhar'];
+
+function desafioLoad() {
+  desafios = JSON.parse(localStorage.getItem('maj_desafios') || '[]');
+}
+
+function desafioSave() {
+  localStorage.setItem('maj_desafios', JSON.stringify(desafios));
+}
+
+function desafioNovoOpen() {
+  // Default date = today
+  const hoje = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('desafioInicio').value =
+    `${hoje.getFullYear()}-${pad(hoje.getMonth()+1)}-${pad(hoje.getDate())}`;
+  document.getElementById('desafioNome').value = '';
+  dSelFoco(0);
+  document.getElementById('desafioModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function desafioModalClose() {
+  document.getElementById('desafioModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function dSelFoco(n) {
+  desafioFocoSel = n;
+  [0,1,2].forEach(i =>
+    document.getElementById('dfoco'+i).classList.toggle('sel', i===n)
+  );
+}
+
+function desafioSalvar() {
+  const nome   = document.getElementById('desafioNome').value.trim();
+  const inicio = document.getElementById('desafioInicio').value;
+  if (!nome || !inicio) {
+    if (!nome) document.getElementById('desafioNome').focus();
+    else document.getElementById('desafioInicio').focus();
+    return;
+  }
+  const startDate = new Date(inicio + 'T00:00:00');
+  const endDate   = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 29);
+
+  desafios.push({
+    id:     Date.now(),
+    nome,
+    inicio,
+    foco:   desafioFocoSel,
+    status: 'ativo',  // ativo | concluido | abandonado
+  });
+  desafioSave();
+  desafioModalClose();
+  renderDesafios();
+}
+
+function desafioAbandonar(id) {
+  if (!confirm('Abandonar este desafio?')) return;
+  const d = desafios.find(d => d.id === id);
+  if (d) { d.status = 'abandonado'; desafioSave(); renderDesafios(); }
+}
+
+function desafioExcluir(id) {
+  if (!confirm('Excluir este desafio?')) return;
+  desafios = desafios.filter(d => d.id !== id);
+  desafioSave();
+  renderDesafios();
+}
+
+function renderDesafios() {
+  const list = document.getElementById('desafioList');
+  if (!list) return;
+  const now = new Date();
+  now.setHours(0,0,0,0);
+
+  // Auto-update status
+  desafios.forEach(d => {
+    if (d.status === 'ativo') {
+      const start = new Date(d.inicio + 'T00:00:00');
+      const end   = new Date(start); end.setDate(end.getDate() + 29);
+      if (now > end) { d.status = 'concluido'; }
+    }
+  });
+  desafioSave();
+
+  // Sort: ativo first, then by date desc
+  const sorted = [...desafios].sort((a,b) => {
+    const order = {ativo:0, concluido:1, abandonado:2};
+    if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status];
+    return new Date(b.inicio) - new Date(a.inicio);
+  });
+
+  const frag = document.createDocumentFragment();
+  sorted.forEach(d => {
+    const start   = new Date(d.inicio + 'T00:00:00');
+    const end     = new Date(start); end.setDate(end.getDate() + 29);
+    const elapsed = Math.max(0, Math.min(30, Math.floor((now - start) / 86400000) + 1));
+    const pct     = Math.round((elapsed / 30) * 100);
+    const meses   = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const fmtDate = dt => `${dt.getDate()} ${meses[dt.getMonth()]}`;
+
+    const statusLabel = { ativo:'● Ativo', concluido:'✓ Concluído', abandonado:'— Abandonado' };
+
+    const card = document.createElement('div');
+    card.className = `desafio-card ${d.status}`;
+    card.innerHTML = `
+      <div class="desafio-card-top">
+        <div class="desafio-nome">${d.nome}</div>
+        <div class="desafio-status-badge ${d.status}">${statusLabel[d.status]}</div>
+      </div>
+      <div class="desafio-progress-row">
+        <div class="desafio-dias">${elapsed}<span>/ 30</span></div>
+        <div class="desafio-bar-wrap">
+          <div class="desafio-bar">
+            <div class="desafio-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="desafio-pct">${pct}%</div>
+        </div>
+      </div>
+      <div class="desafio-meta">
+        <div class="desafio-meta-item">Início <strong>${fmtDate(start)}</strong></div>
+        <div class="desafio-meta-item">Término <strong>${fmtDate(end)}</strong></div>
+        <div class="desafio-meta-item">Foco <strong>${DESAFIO_FOCO_LABELS[d.foco]}</strong></div>
+      </div>
+      ${d.status === 'ativo' ? `
+      <div class="desafio-actions">
+        <button class="desafio-btn danger" onclick="desafioAbandonar(${d.id})">Abandonar</button>
+      </div>` : `
+      <div class="desafio-actions">
+        <button class="desafio-btn danger" onclick="desafioExcluir(${d.id})">Excluir</button>
+      </div>`}
+    `;
+    frag.appendChild(card);
+  });
+
+  list.innerHTML = '';
+  list.appendChild(frag);
+}
 /* ── CALENDÁRIO ───────────────────────────────────── */
 // Storage: maj_cal = { "2026-05-01": "done"/"A"/"B"/"C" }
 const CAL_MONTHS = [
@@ -3150,7 +3632,7 @@ function updateCalStats() {
 
 function buildMiniGrid() {
   // Legacy stub — replaced by calendar
-  calLoad(); buildCalTabs(); renderCalDays();
+  calLoad(); buildCalTabs(); renderCalDays(); renderDesafios();
 }
 
 function toggleDay(n, el) { /* legacy stub */ }
