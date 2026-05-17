@@ -1769,6 +1769,30 @@ function dadosSave(){
           </div>
         </div>
 
+        <!-- BREAKDOWN ABC -->
+        <div class="stats-row" style="margin-top:2px;">
+          <div class="stat-card" style="border-top:2px solid #00c853;">
+            <div class="stat-lbl">Treino ✓</div>
+            <div class="stat-val" id="statDone" style="color:#00c853;">0</div>
+            <div class="stat-unit">dias marcados</div>
+          </div>
+          <div class="stat-card" style="border-top:2px solid var(--red);">
+            <div class="stat-lbl">Treino A</div>
+            <div class="stat-val red" id="statA">0</div>
+            <div class="stat-unit">dias marcados</div>
+          </div>
+          <div class="stat-card" style="border-top:2px solid #ffb300;">
+            <div class="stat-lbl">Treino B</div>
+            <div class="stat-val" id="statB" style="color:#ffb300;">0</div>
+            <div class="stat-unit">dias marcados</div>
+          </div>
+          <div class="stat-card" style="border-top:2px solid #29b6f6;">
+            <div class="stat-lbl">Treino C</div>
+            <div class="stat-val" id="statC" style="color:#29b6f6;">0</div>
+            <div class="stat-unit">dias marcados</div>
+          </div>
+        </div>
+
         <!-- CALENDÁRIO -->
         <div class="cal-wrap">
           <div class="cal-month-tabs" id="calMonthTabs"></div>
@@ -3102,6 +3126,12 @@ function updateCalStats() {
     best = Math.max(best, cur2);
   });
 
+  // Count A/B/C/done breakdown
+  const countDone = keys.filter(k => calData[k] === 'done').length;
+  const countA    = keys.filter(k => calData[k] === 'A').length;
+  const countB    = keys.filter(k => calData[k] === 'B').length;
+  const countC    = keys.filter(k => calData[k] === 'C').length;
+
   // Update dashboard stats
   const setEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
   setEl('statDias',      totalTrained);
@@ -3110,9 +3140,12 @@ function updateCalStats() {
   const statSeqEl = document.getElementById('statSequencia'); if(statSeqEl) statSeqEl.textContent=streak;
   const nb = document.getElementById('navDiaBadge'); if(nb) nb.textContent=totalTrained+' dias';
 
-  // Extra stat cards if present
   setEl('statSemTreinar', semTreinar);
   setEl('statMelhor',     best);
+  setEl('statDone', countDone);
+  setEl('statA',    countA);
+  setEl('statB',    countB);
+  setEl('statC',    countC);
 }
 
 function buildMiniGrid() {
