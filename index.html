@@ -1060,6 +1060,7 @@ function dadosSave(){
   if (sub) sub.textContent = peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM];
   setGreeting(nome);
   updateDietaSummary();
+  calcWater();
   dadosClose();
 }
 /* ── ONBOARDING ───────────────────────────────────── */
@@ -1458,6 +1459,65 @@ function dadosSave(){
 }
 
 
+
+/* ── HIDRATAÇÃO ───────────────────────────────────── */
+let waterCupsState = [];
+
+function calcWater() {
+  const saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
+  const peso  = +saved.dPeso || 0;
+  const ativ  = +saved.ativ  || 1.375;
+  if (!peso) return;
+
+  // Base: 35ml/kg; +500ml if active (ativ > 1.2)
+  const base   = peso * 35;
+  const extra  = ativ > 1.2 ? 500 : 0;
+  const totalMl = base + extra;
+  const litros  = (totalMl / 1000).toFixed(1);
+
+  // Cups: 250ml each
+  const numCups = Math.round(totalMl / 250);
+
+  const litrosEl = document.getElementById('waterLitros');
+  const cupsEl   = document.getElementById('waterCups');
+  const tipEl    = document.getElementById('waterTip');
+  if (!litrosEl) return;
+
+  litrosEl.textContent = litros;
+
+  // Load saved cups state
+  waterCupsState = JSON.parse(localStorage.getItem('maj_water_cups') || '[]');
+  if (waterCupsState.length !== numCups) {
+    waterCupsState = new Array(numCups).fill(false);
+  }
+
+  // Render cups
+  cupsEl.innerHTML = '';
+  waterCupsState.forEach((filled, i) => {
+    const cup = document.createElement('span');
+    cup.className = 'water-cup' + (filled ? ' filled' : '');
+    cup.textContent = '💧';
+    cup.title = `Copo ${i+1} de ${numCups} (250ml)`;
+    cup.onclick = () => {
+      waterCupsState[i] = !waterCupsState[i];
+      localStorage.setItem('maj_water_cups', JSON.stringify(waterCupsState));
+      calcWater();
+    };
+    cupsEl.appendChild(cup);
+  });
+
+  // Tip
+  const consumed = waterCupsState.filter(Boolean).length;
+  const consumedL = (consumed * 0.25).toFixed(2);
+  const remaining = numCups - consumed;
+  let tip = `${consumed} de ${numCups} copos · ${consumedL}L de ${litros}L`;
+  if (remaining > 0) tip += ` · Faltam ${remaining} copos`;
+  else tip = `✓ Meta batida! ${litros}L consumidos hoje.`;
+  if (tipEl) tipEl.textContent = tip;
+
+  // Save litros to form data
+  localStorage.setItem('maj_water_l', litros);
+}
 /* ── DESAFIO 30 DIAS ──────────────────────────────── */
 let desafios = [];
 let desafioFocoSel = 0;
@@ -1675,6 +1735,65 @@ function renderDesafios() {
   width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0;
 }
 
+
+/* ── HIDRATAÇÃO ───────────────────────────────────── */
+let waterCupsState = [];
+
+function calcWater() {
+  const saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
+  const peso  = +saved.dPeso || 0;
+  const ativ  = +saved.ativ  || 1.375;
+  if (!peso) return;
+
+  // Base: 35ml/kg; +500ml if active (ativ > 1.2)
+  const base   = peso * 35;
+  const extra  = ativ > 1.2 ? 500 : 0;
+  const totalMl = base + extra;
+  const litros  = (totalMl / 1000).toFixed(1);
+
+  // Cups: 250ml each
+  const numCups = Math.round(totalMl / 250);
+
+  const litrosEl = document.getElementById('waterLitros');
+  const cupsEl   = document.getElementById('waterCups');
+  const tipEl    = document.getElementById('waterTip');
+  if (!litrosEl) return;
+
+  litrosEl.textContent = litros;
+
+  // Load saved cups state
+  waterCupsState = JSON.parse(localStorage.getItem('maj_water_cups') || '[]');
+  if (waterCupsState.length !== numCups) {
+    waterCupsState = new Array(numCups).fill(false);
+  }
+
+  // Render cups
+  cupsEl.innerHTML = '';
+  waterCupsState.forEach((filled, i) => {
+    const cup = document.createElement('span');
+    cup.className = 'water-cup' + (filled ? ' filled' : '');
+    cup.textContent = '💧';
+    cup.title = `Copo ${i+1} de ${numCups} (250ml)`;
+    cup.onclick = () => {
+      waterCupsState[i] = !waterCupsState[i];
+      localStorage.setItem('maj_water_cups', JSON.stringify(waterCupsState));
+      calcWater();
+    };
+    cupsEl.appendChild(cup);
+  });
+
+  // Tip
+  const consumed = waterCupsState.filter(Boolean).length;
+  const consumedL = (consumed * 0.25).toFixed(2);
+  const remaining = numCups - consumed;
+  let tip = `${consumed} de ${numCups} copos · ${consumedL}L de ${litros}L`;
+  if (remaining > 0) tip += ` · Faltam ${remaining} copos`;
+  else tip = `✓ Meta batida! ${litros}L consumidos hoje.`;
+  if (tipEl) tipEl.textContent = tip;
+
+  // Save litros to form data
+  localStorage.setItem('maj_water_l', litros);
+}
 /* ── DESAFIO 30 DIAS ──────────────────────────────── */
 .desafio-wrap { margin-bottom: 20px; }
 
@@ -1970,6 +2089,39 @@ html, body { overflow-x: hidden; width: 100%; }
 /* Ensure modals don't overflow on mobile */
 .ob-card, .dados-box, .timer-box, .desafio-modal-box, .pm-box {
   max-height: 90vh; overflow-y: auto;
+}
+
+/* ── ÁGUA ─────────────────────────────────────────── */
+.water-card {
+  background: var(--card); border: 1px solid rgba(41,182,246,.25);
+  border-left: 3px solid #29b6f6; padding: 18px 16px; margin-bottom: 16px;
+}
+.water-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.water-meta { text-align: right; }
+.water-litros {
+  font-family: 'Bebas Neue', cursive; font-size: 44px; line-height: 1;
+  color: #29b6f6; text-shadow: 0 0 20px rgba(41,182,246,.3);
+}
+.water-unit {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--faint);
+}
+.water-cups {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;
+}
+.water-cup {
+  font-size: 20px; cursor: pointer; opacity: .3;
+  transition: opacity .15s, transform .15s;
+}
+.water-cup.filled { opacity: 1; }
+.water-cup:hover { transform: scale(1.15); }
+.water-tip {
+  font-size: 12px; color: var(--muted); line-height: 1.5;
+  border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px;
 }
 </style>
 </head>
@@ -2372,6 +2524,23 @@ html, body { overflow-x: hidden; width: 100%; }
             <div class="result-card"><div class="rc-lbl">Gasto Total</div><div class="rc-val" id="rGET">—</div><div class="rc-unit">kcal total</div></div>
             <div class="result-card"><div class="rc-lbl">TMB</div><div class="rc-val" id="rTMB">—</div><div class="rc-unit">kcal base</div></div>
           </div>
+        </div>
+
+
+        <!-- CALCULADORA DE ÁGUA -->
+        <div class="water-card" id="waterCard">
+          <div class="water-top">
+            <div>
+              <div class="section-hdr" style="margin-bottom:2px;">Hidratação Diária</div>
+              <div style="font-size:12px;color:var(--muted);">Baseada no seu peso e nível de atividade</div>
+            </div>
+            <div class="water-meta">
+              <div class="water-litros" id="waterLitros">—</div>
+              <div class="water-unit">litros / dia</div>
+            </div>
+          </div>
+          <div class="water-cups" id="waterCups"></div>
+          <div class="water-tip" id="waterTip"></div>
         </div>
 
         <!-- PLANO ALIMENTAR COM ABAS -->
@@ -2924,15 +3093,15 @@ const TREINOS = {
     A: { titulo:'Treino A — Casa', grupo:'Peito, Ombro e Tríceps · Peso Corporal', dias:['Seg','Qua','Sex'], meta:{ex:6,min:40,series:'4×12'}, ex:[
       {n:'Flexão de Braços',     d:'4 × 15 reps · 40s descanso', rest:40},
       {n:'Flexão Inclinada',     d:'4 × 12 reps · 40s descanso', rest:40},
-      {n:'Dip entre Cadeiras',   d:'3 × 12 reps · 45s descanso', rest:45},
-      {n:'Pike Push-Up',         d:'3 × 10 reps · 45s descanso', rest:45},
+      {n:'Mergulho entre Cadeiras',   d:'3 × 12 reps · 45s descanso', rest:45},
+      {n:'Flexão Pique',         d:'3 × 10 reps · 45s descanso', rest:45},
       {n:'Tríceps Testa no Solo',d:'3 × 15 reps · 30s descanso', rest:30},
       {n:'Elevação Lateral Solo',d:'3 × 15 reps · 30s descanso', rest:30},
     ]},
     B: { titulo:'Treino B — Casa', grupo:'Costas, Bíceps e Core · Peso Corporal', dias:['Ter','Qui'], meta:{ex:6,min:40,series:'3×15'}, ex:[
       {n:'Remada com Mochila',   d:'4 × 12 reps · 45s descanso', rest:45},
       {n:'Flexão com Rotação',   d:'3 × 10 reps · 40s descanso', rest:40},
-      {n:'Superman',             d:'3 × 15 reps · 30s descanso', rest:30},
+      {n:'Super-Homem',             d:'3 × 15 reps · 30s descanso', rest:30},
       {n:'Rosca com Mochila',    d:'3 × 15 reps · 30s descanso', rest:30},
       {n:'Prancha',              d:'3 × 40s · 30s descanso',     rest:30},
       {n:'Abdominal Remador',    d:'3 × 20 reps · 30s descanso', rest:30},
@@ -2940,7 +3109,7 @@ const TREINOS = {
     C: { titulo:'Treino C — Casa', grupo:'Pernas e Glúteos · Peso Corporal', dias:['Sáb'], meta:{ex:6,min:45,series:'4×15'}, ex:[
       {n:'Agachamento Livre',    d:'4 × 20 reps · 45s descanso', rest:45},
       {n:'Avanço Alternado',     d:'3 × 12 cada · 40s descanso', rest:40},
-      {n:'Stiff Unilateral',     d:'3 × 12 cada · 40s descanso', rest:40},
+      {n:'Terra Romeno Unilateral',     d:'3 × 12 cada · 40s descanso', rest:40},
       {n:'Elevação Pélvica',     d:'4 × 20 reps · 30s descanso', rest:30},
       {n:'Panturrilha em Pé',    d:'4 × 25 reps · 20s descanso', rest:20},
       {n:'Agachamento Sumô',     d:'3 × 15 reps · 40s descanso', rest:40},
@@ -2970,9 +3139,9 @@ const TREINOS = {
       {n:'Leg Press',            d:'4 × 12 reps · 60s descanso', rest:60},
       {n:'Cadeira Extensora',    d:'3 × 15 reps · 45s descanso', rest:45},
       {n:'Mesa Flexora',         d:'3 × 15 reps · 45s descanso', rest:45},
-      {n:'Stiff',                d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Terra Romeno',                d:'4 × 10 reps · 60s descanso', rest:60},
       {n:'Abdução de Quadril',   d:'3 × 20 reps · 30s descanso', rest:30},
-      {n:'Panturrilha no Hack',  d:'4 × 20 reps · 30s descanso', rest:30},
+      {n:'Panturrilha na Máquina',  d:'4 × 20 reps · 30s descanso', rest:30},
     ]}
   },
   avancado: {
@@ -2980,17 +3149,17 @@ const TREINOS = {
       {n:'Supino Reto Pesado',   d:'5 × 8 reps · 90s descanso',  rest:90},
       {n:'Supino Inclinado',     d:'4 × 8 reps · 75s descanso',  rest:75},
       {n:'Crucifixo Inclinado',  d:'4 × 10 reps · 60s descanso', rest:60},
-      {n:'Arnold Press',         d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Desenvolvimento Arnold',         d:'4 × 10 reps · 60s descanso', rest:60},
       {n:'Elevação Lateral',     d:'5 × 12 reps · 45s descanso', rest:45},
       {n:'Tríceps Pulley',       d:'4 × 10 reps · 45s descanso', rest:45},
       {n:'Mergulho Paralelas',   d:'4 × 10 reps · 60s descanso', rest:60},
-      {n:'Kickback',             d:'3 × 15 reps · 30s descanso', rest:30},
+      {n:'Tríceps Coice',             d:'3 × 15 reps · 30s descanso', rest:30},
     ]},
     B: { titulo:'Treino B — Avançado', grupo:'Costas e Bíceps · Alta Intensidade', dias:['Ter','Sex'], meta:{ex:8,min:70,series:'5×8'}, ex:[
       {n:'Barra Fixa',           d:'5 × máx · 90s descanso',     rest:90},
       {n:'Remada Curvada Pesada',d:'5 × 8 reps · 90s descanso',  rest:90},
       {n:'Puxada Fechada',       d:'4 × 10 reps · 60s descanso', rest:60},
-      {n:'Remada Cavalinho',     d:'4 × 10 reps · 60s descanso', rest:60},
+      {n:'Remada Alta',     d:'4 × 10 reps · 60s descanso', rest:60},
       {n:'Rosca Direta Pesada',  d:'4 × 8 reps · 60s descanso',  rest:60},
       {n:'Rosca Concentrada',    d:'3 × 12 reps · 45s descanso', rest:45},
       {n:'Rosca 21',             d:'3 × 21 reps · 60s descanso', rest:60},
@@ -2999,8 +3168,8 @@ const TREINOS = {
     C: { titulo:'Treino C — Avançado', grupo:'Pernas · Alta Intensidade', dias:['Qua','Sáb'], meta:{ex:8,min:75,series:'5×10'}, ex:[
       {n:'Agachamento Livre',    d:'5 × 8 reps · 120s descanso', rest:120},
       {n:'Leg Press 45°',        d:'4 × 12 reps · 90s descanso', rest:90},
-      {n:'Hack Squat',           d:'4 × 10 reps · 75s descanso', rest:75},
-      {n:'Stiff Pesado',         d:'4 × 10 reps · 75s descanso', rest:75},
+      {n:'Agachamento Hack',           d:'4 × 10 reps · 75s descanso', rest:75},
+      {n:'Terra Romeno Pesado',         d:'4 × 10 reps · 75s descanso', rest:75},
       {n:'Mesa Flexora',         d:'4 × 12 reps · 60s descanso', rest:60},
       {n:'Cadeira Adutora',      d:'3 × 20 reps · 45s descanso', rest:45},
       {n:'Panturrilha em Pé',    d:'5 × 20 reps · 30s descanso', rest:30},
@@ -3297,6 +3466,7 @@ function dadosSave(){
   if (sub) sub.textContent = peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM];
   setGreeting(nome);
   updateDietaSummary();
+  calcWater();
   dadosClose();
 }
 /* ── ONBOARDING ───────────────────────────────────── */
@@ -3361,11 +3531,13 @@ function obNext(step) {
     localStorage.setItem('maj_nome',  nome);
     localStorage.setItem('maj_kcal',  meta);
     localStorage.setItem('maj_prot',  prot);
+    const waterMl = peso * 35 + (ativ > 1.2 ? 500 : 0);
     localStorage.setItem('maj_tmb_form', JSON.stringify({
       dPeso:peso, dAltura:altura, dIdade:idade,
       sex:obSexoSel, ativ:String(ativ), obj:String(obj),
       tmb:Math.round(tmb), get:get
     }));
+    localStorage.setItem('maj_water_l', (waterMl/1000).toFixed(1));
 
     document.getElementById('obStep1').classList.remove('active');
     document.getElementById('obStep2').classList.add('active');
@@ -3439,6 +3611,7 @@ function bootApp(email, rawName) {
   calLoad();
   desafioLoad();
   buildMiniGrid();
+  calcWater();
   buildExLists();
   buildHistorico();
   maybeShowOnboarding();
@@ -3473,6 +3646,7 @@ function navigate(page) {
   closeSidebar(); window.scrollTo(0,0);
   // Page-specific init
   if(page === 'videos') buildVideoPage();
+  if(page === 'dieta')  calcWater();
 }
 
 /* ── SIDEBAR ──────────────────────────────────────── */
@@ -3507,6 +3681,65 @@ function setGreeting(nome) {
 }
 
 
+
+/* ── HIDRATAÇÃO ───────────────────────────────────── */
+let waterCupsState = [];
+
+function calcWater() {
+  const saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
+  const peso  = +saved.dPeso || 0;
+  const ativ  = +saved.ativ  || 1.375;
+  if (!peso) return;
+
+  // Base: 35ml/kg; +500ml if active (ativ > 1.2)
+  const base   = peso * 35;
+  const extra  = ativ > 1.2 ? 500 : 0;
+  const totalMl = base + extra;
+  const litros  = (totalMl / 1000).toFixed(1);
+
+  // Cups: 250ml each
+  const numCups = Math.round(totalMl / 250);
+
+  const litrosEl = document.getElementById('waterLitros');
+  const cupsEl   = document.getElementById('waterCups');
+  const tipEl    = document.getElementById('waterTip');
+  if (!litrosEl) return;
+
+  litrosEl.textContent = litros;
+
+  // Load saved cups state
+  waterCupsState = JSON.parse(localStorage.getItem('maj_water_cups') || '[]');
+  if (waterCupsState.length !== numCups) {
+    waterCupsState = new Array(numCups).fill(false);
+  }
+
+  // Render cups
+  cupsEl.innerHTML = '';
+  waterCupsState.forEach((filled, i) => {
+    const cup = document.createElement('span');
+    cup.className = 'water-cup' + (filled ? ' filled' : '');
+    cup.textContent = '💧';
+    cup.title = `Copo ${i+1} de ${numCups} (250ml)`;
+    cup.onclick = () => {
+      waterCupsState[i] = !waterCupsState[i];
+      localStorage.setItem('maj_water_cups', JSON.stringify(waterCupsState));
+      calcWater();
+    };
+    cupsEl.appendChild(cup);
+  });
+
+  // Tip
+  const consumed = waterCupsState.filter(Boolean).length;
+  const consumedL = (consumed * 0.25).toFixed(2);
+  const remaining = numCups - consumed;
+  let tip = `${consumed} de ${numCups} copos · ${consumedL}L de ${litros}L`;
+  if (remaining > 0) tip += ` · Faltam ${remaining} copos`;
+  else tip = `✓ Meta batida! ${litros}L consumidos hoje.`;
+  if (tipEl) tipEl.textContent = tip;
+
+  // Save litros to form data
+  localStorage.setItem('maj_water_l', litros);
+}
 /* ── DESAFIO 30 DIAS ──────────────────────────────── */
 let desafios = [];
 let desafioFocoSel = 0;
