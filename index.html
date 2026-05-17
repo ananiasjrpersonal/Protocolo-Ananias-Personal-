@@ -957,12 +957,6 @@ function closeVideo(e) {
   document.body.style.overflow = '';
 }
 
-// Build on navigate
-const _origNavigate = navigate;
-function navigate(page) {
-  _origNavigate(page);
-  if (page === 'videos') buildVideoPage();
-}
 
 function updateDietaSummary() {
   const k = localStorage.getItem('maj_kcal');
@@ -1056,8 +1050,8 @@ function dadosSave(){
   }));
 
   // Update UI live
-  document.getElementById('statKcal').textContent = meta;
-  document.getElementById('statProt').textContent = prot;
+  (function(){const _e=document.getElementById('statKcal');if(_e)_e.textContent=meta;})()
+  (function(){const _e=document.getElementById('statProt');if(_e)_e.textContent=prot;})()
   document.getElementById('sidebarName').textContent = nome;
   document.getElementById('sidebarInitials').textContent = nome.slice(0,2).toUpperCase();
   document.getElementById('perfilName').textContent = nome;
@@ -2410,6 +2404,7 @@ const LS_VERSION = 3;
 (function migrateLS(){
   const v=parseInt(localStorage.getItem('maj_version')||'0');
   if(v<LS_VERSION){
+    // maj_cal preserved intentionally — calendar history must never be wiped
     ['maj_days','maj_ex_exListCasa','maj_ex_exListAca','maj_ex_exListAdv','maj_medidas'].forEach(k=>localStorage.removeItem(k));
     localStorage.setItem('maj_version',String(LS_VERSION));
   }
@@ -2624,12 +2619,6 @@ function closeVideo(e) {
   document.body.style.overflow = '';
 }
 
-// Build on navigate
-const _origNavigate = navigate;
-function navigate(page) {
-  _origNavigate(page);
-  if (page === 'videos') buildVideoPage();
-}
 
 function updateDietaSummary() {
   const k = localStorage.getItem('maj_kcal');
@@ -2723,8 +2712,8 @@ function dadosSave(){
   }));
 
   // Update UI live
-  document.getElementById('statKcal').textContent = meta;
-  document.getElementById('statProt').textContent = prot;
+  (function(){const _e=document.getElementById('statKcal');if(_e)_e.textContent=meta;})()
+  (function(){const _e=document.getElementById('statProt');if(_e)_e.textContent=prot;})()
   document.getElementById('sidebarName').textContent = nome;
   document.getElementById('sidebarInitials').textContent = nome.slice(0,2).toUpperCase();
   document.getElementById('perfilName').textContent = nome;
@@ -2860,8 +2849,9 @@ function bootApp(email, rawName) {
 
   // Restore calculated stats
   const k=localStorage.getItem('maj_kcal'), p=localStorage.getItem('maj_prot');
-  if(k) document.getElementById('statKcal').textContent=k;
-  if(p) document.getElementById('statProt').textContent=p;
+  // statKcal/statProt removed from dashboard — data lives in dietaResumo
+  const _kcalEl=document.getElementById('statKcal'); if(_kcalEl&&k) _kcalEl.textContent=k;
+  const _protEl=document.getElementById('statProt'); if(_protEl&&p) _protEl.textContent=p;
   // Populate dieta summary from saved TMB data
   updateDietaSummary();
 
@@ -2911,6 +2901,8 @@ function navigate(page) {
     if(n.dataset.page===page) n.classList.add('active');
   });
   closeSidebar(); window.scrollTo(0,0);
+  // Page-specific init
+  if(page === 'videos') buildVideoPage();
 }
 
 /* ── SIDEBAR ──────────────────────────────────────── */
@@ -3071,6 +3063,7 @@ function renderCalDays() {
       });
       el.addEventListener('pointerup',    () => clearTimeout(longPressTimer));
       el.addEventListener('pointerleave', () => clearTimeout(longPressTimer));
+      el.addEventListener('pointermove',  () => clearTimeout(longPressTimer));
     }
     frag.appendChild(el);
   }
@@ -3302,8 +3295,8 @@ function saveMedidas() {
 (function() {
   const k = localStorage.getItem('maj_kcal');
   const p = localStorage.getItem('maj_prot');
-  if (k) document.getElementById('statKcal').textContent = k;
-  if (p) document.getElementById('statProt').textContent = p;
+  const _kcalEl2=document.getElementById('statKcal'); if(_kcalEl2&&k) _kcalEl2.textContent=k;
+  const _protEl2=document.getElementById('statProt'); if(_protEl2&&p) _protEl2.textContent=p;
 })();
 
 document.addEventListener('keydown', e => {
