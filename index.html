@@ -1794,6 +1794,16 @@ function renderDesafios() {
 
   list.innerHTML = '';
   list.appendChild(frag);
+
+  // Pre-fill inputs with last saved measurement
+  const last = saved.length > 0 ? saved[0] : null;
+  if (last) {
+    const setInp = (id, val) => { const el=document.getElementById(id); if(el&&val&&val!=='—') el.placeholder=val+''; };
+    setInp('mPeso',    last.peso);
+    setInp('mCintura', last.cintura);
+    setInp('mAbdomen', last.abdomen);
+    setInp('mQuadril', last.quadril);
+  }
 }
 /* ── CALENDÁRIO ───────────────────────────────────── */
 .cal-wrap { background: var(--card); border: 1px solid var(--border); margin-bottom: 20px; }
@@ -2947,22 +2957,22 @@ canvas#pesoChart {
           <div class="medidas-grid">
             <div class="medida-card">
               <div class="medida-lbl">Peso (kg)</div>
-              <input class="medida-inp" type="number" id="mPeso" placeholder="75.0" step="0.1">
+              <input class="medida-inp" type="number" id="mPeso" step="0.1">
               <div class="medida-unit">KG</div>
             </div>
             <div class="medida-card">
               <div class="medida-lbl">Cintura (cm)</div>
-              <input class="medida-inp" type="number" id="mCintura" placeholder="80" step="0.5">
+              <input class="medida-inp" type="number" id="mCintura" step="0.5">
               <div class="medida-unit">CM</div>
             </div>
             <div class="medida-card">
               <div class="medida-lbl">Abdômen (cm)</div>
-              <input class="medida-inp" type="number" id="mAbdomen" placeholder="88" step="0.5">
+              <input class="medida-inp" type="number" id="mAbdomen" step="0.5">
               <div class="medida-unit">CM</div>
             </div>
             <div class="medida-card">
               <div class="medida-lbl">Quadril (cm)</div>
-              <input class="medida-inp" type="number" id="mQuadril" placeholder="95" step="0.5">
+              <input class="medida-inp" type="number" id="mQuadril" step="0.5">
               <div class="medida-unit">CM</div>
             </div>
           </div>
@@ -3436,11 +3446,7 @@ const TREINOS = {
 const TREINOS_CASA = TREINOS.casa.A.ex;
 const TREINOS_ACA  = TREINOS.academia.A.ex;
 
-const HIST_MOCK = [
-  {data:'25/05/2026', peso:'76.5', cintura:'82', abdomen:'89', quadril:'96', delta:-0.8},
-  {data:'18/05/2026', peso:'77.3', cintura:'83', abdomen:'90', quadril:'96', delta:-0.5},
-  {data:'11/05/2026', peso:'77.8', cintura:'84', abdomen:'91', quadril:'97', delta:null},
-];
+const HIST_MOCK = []; // sem dados de demonstração
 
 /* ── STATE ────────────────────────────────────────── */
 let currentPage = 'dashboard';
@@ -4274,6 +4280,16 @@ function renderDesafios() {
 
   list.innerHTML = '';
   list.appendChild(frag);
+
+  // Pre-fill inputs with last saved measurement
+  const last = saved.length > 0 ? saved[0] : null;
+  if (last) {
+    const setInp = (id, val) => { const el=document.getElementById(id); if(el&&val&&val!=='—') el.placeholder=val+''; };
+    setInp('mPeso',    last.peso);
+    setInp('mCintura', last.cintura);
+    setInp('mAbdomen', last.abdomen);
+    setInp('mQuadril', last.quadril);
+  }
 }
 /* ── CALENDÁRIO ───────────────────────────────────── */
 // Storage: maj_cal = { "2026-05-01": "done"/"A"/"B"/"C" }
