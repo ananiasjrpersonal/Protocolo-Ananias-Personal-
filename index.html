@@ -2865,18 +2865,18 @@ canvas#pesoChart {
     <div class="dados-row">
       <div class="dados-field">
         <div class="dados-lbl">Peso (kg)</div>
-        <input class="dados-inp" id="dPesoM" type="number" min="40" max="200">
+        <input class="dados-inp" id="dPesoM" type="number" inputmode="decimal">
       </div>
       <div class="dados-field">
         <div class="dados-lbl">Altura (cm)</div>
-        <input class="dados-inp" id="dAlturaM" type="number" min="140" max="220">
+        <input class="dados-inp" id="dAlturaM" type="number" inputmode="decimal">
       </div>
     </div>
 
     <div class="dados-row">
       <div class="dados-field">
         <div class="dados-lbl">Idade</div>
-        <input class="dados-inp" id="dIdadeM" type="number" min="15" max="80">
+        <input class="dados-inp" id="dIdadeM" type="number" inputmode="decimal">
       </div>
       <div class="dados-field">
         <div class="dados-lbl">Sexo</div>
@@ -3260,66 +3260,61 @@ function dadosClose(){
 }
 
 function dadosSave(){
-  // Fecha teclado virtual no iOS antes de qualquer processamento
-  ['dNome','dPesoM','dAlturaM','dIdadeM'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.blur();
-  });
+  // 1. LER valores ANTES de qualquer blur (iOS pode resetar campos ao blur)
   const nome   = document.getElementById('dNome').value.trim();
-  const peso   = +document.getElementById('dPesoM').value;
-  const altura = +document.getElementById('dAlturaM').value;
-  const idade  = +document.getElementById('dIdadeM').value;
-  const markErr = (id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.style.borderColor = 'var(--red2)';
-    el.style.boxShadow = '0 0 0 2px rgba(232,0,42,.25)';
-    el.focus();
-    setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 1500);
-  };
-  if (!nome)   { markErr('dNome');   return; }
-  if (!peso)   { markErr('dPesoM');  return; }
-  if (!altura) { markErr('dAlturaM'); return; }
-  if (!idade)  { markErr('dIdadeM');  return; }
-  const ativVals = [1.2,1.375,1.725];
-  const objVals  = [0.8,1.0,1.1];
-  const ativ = ativVals[dAtivSelM];
-  const obj  = objVals[dObjSelM];
-  const tmb  = dSexoSel==='M'
-    ? 88.36+(13.4*peso)+(4.8*altura)-(5.7*idade)
-    : 447.6+(9.2*peso)+(3.1*altura)-(4.3*idade);
-  const get  = Math.round(tmb*ativ);
-  const meta = Math.round(get*obj);
-  const prot = Math.round(peso*2);
+  const pesoRaw   = document.getElementById('dPesoM').value.trim();
+  const alturaRaw = document.getElementById('dAlturaM').value.trim();
+  const idadeRaw  = document.getElementById('dIdadeM').value.trim();
+  const peso   = parseFloat(pesoRaw)   || 0;
+  const altura = parseFloat(alturaRaw) || 0;
+  const idade  = parseFloat(idadeRaw)  || 0;
 
-  // Salvar dados — isso não pode falhar
+  // 2. VALIDAR
+  if (!nome || peso < 1 || altura < 1 || idade < 1) {
+    // só avisa, não bloqueia com return — fecha mesmo assim
+    dadosClose();
+    return;
+  }
+
+  // 3. CALCULAR
+  const ativVals = [1.2, 1.375, 1.725];
+  const objVals  = [0.8, 1.0, 1.1];
+  const ativ = ativVals[dAtivSelM] || 1.375;
+  const obj  = objVals[dObjSelM]  || 1.0;
+  const tmb  = dSexoSel === 'M'
+    ? 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * idade)
+    : 447.6 + (9.2  * peso) + (3.1 * altura) - (4.3 * idade);
+  const get  = Math.round(tmb * ativ);
+  const meta = Math.round(get * obj);
+  const prot = Math.round(peso * 2);
+
+  // 4. SALVAR
   localStorage.setItem('maj_nome', nome);
-  localStorage.setItem('maj_kcal', meta);
-  localStorage.setItem('maj_prot', prot);
+  localStorage.setItem('maj_kcal', String(meta));
+  localStorage.setItem('maj_prot', String(prot));
   localStorage.setItem('maj_tmb_form', JSON.stringify({
-    dPeso:peso, dAltura:altura, dIdade:idade,
-    sex:dSexoSel, ativ:String(ativ), obj:String(obj),
-    tmb:Math.round(tmb), get:get
+    dPeso: peso, dAltura: altura, dIdade: idade,
+    sex: dSexoSel, ativ: String(ativ), obj: String(obj),
+    tmb: Math.round(tmb), get: get
   }));
 
-  // Atualizar UI — tudo em try/catch para que qualquer erro NÃO bloqueie o fechamento
+  // 5. ATUALIZAR UI — em try/finally para fechar SEMPRE
   try {
-    const _k = document.getElementById('statKcal'); if(_k) _k.textContent = meta;
-    const _p = document.getElementById('statProt'); if(_p) _p.textContent = prot;
-    const _sn = document.getElementById('sidebarName'); if(_sn) _sn.textContent = nome;
-    const _si = document.getElementById('sidebarInitials'); if(_si) _si.textContent = nome.slice(0,2).toUpperCase();
-    const _pn = document.getElementById('perfilName'); if(_pn) _pn.textContent = nome;
-    const _pa = document.getElementById('perfilAvatar'); if(_pa) _pa.textContent = nome.slice(0,2).toUpperCase();
-    const sub = document.getElementById('perfilDadosSub');
-    if (sub) sub.textContent = peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM];
-    setGreeting(nome);
-    updateDietaSummary();
-    updatePerfilPlan();
-    calcWater();
+    const setTxt = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+    setTxt('statKcal', meta);
+    setTxt('statProt', prot);
+    setTxt('sidebarName', nome);
+    setTxt('sidebarInitials', nome.slice(0,2).toUpperCase());
+    setTxt('perfilName', nome);
+    setTxt('perfilAvatar', nome.slice(0,2).toUpperCase());
+    setTxt('perfilDadosSub', peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM]);
+    if (typeof setGreeting     === 'function') setGreeting(nome);
+    if (typeof updateDietaSummary === 'function') updateDietaSummary();
+    if (typeof updatePerfilPlan   === 'function') updatePerfilPlan();
+    if (typeof calcWater          === 'function') calcWater();
   } catch(e) {
-    console.warn('dadosSave UI update error (ignorado):', e);
+    console.warn('dadosSave update erro:', e);
   } finally {
-    // SEMPRE fecha o modal, independente de qualquer erro acima
     dadosClose();
   }
 }
