@@ -42,6 +42,7 @@ input, select { font-family: inherit; }
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   padding: 32px 20px;
+  overflow-y: auto;
 }
 .lock-logo {
   font-family: 'Bebas Neue', cursive;
@@ -119,6 +120,9 @@ input, select { font-family: inherit; }
   padding: 0 16px; z-index: 200;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
+@media (min-width: 900px) {
+  #topbar { padding: 0 24px; }
+}
 .topbar-logo {
   font-family: 'Bebas Neue', cursive;
   font-size: 18px; letter-spacing: 3px; line-height: 1;
@@ -178,7 +182,7 @@ input, select { font-family: inherit; }
   content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
   width: 2px; background: var(--red);
 }
-.nav-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+.nav-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; display: flex; align-items: center; justify-content: center; }
 .nav-badge {
   margin-left: auto;
   background: rgba(232,0,42,.15); color: var(--red2);
@@ -243,7 +247,7 @@ input, select { font-family: inherit; }
 }
 
 /* ── CONTAINER ────────────────────────────────────── */
-.wrap { max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 24px 20px 80px; }
 
 /* ── DASHBOARD ────────────────────────────────────── */
 .dash-greeting {
@@ -789,471 +793,10 @@ input, select { font-family: inherit; }
 }
 .bn-item.active { color: var(--red); }
 .bn-item:hover { color: var(--text); }
-.bn-icon { font-size: 20px; line-height: 1; }
+.bn-icon { font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; }
 .bn-lbl { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
 
 
-
-/* ── VÍDEOS ───────────────────────────────────────── */
-// Para adicionar vídeos: copie o ID do YouTube (parte depois de ?v= ou youtu.be/)
-// Exemplo: https://youtu.be/dQw4w9WgXcQ → id: 'dQw4w9WgXcQ'
-const VIDEOS = [
-  // premium: false → todos os alunos acessam
-  // premium: true  → mostra cadeado, exige upgrade
-  {
-    id: 'PLACEHOLDER_1',
-    title: 'Flexão de Braços — Técnica Perfeita',
-    cat: 'Peito', dur: '2:14',
-    desc: 'Posição das mãos, cotovelos e amplitude correta',
-    premium: false
-  },
-  {
-    id: 'PLACEHOLDER_2',
-    title: 'Agachamento Livre — Do Zero ao Correto',
-    cat: 'Pernas', dur: '3:02',
-    desc: 'Joelhos, quadril e postura — os erros mais comuns',
-    premium: false
-  },
-  {
-    id: 'PLACEHOLDER_3',
-    title: 'Remada Curvada — Costas sem Lesão',
-    cat: 'Costas', dur: '1:58',
-    desc: 'Ativação correta do dorsal e proteção lombar',
-    premium: false
-  },
-  {
-    id: 'PLACEHOLDER_4',
-    title: 'Desenvolvimento com Halteres',
-    cat: 'Ombro', dur: '2:30',
-    desc: 'Amplitude, rotação e proteção do manguito',
-    premium: true
-  },
-  {
-    id: 'PLACEHOLDER_5',
-    title: 'Rosca Direta — Bíceps de Verdade',
-    cat: 'Bíceps', dur: '1:45',
-    desc: 'Como isolar o bíceps e não usar o ombro',
-    premium: true
-  },
-  {
-    id: 'PLACEHOLDER_6',
-    title: 'Prancha Isométrica — Core Total',
-    cat: 'Abdômen', dur: '1:20',
-    desc: 'Ativação do transverso e respiração correta',
-    premium: true
-  },
-];
-
-let activeVideoCat = 'Todos';
-
-function buildVideoPage() {
-  const cats = ['Todos', ...new Set(VIDEOS.map(v => v.cat))];
-  const catsEl = document.getElementById('videoCats');
-  if (!catsEl) return;
-  catsEl.innerHTML = '';
-  cats.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'video-cat' + (cat === activeVideoCat ? ' active' : '');
-    btn.textContent = cat;
-    btn.onclick = () => {
-      activeVideoCat = cat;
-      catsEl.querySelectorAll('.video-cat').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderVideoGrid();
-    };
-    catsEl.appendChild(btn);
-  });
-  renderVideoGrid();
-}
-
-function renderVideoGrid() {
-  const grid = document.getElementById('videoGrid');
-  if (!grid) return;
-  const filtered = activeVideoCat === 'Todos'
-    ? VIDEOS
-    : VIDEOS.filter(v => v.cat === activeVideoCat);
-
-  if (!filtered.length) {
-    grid.innerHTML = '<div class="video-empty"><div class="video-empty-icon">🎬</div>Nenhum vídeo nesta categoria ainda.</div>';
-    return;
-  }
-
-  const frag = document.createDocumentFragment();
-  filtered.forEach(v => {
-    const isPlaceholder = v.id.startsWith('PLACEHOLDER');
-    const isPremium     = !!v.premium;
-    const thumbUrl = isPlaceholder
-      ? null
-      : `https://img.youtube.com/vi/${v.id}/mqdefault.jpg`;
-
-    const card = document.createElement('div');
-    card.className = 'video-card' + (isPremium ? ' premium-card' : '');
-
-    const thumbInner = thumbUrl
-      ? `<img class="video-thumb-img" src="${thumbUrl}" alt="${v.title}" loading="lazy">`
-      : `<div class="video-thumb-img" style="display:flex;align-items:center;justify-content:center;background:var(--card2);"><span style="font-size:32px;opacity:.3;">🎬</span></div>`;
-
-    const playOrLock = isPremium
-      ? `<div class="video-play-btn"><div class="video-lock-icon">🔒</div></div>
-         <div class="video-lock-badge">⭐ Premium</div>`
-      : `<div class="video-play-btn"><div class="video-play-icon">▶</div></div>`;
-
-    card.innerHTML = `
-      <div class="video-thumb">
-        ${thumbInner}
-        ${playOrLock}
-      </div>
-      <div class="video-info">
-        <div class="video-tag ${isPremium ? 'premium-tag' : ''}">${isPremium ? '⭐ ' : ''}${v.cat}</div>
-        <div class="video-title">${v.title}</div>
-        <div class="video-meta">
-          <span class="video-dur">⏱ ${v.dur}</span>
-          <span>${v.desc}</span>
-        </div>
-      </div>
-    `;
-    card.onclick = () => openVideo(v);
-    frag.appendChild(card);
-  });
-  grid.innerHTML = '';
-  grid.appendChild(frag);
-}
-
-function openVideo(v) {
-  // Premium gate
-  if (v.premium) {
-    document.getElementById('pmVideoName').textContent = v.title;
-    document.getElementById('premiumModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    return;
-  }
-  // Placeholder
-  if (v.id.startsWith('PLACEHOLDER')) {
-    alert('Vídeo em breve! O Ananias está gravando.');
-    return;
-  }
-  const frame = document.getElementById('vpFrame');
-  frame.src = `https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&modestbranding=1`;
-  document.getElementById('vpTitle').textContent = v.title;
-  document.getElementById('vpSub').textContent = v.cat + ' · ' + v.dur;
-  document.getElementById('videoPlayer').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closePremiumModal() {
-  document.getElementById('premiumModal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function pmContact() {
-  closePremiumModal();
-  navigate('suporte');
-}
-
-function closeVideo(e) {
-  if (e && e.target !== document.getElementById('videoPlayer') && !e.target.classList.contains('vp-close')) return;
-  document.getElementById('vpFrame').src = '';
-  document.getElementById('videoPlayer').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-
-
-function updatePerfilPlan() {
-  const saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
-  const objVals  = [0.8, 1.0, 1.1];
-  const objLabels = ['Seca Barriga', 'Manutenção', 'Ganho de Massa'];
-  const objIdx = objVals.indexOf(+saved.obj);
-  const label  = objIdx >= 0 ? objLabels[objIdx] : 'Método Ananias Jr';
-  const el = document.getElementById('perfilPlan');
-  if (el) el.textContent = label + ' · Ativo';
-  // Also update the sub text in meus dados button
-  const sub = document.getElementById('perfilDadosSub');
-  if (sub && saved.dPeso) {
-    const ativLabels = ['Não treino', '1–3x / sem', '4x ou mais'];
-    const ativVals   = [1.2, 1.375, 1.725];
-    const ativIdx    = ativVals.indexOf(+saved.ativ);
-    const ativLabel  = ativIdx >= 0 ? ativLabels[ativIdx] : '';
-    sub.textContent  = saved.dPeso + 'kg · ' + saved.dAltura + 'cm · ' + (objIdx >= 0 ? objLabels[objIdx] : '') + (ativLabel ? ' · ' + ativLabel : '');
-  }
-}
-function updateDietaSummary() {
-  const k = localStorage.getItem('maj_kcal');
-  const p = localStorage.getItem('maj_prot');
-  const saved = JSON.parse(localStorage.getItem('maj_tmb_form')||'{}');
-  const metaEl = document.getElementById('rMeta');
-  const protEl = document.getElementById('rProt');
-  const tmbEl  = document.getElementById('rTMB');
-  const getEl  = document.getElementById('rGET');
-  if (metaEl && k) metaEl.textContent = k;
-  if (protEl && p) protEl.textContent = p;
-  if (tmbEl && saved.tmb) tmbEl.textContent = saved.tmb;
-  if (getEl && saved.get) getEl.textContent = saved.get;
-}
-/* ── DADOS MODAL ──────────────────────────────────── */
-let dSexoSel = 'M', dAtivSelM = 1, dObjSelM = 0;
-
-function dSelSexo(s){
-  dSexoSel=s;
-  document.getElementById('dSexMM').classList.toggle('sel',s==='M');
-  document.getElementById('dSexFM').classList.toggle('sel',s==='F');
-}
-function dSelAtiv(n){
-  dAtivSelM=n;
-  [0,1,2].forEach(i=>document.getElementById('dAtivM'+i).classList.toggle('sel',i===n));
-}
-function dSelObj(n){
-  dObjSelM=n;
-  [0,1,2].forEach(i=>document.getElementById('dObjM'+i).classList.toggle('sel',i===n));
-}
-
-function dadosOpen(){
-  // Pre-fill with saved data
-  const saved = JSON.parse(localStorage.getItem('maj_tmb_form')||'{}');
-  document.getElementById('dNome').value    = localStorage.getItem('maj_nome')||'';
-  document.getElementById('dPesoM').value   = saved.dPeso||'';
-  document.getElementById('dAlturaM').value = saved.dAltura||'';
-  document.getElementById('dIdadeM').value  = saved.dIdade||'';
-  // sex
-  const sex = saved.sex||'M'; dSexoSel=sex;
-  document.getElementById('dSexMM').classList.toggle('sel',sex==='M');
-  document.getElementById('dSexFM').classList.toggle('sel',sex==='F');
-  // ativ
-  const ativVals = [1.2,1.375,1.725];
-  const ativIdx = ativVals.indexOf(+saved.ativ);
-  dAtivSelM = ativIdx>=0 ? ativIdx : 1;
-  [0,1,2].forEach(i=>document.getElementById('dAtivM'+i).classList.toggle('sel',i===dAtivSelM));
-  // obj
-  const objVals = [0.8,1.0,1.1];
-  const objIdx = objVals.indexOf(+saved.obj);
-  dObjSelM = objIdx>=0 ? objIdx : 0;
-  [0,1,2].forEach(i=>document.getElementById('dObjM'+i).classList.toggle('sel',i===dObjSelM));
-
-  document.getElementById('dadosModal').classList.add('open');
-}
-
-function dadosClose(){
-  document.getElementById('dadosModal').classList.remove('open');
-}
-
-function dadosSave(){
-  const nome   = document.getElementById('dNome').value.trim();
-  const peso   = +document.getElementById('dPesoM').value;
-  const altura = +document.getElementById('dAlturaM').value;
-  const idade  = +document.getElementById('dIdadeM').value;
-  if(!nome||!peso||!altura||!idade){
-    if(!nome)   document.getElementById('dNome').focus();
-    else if(!peso)   document.getElementById('dPesoM').focus();
-    else if(!altura) document.getElementById('dAlturaM').focus();
-    else             document.getElementById('dIdadeM').focus();
-    return;
-  }
-  const ativVals = [1.2,1.375,1.725];
-  const objVals  = [0.8,1.0,1.1];
-  const ativ = ativVals[dAtivSelM];
-  const obj  = objVals[dObjSelM];
-  const tmb  = dSexoSel==='M'
-    ? 88.36+(13.4*peso)+(4.8*altura)-(5.7*idade)
-    : 447.6+(9.2*peso)+(3.1*altura)-(4.3*idade);
-  const get  = Math.round(tmb*ativ);
-  const meta = Math.round(get*obj);
-  const prot = Math.round(peso*2);
-
-  localStorage.setItem('maj_nome', nome);
-  localStorage.setItem('maj_kcal', meta);
-  localStorage.setItem('maj_prot', prot);
-  localStorage.setItem('maj_tmb_form', JSON.stringify({
-    dPeso:peso, dAltura:altura, dIdade:idade,
-    sex:dSexoSel, ativ:String(ativ), obj:String(obj),
-    tmb:Math.round(tmb), get:get
-  }));
-
-  // Update UI live
-  (function(){const _e=document.getElementById('statKcal');if(_e)_e.textContent=meta;})()
-  (function(){const _e=document.getElementById('statProt');if(_e)_e.textContent=prot;})()
-  document.getElementById('sidebarName').textContent = nome;
-  document.getElementById('sidebarInitials').textContent = nome.slice(0,2).toUpperCase();
-  document.getElementById('perfilName').textContent = nome;
-  document.getElementById('perfilAvatar').textContent = nome.slice(0,2).toUpperCase();
-  const sub = document.getElementById('perfilDadosSub');
-  if (sub) sub.textContent = peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM];
-  setGreeting(nome);
-  updateDietaSummary();
-  updatePerfilPlan();
-  calcWater();
-  dadosClose();
-}
-/* ── ONBOARDING ───────────────────────────────────── */
-#onboarding {
-  position: fixed; inset: 0; z-index: 9998;
-  background: var(--bg);
-  display: none; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 24px 20px;
-}
-#onboarding.open { display: flex; }
-.ob-logo {
-  font-family: 'Bebas Neue', cursive;
-  font-size: clamp(28px,7vw,42px); letter-spacing: 4px;
-  text-align: center; margin-bottom: 4px; line-height: 1.1;
-}
-.ob-logo span { color: var(--red); }
-.ob-sub {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; letter-spacing: 5px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 32px;
-}
-.ob-card {
-  background: var(--card); border: 1px solid var(--border);
-  padding: 28px 24px; width: 100%; max-width: 380px;
-}
-.ob-step-ind {
-  display: flex; gap: 6px; justify-content: center; margin-bottom: 24px;
-}
-.ob-dot {
-  width: 24px; height: 3px; background: var(--border); transition: background .3s;
-}
-.ob-dot.active { background: var(--red); }
-.ob-step { display: none; }
-.ob-step.active { display: block; }
-.ob-title {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 26px; letter-spacing: 2px; margin-bottom: 6px;
-}
-.ob-desc {
-  font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5;
-}
-.ob-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-.ob-lbl {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--muted);
-}
-.ob-inp {
-  background: var(--bg); border: 1px solid var(--border);
-  color: var(--white); padding: 13px 16px; outline: none;
-  font-family: 'Barlow', sans-serif; font-size: 16px;
-  transition: border-color .2s; -webkit-appearance: none; appearance: none;
-  -moz-appearance: textfield;
-}
-.ob-inp::-webkit-outer-spin-button,
-.ob-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
-.ob-inp:focus { border-color: var(--red); }
-.ob-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-.ob-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-.ob-btn-group { display: flex; gap: 6px; }
-.ob-choice {
-  flex: 1; background: var(--bg); border: 1px solid var(--border);
-  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; padding: 12px 8px; text-align: center;
-  transition: all .2s; cursor: pointer; min-height: 44px;
-}
-.ob-choice.sel { background: rgba(232,0,42,.12); border-color: var(--red); color: var(--red2); }
-.ob-next {
-  width: 100%; margin-top: 20px;
-  background: var(--red); color: #fff;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px; font-weight: 700; letter-spacing: 5px;
-  text-transform: uppercase; padding: 15px; min-height: 48px;
-  transition: background .2s;
-}
-.ob-next:hover { background: var(--red2); }
-.ob-result-cards {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin: 20px 0;
-}
-.ob-result-card {
-  background: var(--card2); border: 1px solid var(--border);
-  padding: 16px 12px; text-align: center;
-}
-.ob-result-card.hl { background: rgba(232,0,42,.07); border-color: rgba(232,0,42,.3); }
-.ob-result-card.hl-g { background: rgba(0,230,118,.06); border-color: rgba(0,230,118,.3); }
-.ob-rc-lbl {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 9px; font-weight: 700; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
-}
-.ob-rc-val {
-  font-family: 'Bebas Neue', cursive; font-size: 36px; line-height: 1;
-}
-.ob-rc-val.red { color: var(--red); text-shadow: 0 0 16px rgba(232,0,42,.3); }
-.ob-rc-val.green { color: var(--green); }
-.ob-rc-unit {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; color: var(--faint); letter-spacing: 2px; margin-top: 2px;
-}
-
-/* ── EDIT DATA SHORTCUT ───────────────────────────── */
-.edit-data-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: transparent; border: 1px solid var(--border);
-  color: var(--faint); font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; padding: 5px 12px; cursor: pointer;
-  transition: all .2s; margin-top: 8px;
-}
-.edit-data-btn:hover { border-color: var(--red); color: var(--red2); }
-
-/* ── MEUS DADOS MODAL ─────────────────────────────── */
-#dadosModal {
-  display: none; position: fixed; inset: 0; z-index: 400;
-  background: rgba(0,0,0,.88); align-items: center;
-  justify-content: center; padding: 20px;
-}
-#dadosModal.open { display: flex; }
-.dados-box {
-  background: var(--card); border: 1px solid rgba(232,0,42,.3);
-  border-top: 2px solid var(--red);
-  padding: 28px 24px; width: 100%; max-width: 400px;
-  max-height: 90vh; overflow-y: auto;
-}
-.dados-title {
-  font-family: 'Bebas Neue', cursive;
-  font-size: 24px; letter-spacing: 2px; margin-bottom: 4px;
-}
-.dados-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
-.dados-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.dados-field { display: flex; flex-direction: column; gap: 5px; }
-.dados-lbl {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 10px; font-weight: 700; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--muted);
-}
-.dados-inp {
-  background: var(--bg); border: 1px solid var(--border);
-  color: var(--white); font-family: 'Bebas Neue', cursive;
-  font-size: 22px; padding: 8px 10px; outline: none;
-  transition: border-color .2s; -moz-appearance: textfield;
-  min-height: 44px;
-}
-.dados-inp::-webkit-outer-spin-button,
-.dados-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
-.dados-inp:focus { border-color: var(--red); }
-.dados-inp.text { font-family: 'Barlow', sans-serif; font-size: 16px; }
-.dados-btn-group { display: flex; gap: 6px; margin-bottom: 12px; }
-.dados-choice {
-  flex: 1; background: var(--bg); border: 1px solid var(--border);
-  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; padding: 11px 6px; text-align: center;
-  transition: all .2s; cursor: pointer; min-height: 44px;
-}
-.dados-choice.sel { background: rgba(232,0,42,.12); border-color: var(--red); color: var(--red2); }
-.dados-actions { display: flex; gap: 8px; margin-top: 20px; }
-.dados-save {
-  flex: 2; background: var(--red); color: #fff;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px; font-weight: 700; letter-spacing: 4px;
-  text-transform: uppercase; padding: 14px; min-height: 48px; transition: background .2s;
-}
-.dados-save:hover { background: var(--red2); }
-.dados-cancel {
-  flex: 1; background: transparent; border: 1px solid var(--border);
-  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px; font-weight: 700; letter-spacing: 3px;
-  text-transform: uppercase; padding: 14px; min-height: 48px; transition: all .2s;
-}
-.dados-cancel:hover { color: var(--white); border-color: var(--border2); }
 
 /* ── VÍDEOS ───────────────────────────────────────── */
 .video-cats { display: flex; gap: 2px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -1481,382 +1024,6 @@ function dadosSave(){
 
 
 
-/* ── GRÁFICO PESO ─────────────────────────────────── */
-function buildPesoChart() {
-  const saved = JSON.parse(localStorage.getItem('maj_medidas') || '[]');
-  const all   = [...saved, ...HIST_MOCK].reverse(); // oldest first
-
-  const pesoAtualEl = document.getElementById('pesoAtual');
-  const pesoDeltaEl = document.getElementById('pesoDelta');
-  const emptyEl     = document.getElementById('pesoChartEmpty');
-  const canvas      = document.getElementById('pesoChart');
-  if (!canvas) return;
-
-  const valid = all.filter(r => r.peso && !isNaN(+r.peso));
-
-  // Update header
-  if (valid.length > 0) {
-    const last = +valid[valid.length - 1].peso;
-    if (pesoAtualEl) pesoAtualEl.textContent = last.toFixed(1);
-    if (valid.length > 1 && pesoDeltaEl) {
-      const first = +valid[0].peso;
-      const diff  = +(last - first).toFixed(1);
-      pesoDeltaEl.textContent = (diff > 0 ? '+' : '') + diff + ' kg';
-      pesoDeltaEl.className   = 'peso-chart-delta ' + (diff <= 0 ? 'down' : 'up');
-      pesoDeltaEl.style.display = 'inline';
-    }
-  }
-
-  if (valid.length < 2) {
-    if (emptyEl)  emptyEl.style.display  = 'block';
-    canvas.style.display = 'none';
-    return;
-  }
-
-  if (emptyEl)  emptyEl.style.display  = 'none';
-  canvas.style.display = 'block';
-
-  // Draw chart
-  const ctx    = canvas.getContext('2d');
-  const dpr    = window.devicePixelRatio || 1;
-  const W      = canvas.offsetWidth  || canvas.parentElement.offsetWidth || 300;
-  const H      = 160;
-  canvas.width  = W * dpr;
-  canvas.height = H * dpr;
-  ctx.scale(dpr, dpr);
-
-  const pesos  = valid.map(r => +r.peso);
-  const labels = valid.map(r => r.data.slice(0,5)); // DD/Mon
-  const minP   = Math.min(...pesos) - 1;
-  const maxP   = Math.max(...pesos) + 1;
-  const padL   = 36, padR = 12, padT = 12, padB = 28;
-  const cW     = W - padL - padR;
-  const cH     = H - padT - padB;
-
-  const xOf = i  => padL + (i / (pesos.length - 1)) * cW;
-  const yOf = v  => padT + (1 - (v - minP) / (maxP - minP)) * cH;
-
-  ctx.clearRect(0, 0, W, H);
-
-  // Grid lines
-  ctx.strokeStyle = 'rgba(255,255,255,.06)';
-  ctx.lineWidth   = 1;
-  [0, 0.25, 0.5, 0.75, 1].forEach(t => {
-    const y = padT + t * cH;
-    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-    const val = (maxP - t * (maxP - minP)).toFixed(1);
-    ctx.fillStyle   = 'rgba(255,255,255,.3)';
-    ctx.font        = `${10 * dpr / dpr}px Barlow Condensed, sans-serif`;
-    ctx.textAlign   = 'right';
-    ctx.fillText(val, padL - 4, y + 4);
-  });
-
-  // Fill area
-  const grad = ctx.createLinearGradient(0, padT, 0, padT + cH);
-  grad.addColorStop(0,   'rgba(232,0,42,.25)');
-  grad.addColorStop(1,   'rgba(232,0,42,0)');
-  ctx.beginPath();
-  ctx.moveTo(xOf(0), yOf(pesos[0]));
-  pesos.forEach((p, i) => { if (i > 0) ctx.lineTo(xOf(i), yOf(p)); });
-  ctx.lineTo(xOf(pesos.length - 1), padT + cH);
-  ctx.lineTo(xOf(0), padT + cH);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
-
-  // Line
-  ctx.strokeStyle = '#e8002a';
-  ctx.lineWidth   = 2;
-  ctx.lineJoin    = 'round';
-  ctx.beginPath();
-  pesos.forEach((p, i) => i === 0 ? ctx.moveTo(xOf(i), yOf(p)) : ctx.lineTo(xOf(i), yOf(p)));
-  ctx.stroke();
-
-  // Dots + labels
-  pesos.forEach((p, i) => {
-    // dot
-    ctx.beginPath();
-    ctx.arc(xOf(i), yOf(p), 3.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#e8002a';
-    ctx.fill();
-    ctx.strokeStyle = '#0a0a0a';
-    ctx.lineWidth   = 1.5;
-    ctx.stroke();
-
-    // x-axis label (show first, last, and evenly spaced)
-    const step = Math.max(1, Math.floor(pesos.length / 4));
-    if (i === 0 || i === pesos.length - 1 || i % step === 0) {
-      ctx.fillStyle  = 'rgba(255,255,255,.4)';
-      ctx.font       = '10px Barlow Condensed, sans-serif';
-      ctx.textAlign  = i === 0 ? 'left' : i === pesos.length - 1 ? 'right' : 'center';
-      ctx.fillText(labels[i], xOf(i), H - 6);
-    }
-  });
-}
-/* ── HIDRATAÇÃO ───────────────────────────────────── */
-let waterCupsState = [];
-
-function calcWater() {
-  const saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
-  const peso  = +saved.dPeso || 0;
-  const ativ  = +saved.ativ  || 1.375;
-  if (!peso) return;
-
-  // Base: 35ml/kg; +500ml if active (ativ > 1.2)
-  const base   = peso * 35;
-  const extra  = ativ > 1.2 ? 500 : 0;
-  const totalMl = base + extra;
-  const litros  = (totalMl / 1000).toFixed(1);
-
-  // Cups: 250ml each
-  const numCups = Math.round(totalMl / 250);
-
-  const litrosEl = document.getElementById('waterLitros');
-  const cupsEl   = document.getElementById('waterCups');
-  const tipEl    = document.getElementById('waterTip');
-  if (!litrosEl) return;
-
-  litrosEl.textContent = litros;
-
-  // Load saved cups state
-  waterCupsState = JSON.parse(localStorage.getItem('maj_water_cups') || '[]');
-  if (waterCupsState.length !== numCups) {
-    waterCupsState = new Array(numCups).fill(false);
-  }
-
-  // Render cups
-  cupsEl.innerHTML = '';
-  waterCupsState.forEach((filled, i) => {
-    const cup = document.createElement('span');
-    cup.className = 'water-cup' + (filled ? ' filled' : '');
-    cup.textContent = '💧';
-    cup.title = `Copo ${i+1} de ${numCups} (250ml)`;
-    cup.onclick = () => {
-      waterCupsState[i] = !waterCupsState[i];
-      localStorage.setItem('maj_water_cups', JSON.stringify(waterCupsState));
-      calcWater();
-    };
-    cupsEl.appendChild(cup);
-  });
-
-  // Tip
-  const consumed = waterCupsState.filter(Boolean).length;
-  const consumedL = (consumed * 0.25).toFixed(2);
-  const remaining = numCups - consumed;
-  let tip = `${consumed} de ${numCups} copos · ${consumedL}L de ${litros}L`;
-  if (remaining > 0) tip += ` · Faltam ${remaining} copos`;
-  else tip = `✓ Meta batida! ${litros}L consumidos hoje.`;
-  if (tipEl) tipEl.textContent = tip;
-
-  // Save litros to form data
-  localStorage.setItem('maj_water_l', litros);
-}
-
-/* ── TREINO DE HOJE ───────────────────────────────── */
-function getNextTreino() {
-  // Find last training type from calendar
-  const keys = Object.keys(calData).sort().reverse();
-  let lastType = null;
-  for (const k of keys) {
-    const v = calData[k];
-    if (v === 'A' || v === 'B' || v === 'C') { lastType = v; break; }
-  }
-  // Cycle: A→B→C→A. If no history, start with A
-  const cycle = ['A','B','C'];
-  if (!lastType) return 'A';
-  return cycle[(cycle.indexOf(lastType) + 1) % 3];
-}
-
-function updateHojeTreino() {
-  const next = getNextTreino();
-  const mod  = treinoModalidade || 'casa';
-  const t    = (TREINOS[mod] && TREINOS[mod][next]) ? TREINOS[mod][next] : null;
-
-  const titleEl = document.getElementById('hojeTreinoTitulo');
-  const grupoEl = document.getElementById('hojeTreinoGrupo');
-  const badgeEl = document.getElementById('hojeTreinoBadge');
-
-  if (titleEl) titleEl.textContent = t ? t.titulo : 'Treino ' + next;
-  if (grupoEl) grupoEl.textContent = t ? t.grupo  : 'Selecione o local do treino';
-  if (badgeEl) badgeEl.textContent = next;
-}
-
-function irParaTreino() {
-  const next = getNextTreino();
-  navigate('treino');
-  // Set the correct day tab
-  setTimeout(() => {
-    treinoDia = next;
-    document.querySelectorAll('#treino-dia-tabs .tab').forEach((btn, i) => {
-      const dias = ['A','B','C'];
-      btn.classList.toggle('active', dias[i] === next);
-    });
-    renderTreino();
-  }, 50);
-}
-
-function toggleAcc(btn) {
-  const item = btn.closest('.acc-item');
-  const isOpen = item.classList.contains('open');
-  // Close all in same accordion
-  btn.closest('.accordion').querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
-  if (!isOpen) item.classList.add('open');
-}
-/* ── DESAFIO 30 DIAS ──────────────────────────────── */
-let desafios = [];
-let desafioFocoSel = 0;
-const DESAFIO_FOCOS = ['Secar — Déficit 20%', 'Manter — Equilíbrio', 'Ganhar — Superávit 10%'];
-const DESAFIO_FOCO_LABELS = ['🔥 Secar', '⚖️ Manter', '💪 Ganhar'];
-
-function desafioLoad() {
-  desafios = JSON.parse(localStorage.getItem('maj_desafios') || '[]');
-}
-
-function desafioSave() {
-  localStorage.setItem('maj_desafios', JSON.stringify(desafios));
-}
-
-function desafioNovoOpen() {
-  // Default date = today
-  const hoje = new Date();
-  const pad = n => String(n).padStart(2,'0');
-  document.getElementById('desafioInicio').value =
-    `${hoje.getFullYear()}-${pad(hoje.getMonth()+1)}-${pad(hoje.getDate())}`;
-  document.getElementById('desafioNome').value = '';
-  dSelFoco(0);
-  document.getElementById('desafioModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function desafioModalClose() {
-  document.getElementById('desafioModal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function dSelFoco(n) {
-  desafioFocoSel = n;
-  [0,1,2].forEach(i =>
-    document.getElementById('dfoco'+i).classList.toggle('sel', i===n)
-  );
-}
-
-function desafioSalvar() {
-  const nome   = document.getElementById('desafioNome').value.trim();
-  const inicio = document.getElementById('desafioInicio').value;
-  if (!nome || !inicio) {
-    if (!nome) document.getElementById('desafioNome').focus();
-    else document.getElementById('desafioInicio').focus();
-    return;
-  }
-  const startDate = new Date(inicio + 'T00:00:00');
-  const endDate   = new Date(startDate);
-  endDate.setDate(endDate.getDate() + 29);
-
-  desafios.push({
-    id:     Date.now(),
-    nome,
-    inicio,
-    foco:   desafioFocoSel,
-    status: 'ativo',  // ativo | concluido | abandonado
-  });
-  desafioSave();
-  desafioModalClose();
-  renderDesafios();
-}
-
-function desafioAbandonar(id) {
-  if (!confirm('Abandonar este desafio?')) return;
-  const d = desafios.find(d => d.id === id);
-  if (d) { d.status = 'abandonado'; desafioSave(); renderDesafios(); }
-}
-
-function desafioExcluir(id) {
-  if (!confirm('Excluir este desafio?')) return;
-  desafios = desafios.filter(d => d.id !== id);
-  desafioSave();
-  renderDesafios();
-}
-
-function renderDesafios() {
-  // Target: perfil page list (primary) or dashboard fallback
-  const list = document.getElementById('desafioListPerfil') || document.getElementById('desafioList');
-  if (!list) return;
-  const now = new Date();
-  now.setHours(0,0,0,0);
-
-  // Auto-update status
-  desafios.forEach(d => {
-    if (d.status === 'ativo') {
-      const start = new Date(d.inicio + 'T00:00:00');
-      const end   = new Date(start); end.setDate(end.getDate() + 29);
-      if (now > end) { d.status = 'concluido'; }
-    }
-  });
-  desafioSave();
-
-  // Sort: ativo first, then by date desc
-  const sorted = [...desafios].sort((a,b) => {
-    const order = {ativo:0, concluido:1, abandonado:2};
-    if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status];
-    return new Date(b.inicio) - new Date(a.inicio);
-  });
-
-  const frag = document.createDocumentFragment();
-  sorted.forEach(d => {
-    const start   = new Date(d.inicio + 'T00:00:00');
-    const end     = new Date(start); end.setDate(end.getDate() + 29);
-    const elapsed = Math.max(0, Math.min(30, Math.floor((now - start) / 86400000) + 1));
-    const pct     = Math.round((elapsed / 30) * 100);
-    const meses   = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    const fmtDate = dt => `${dt.getDate()} ${meses[dt.getMonth()]}`;
-
-    const statusLabel = { ativo:'● Ativo', concluido:'✓ Concluído', abandonado:'— Abandonado' };
-
-    const card = document.createElement('div');
-    card.className = `desafio-card ${d.status}`;
-    card.innerHTML = `
-      <div class="desafio-card-top">
-        <div class="desafio-nome">${d.nome}</div>
-        <div class="desafio-status-badge ${d.status}">${statusLabel[d.status]}</div>
-      </div>
-      <div class="desafio-progress-row">
-        <div class="desafio-dias">${elapsed}<span>/ 30</span></div>
-        <div class="desafio-bar-wrap">
-          <div class="desafio-bar">
-            <div class="desafio-bar-fill" style="width:${pct}%"></div>
-          </div>
-          <div class="desafio-pct">${pct}%</div>
-        </div>
-      </div>
-      <div class="desafio-meta">
-        <div class="desafio-meta-item">Início <strong>${fmtDate(start)}</strong></div>
-        <div class="desafio-meta-item">Término <strong>${fmtDate(end)}</strong></div>
-        <div class="desafio-meta-item">Foco <strong>${DESAFIO_FOCO_LABELS[d.foco]}</strong></div>
-      </div>
-      ${d.status === 'ativo' ? `
-      <div class="desafio-actions">
-        <button class="desafio-btn danger" onclick="desafioAbandonar(${d.id})">Abandonar</button>
-      </div>` : `
-      <div class="desafio-actions">
-        <button class="desafio-btn danger" onclick="desafioExcluir(${d.id})">Excluir</button>
-      </div>`}
-    `;
-    frag.appendChild(card);
-  });
-
-  list.innerHTML = '';
-  list.appendChild(frag);
-
-  // Pre-fill inputs with last saved measurement
-  const last = saved.length > 0 ? saved[0] : null;
-  if (last) {
-    const setInp = (id, val) => { const el=document.getElementById(id); if(el&&val&&val!=='—') el.placeholder=val+''; };
-    setInp('mPeso',    last.peso);
-    setInp('mCintura', last.cintura);
-    setInp('mAbdomen', last.abdomen);
-    setInp('mQuadril', last.quadril);
-  }
-}
 /* ── CALENDÁRIO ───────────────────────────────────── */
 .cal-wrap { background: var(--card); border: 1px solid var(--border); margin-bottom: 20px; }
 
@@ -1932,227 +1099,6 @@ function renderDesafios() {
 
 
 
-/* ── GRÁFICO PESO ─────────────────────────────────── */
-function buildPesoChart() {
-  const saved = JSON.parse(localStorage.getItem('maj_medidas') || '[]');
-  const all   = [...saved, ...HIST_MOCK].reverse(); // oldest first
-
-  const pesoAtualEl = document.getElementById('pesoAtual');
-  const pesoDeltaEl = document.getElementById('pesoDelta');
-  const emptyEl     = document.getElementById('pesoChartEmpty');
-  const canvas      = document.getElementById('pesoChart');
-  if (!canvas) return;
-
-  const valid = all.filter(r => r.peso && !isNaN(+r.peso));
-
-  // Update header
-  if (valid.length > 0) {
-    const last = +valid[valid.length - 1].peso;
-    if (pesoAtualEl) pesoAtualEl.textContent = last.toFixed(1);
-    if (valid.length > 1 && pesoDeltaEl) {
-      const first = +valid[0].peso;
-      const diff  = +(last - first).toFixed(1);
-      pesoDeltaEl.textContent = (diff > 0 ? '+' : '') + diff + ' kg';
-      pesoDeltaEl.className   = 'peso-chart-delta ' + (diff <= 0 ? 'down' : 'up');
-      pesoDeltaEl.style.display = 'inline';
-    }
-  }
-
-  if (valid.length < 2) {
-    if (emptyEl)  emptyEl.style.display  = 'block';
-    canvas.style.display = 'none';
-    return;
-  }
-
-  if (emptyEl)  emptyEl.style.display  = 'none';
-  canvas.style.display = 'block';
-
-  // Draw chart
-  const ctx    = canvas.getContext('2d');
-  const dpr    = window.devicePixelRatio || 1;
-  const W      = canvas.offsetWidth  || canvas.parentElement.offsetWidth || 300;
-  const H      = 160;
-  canvas.width  = W * dpr;
-  canvas.height = H * dpr;
-  ctx.scale(dpr, dpr);
-
-  const pesos  = valid.map(r => +r.peso);
-  const labels = valid.map(r => r.data.slice(0,5)); // DD/Mon
-  const minP   = Math.min(...pesos) - 1;
-  const maxP   = Math.max(...pesos) + 1;
-  const padL   = 36, padR = 12, padT = 12, padB = 28;
-  const cW     = W - padL - padR;
-  const cH     = H - padT - padB;
-
-  const xOf = i  => padL + (i / (pesos.length - 1)) * cW;
-  const yOf = v  => padT + (1 - (v - minP) / (maxP - minP)) * cH;
-
-  ctx.clearRect(0, 0, W, H);
-
-  // Grid lines
-  ctx.strokeStyle = 'rgba(255,255,255,.06)';
-  ctx.lineWidth   = 1;
-  [0, 0.25, 0.5, 0.75, 1].forEach(t => {
-    const y = padT + t * cH;
-    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-    const val = (maxP - t * (maxP - minP)).toFixed(1);
-    ctx.fillStyle   = 'rgba(255,255,255,.3)';
-    ctx.font        = `${10 * dpr / dpr}px Barlow Condensed, sans-serif`;
-    ctx.textAlign   = 'right';
-    ctx.fillText(val, padL - 4, y + 4);
-  });
-
-  // Fill area
-  const grad = ctx.createLinearGradient(0, padT, 0, padT + cH);
-  grad.addColorStop(0,   'rgba(232,0,42,.25)');
-  grad.addColorStop(1,   'rgba(232,0,42,0)');
-  ctx.beginPath();
-  ctx.moveTo(xOf(0), yOf(pesos[0]));
-  pesos.forEach((p, i) => { if (i > 0) ctx.lineTo(xOf(i), yOf(p)); });
-  ctx.lineTo(xOf(pesos.length - 1), padT + cH);
-  ctx.lineTo(xOf(0), padT + cH);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
-
-  // Line
-  ctx.strokeStyle = '#e8002a';
-  ctx.lineWidth   = 2;
-  ctx.lineJoin    = 'round';
-  ctx.beginPath();
-  pesos.forEach((p, i) => i === 0 ? ctx.moveTo(xOf(i), yOf(p)) : ctx.lineTo(xOf(i), yOf(p)));
-  ctx.stroke();
-
-  // Dots + labels
-  pesos.forEach((p, i) => {
-    // dot
-    ctx.beginPath();
-    ctx.arc(xOf(i), yOf(p), 3.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#e8002a';
-    ctx.fill();
-    ctx.strokeStyle = '#0a0a0a';
-    ctx.lineWidth   = 1.5;
-    ctx.stroke();
-
-    // x-axis label (show first, last, and evenly spaced)
-    const step = Math.max(1, Math.floor(pesos.length / 4));
-    if (i === 0 || i === pesos.length - 1 || i % step === 0) {
-      ctx.fillStyle  = 'rgba(255,255,255,.4)';
-      ctx.font       = '10px Barlow Condensed, sans-serif';
-      ctx.textAlign  = i === 0 ? 'left' : i === pesos.length - 1 ? 'right' : 'center';
-      ctx.fillText(labels[i], xOf(i), H - 6);
-    }
-  });
-}
-/* ── HIDRATAÇÃO ───────────────────────────────────── */
-let waterCupsState = [];
-
-function calcWater() {
-  const saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
-  const peso  = +saved.dPeso || 0;
-  const ativ  = +saved.ativ  || 1.375;
-  if (!peso) return;
-
-  // Base: 35ml/kg; +500ml if active (ativ > 1.2)
-  const base   = peso * 35;
-  const extra  = ativ > 1.2 ? 500 : 0;
-  const totalMl = base + extra;
-  const litros  = (totalMl / 1000).toFixed(1);
-
-  // Cups: 250ml each
-  const numCups = Math.round(totalMl / 250);
-
-  const litrosEl = document.getElementById('waterLitros');
-  const cupsEl   = document.getElementById('waterCups');
-  const tipEl    = document.getElementById('waterTip');
-  if (!litrosEl) return;
-
-  litrosEl.textContent = litros;
-
-  // Load saved cups state
-  waterCupsState = JSON.parse(localStorage.getItem('maj_water_cups') || '[]');
-  if (waterCupsState.length !== numCups) {
-    waterCupsState = new Array(numCups).fill(false);
-  }
-
-  // Render cups
-  cupsEl.innerHTML = '';
-  waterCupsState.forEach((filled, i) => {
-    const cup = document.createElement('span');
-    cup.className = 'water-cup' + (filled ? ' filled' : '');
-    cup.textContent = '💧';
-    cup.title = `Copo ${i+1} de ${numCups} (250ml)`;
-    cup.onclick = () => {
-      waterCupsState[i] = !waterCupsState[i];
-      localStorage.setItem('maj_water_cups', JSON.stringify(waterCupsState));
-      calcWater();
-    };
-    cupsEl.appendChild(cup);
-  });
-
-  // Tip
-  const consumed = waterCupsState.filter(Boolean).length;
-  const consumedL = (consumed * 0.25).toFixed(2);
-  const remaining = numCups - consumed;
-  let tip = `${consumed} de ${numCups} copos · ${consumedL}L de ${litros}L`;
-  if (remaining > 0) tip += ` · Faltam ${remaining} copos`;
-  else tip = `✓ Meta batida! ${litros}L consumidos hoje.`;
-  if (tipEl) tipEl.textContent = tip;
-
-  // Save litros to form data
-  localStorage.setItem('maj_water_l', litros);
-}
-
-/* ── TREINO DE HOJE ───────────────────────────────── */
-function getNextTreino() {
-  // Find last training type from calendar
-  const keys = Object.keys(calData).sort().reverse();
-  let lastType = null;
-  for (const k of keys) {
-    const v = calData[k];
-    if (v === 'A' || v === 'B' || v === 'C') { lastType = v; break; }
-  }
-  // Cycle: A→B→C→A. If no history, start with A
-  const cycle = ['A','B','C'];
-  if (!lastType) return 'A';
-  return cycle[(cycle.indexOf(lastType) + 1) % 3];
-}
-
-function updateHojeTreino() {
-  const next = getNextTreino();
-  const mod  = treinoModalidade || 'casa';
-  const t    = (TREINOS[mod] && TREINOS[mod][next]) ? TREINOS[mod][next] : null;
-
-  const titleEl = document.getElementById('hojeTreinoTitulo');
-  const grupoEl = document.getElementById('hojeTreinoGrupo');
-  const badgeEl = document.getElementById('hojeTreinoBadge');
-
-  if (titleEl) titleEl.textContent = t ? t.titulo : 'Treino ' + next;
-  if (grupoEl) grupoEl.textContent = t ? t.grupo  : 'Selecione o local do treino';
-  if (badgeEl) badgeEl.textContent = next;
-}
-
-function irParaTreino() {
-  const next = getNextTreino();
-  navigate('treino');
-  // Set the correct day tab
-  setTimeout(() => {
-    treinoDia = next;
-    document.querySelectorAll('#treino-dia-tabs .tab').forEach((btn, i) => {
-      const dias = ['A','B','C'];
-      btn.classList.toggle('active', dias[i] === next);
-    });
-    renderTreino();
-  }, 50);
-}
-
-function toggleAcc(btn) {
-  const item = btn.closest('.acc-item');
-  const isOpen = item.classList.contains('open');
-  // Close all in same accordion
-  btn.closest('.accordion').querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
-  if (!isOpen) item.classList.add('open');
-}
 /* ── DESAFIO 30 DIAS ──────────────────────────────── */
 .desafio-wrap { margin-bottom: 20px; }
 
@@ -2719,6 +1665,251 @@ canvas#pesoChart {
   font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 20px;
 }
 .aj-enc-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ── ONBOARDING ───────────────────────────────────── */
+#onboarding {
+  position: fixed; inset: 0; z-index: 9998;
+  background: var(--bg);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px 20px;
+}
+#onboarding.open { display: flex; }
+.ob-logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(28px,7vw,42px); letter-spacing: 4px;
+  text-align: center; margin-bottom: 4px; line-height: 1.1;
+}
+.ob-logo span { color: var(--red); }
+.ob-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; letter-spacing: 5px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 32px;
+}
+.ob-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 28px 24px; width: 100%; max-width: 420px;
+}
+.ob-step-ind {
+  display: flex; gap: 6px; justify-content: center; margin-bottom: 24px;
+}
+.ob-dot {
+  width: 24px; height: 3px; background: var(--border); transition: background .3s;
+}
+.ob-dot.active { background: var(--red); }
+.ob-step { display: none; }
+.ob-step.active { display: block; }
+.ob-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 26px; letter-spacing: 2px; margin-bottom: 6px;
+}
+.ob-desc {
+  font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5;
+}
+.ob-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.ob-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--muted);
+}
+.ob-inp {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--white); padding: 13px 16px; outline: none;
+  font-family: 'Barlow', sans-serif; font-size: 16px;
+  transition: border-color .2s; -webkit-appearance: none; appearance: none;
+  -moz-appearance: textfield; width: 100%;
+}
+.ob-inp::-webkit-outer-spin-button,
+.ob-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
+.ob-inp:focus { border-color: var(--red); }
+.ob-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.ob-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.ob-btn-group { display: flex; gap: 6px; }
+.ob-choice {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; padding: 12px 8px; text-align: center;
+  transition: all .2s; cursor: pointer; min-height: 44px;
+}
+.ob-choice.sel { background: rgba(232,0,42,.12); border-color: var(--red); color: var(--red2); }
+.ob-next {
+  width: 100%; margin-top: 20px;
+  background: var(--red); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 5px;
+  text-transform: uppercase; padding: 15px; min-height: 48px;
+  transition: background .2s; cursor: pointer; border: none;
+}
+.ob-next:hover { background: var(--red2); }
+.ob-result-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin: 20px 0;
+}
+.ob-result-card {
+  background: var(--card2); border: 1px solid var(--border);
+  padding: 16px 12px; text-align: center;
+}
+.ob-result-card.hl { background: rgba(232,0,42,.07); border-color: rgba(232,0,42,.3); }
+.ob-result-card.hl-g { background: rgba(0,230,118,.06); border-color: rgba(0,230,118,.3); }
+.ob-rc-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+}
+.ob-rc-val {
+  font-family: 'Bebas Neue', cursive; font-size: 36px; line-height: 1;
+}
+.ob-rc-val.red { color: var(--red); text-shadow: 0 0 16px rgba(232,0,42,.3); }
+.ob-rc-val.green { color: var(--green); }
+.ob-rc-unit {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; color: var(--faint); letter-spacing: 2px; margin-top: 2px;
+}
+
+/* ── EDIT DATA SHORTCUT ───────────────────────────── */
+.edit-data-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--faint); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; padding: 5px 12px; cursor: pointer;
+  transition: all .2s; margin-top: 8px;
+}
+.edit-data-btn:hover { border-color: var(--red); color: var(--red2); }
+
+/* ── MEUS DADOS MODAL ─────────────────────────────── */
+#dadosModal {
+  display: none; position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,.88); align-items: center;
+  justify-content: center; padding: 20px;
+}
+#dadosModal.open { display: flex; }
+.dados-box {
+  background: var(--card); border: 1px solid rgba(232,0,42,.3);
+  border-top: 2px solid var(--red);
+  padding: 28px 24px; width: 100%; max-width: 420px;
+  max-height: 90vh; overflow-y: auto;
+}
+.dados-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 24px; letter-spacing: 2px; margin-bottom: 4px;
+}
+.dados-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.dados-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.dados-field { display: flex; flex-direction: column; gap: 5px; }
+.dados-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted);
+}
+.dados-inp {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--white); font-family: 'Bebas Neue', cursive;
+  font-size: 22px; padding: 8px 10px; outline: none;
+  transition: border-color .2s; -moz-appearance: textfield;
+  min-height: 44px; width: 100%;
+}
+.dados-inp::-webkit-outer-spin-button,
+.dados-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
+.dados-inp:focus { border-color: var(--red); }
+.dados-inp.text { font-family: 'Barlow', sans-serif; font-size: 16px; }
+.dados-btn-group { display: flex; gap: 6px; margin-bottom: 12px; }
+.dados-choice {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; padding: 11px 6px; text-align: center;
+  transition: all .2s; cursor: pointer; min-height: 44px;
+}
+.dados-choice.sel { background: rgba(232,0,42,.12); border-color: var(--red); color: var(--red2); }
+.dados-actions { display: flex; gap: 8px; margin-top: 20px; }
+.dados-save {
+  flex: 2; background: var(--red); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; padding: 14px; min-height: 48px; transition: background .2s;
+  border: none; cursor: pointer;
+}
+.dados-save:hover { background: var(--red2); }
+.dados-cancel {
+  flex: 1; background: transparent; border: 1px solid var(--border);
+  color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 14px; min-height: 48px; transition: all .2s;
+  cursor: pointer;
+}
+.dados-cancel:hover { color: var(--white); border-color: var(--border2); }
+
+/* ── DESKTOP RESPONSIVENESS ───────────────────────── */
+@media (min-width: 900px) {
+  #lockScreen { padding: 48px 20px; }
+  .lock-card { max-width: 400px; padding: 36px 32px; }
+  #onboarding { padding: 48px 20px; }
+  .ob-card { max-width: 480px; padding: 36px 32px; }
+  .wrap { padding: 28px 32px 80px; }
+  .page-hdr { padding: 36px 32px 0; }
+  .dash-greeting { padding: 28px 24px; }
+  .stats-row { grid-template-columns: repeat(4, 1fr); }
+  .modules-grid { grid-template-columns: repeat(3, 1fr); }
+  .medidas-grid { grid-template-columns: repeat(4, 1fr); }
+  .result-cards { grid-template-columns: repeat(4, 1fr); }
+  .ob-result-cards { grid-template-columns: repeat(4, 1fr); }
+  .treino-hdr { padding: 24px 20px; }
+  .video-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── CIÊNCIA CARDS ────────────────────────────────── */
+.ciencia-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  margin-bottom: 20px;
+}
+@media (min-width: 600px) { .ciencia-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .ciencia-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+.ciencia-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 22px 18px; position: relative; overflow: hidden;
+  transition: border-color .2s;
+}
+.ciencia-card:hover { border-color: rgba(232,0,42,.35); }
+.ciencia-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.ciencia-card.c-red::before   { background: var(--red); }
+.ciencia-card.c-green::before { background: var(--green); }
+.ciencia-card.c-blue::before  { background: var(--blue); }
+.ciencia-card.c-amber::before { background: var(--amber); }
+.ciencia-card.c-red2::before  { background: var(--red2); }
+.ciencia-card-icon {
+  font-size: 28px; margin-bottom: 12px; display: block;
+}
+.ciencia-card-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 20px; letter-spacing: 2px; color: var(--white);
+  margin-bottom: 8px;
+}
+.ciencia-card-body {
+  font-size: 13px; color: var(--muted); line-height: 1.7;
+}
+.ciencia-card-tag {
+  display: inline-block; margin-top: 12px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 3px 8px;
+  color: var(--red2); background: rgba(232,0,42,.08);
+  border: 1px solid rgba(232,0,42,.2);
+}
+.ciencia-intro {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  padding: 20px 18px; margin-bottom: 16px;
+  font-size: 14px; color: var(--text); line-height: 1.7;
+}
+.ciencia-intro strong { color: var(--white); }
+
 </style>
 </head>
 <body>
@@ -2854,9 +2045,9 @@ canvas#pesoChart {
 
   <!-- TOPBAR -->
   <div id="topbar">
-    <div class="topbar-logo">Método <span>Ananias Jr</span></div>
+    <div class="topbar-logo">Método <span>Ananias Jr</span><small>Plataforma</small></div>
     <div class="topbar-right">
-      <button class="topbar-btn" id="menuBtn" onclick="toggleSidebar()">☰</button>
+      <button class="topbar-btn" id="menuBtn" onclick="toggleSidebar()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     </div>
   </div>
 
@@ -2864,16 +2055,16 @@ canvas#pesoChart {
   <nav id="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-section-lbl">Configurações</div>
-      <div class="nav-item" onclick="dadosOpen()"><span class="nav-icon">⚙️</span> Meus Dados</div>
-      <div class="nav-item" data-page="ananias" onclick="navigate('ananias')"><span class="nav-icon">⭐</span> Quem é Ananias</div>
-      <div class="nav-item" data-page="ciencia" onclick="navigate('ciencia')"><span class="nav-icon">🔬</span> A Ciência</div>
-      <div class="nav-item" data-page="modulos" onclick="navigate('modulos')"><span class="nav-icon">⚡</span> Módulos</div>
+      <div class="nav-item" onclick="dadosOpen()"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span> Meus Dados</div>
+      <div class="nav-item" data-page="ananias" onclick="navigate('ananias')"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Quem é Ananias</div>
+      <div class="nav-item" data-page="ciencia" onclick="navigate('ciencia')"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.31"/><path d="M14 9.3V1.99"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/></svg></span> A Ciência</div>
+      <div class="nav-item" data-page="modulos" onclick="navigate('modulos')"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span> Módulos</div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-section-lbl">Conta</div>
-      <div class="nav-item" onclick="window.open('https://instagram.com/ananiasjr_personal','_blank')"><span class="nav-icon">💬</span> Suporte</div>
-      <div class="nav-item" onclick="desafioNovoOpen()"><span class="nav-icon">🎯</span> Novo Desafio</div>
-      <div class="nav-item" onclick="logout()"><span class="nav-icon" style="color:var(--red2)">✕</span> <span style="color:var(--red2)">Sair</span></div>
+      <div class="nav-item" onclick="window.open('https://instagram.com/ananiasjr_personal','_blank')"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> Suporte</div>
+      <div class="nav-item" onclick="desafioNovoOpen()"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></span> Novo Desafio</div>
+      <div class="nav-item" onclick="logout()"><span class="nav-icon" style="color:var(--red2)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> <span style="color:var(--red2)">Sair</span></div>
     </div>
 
     <div class="sidebar-user">
@@ -2882,7 +2073,7 @@ canvas#pesoChart {
         <div class="sidebar-name" id="sidebarName"></div>
         <div class="sidebar-plan">● Acesso Ativo</div>
       </div>
-      <button class="sidebar-logout" onclick="logout()" title="Sair">✕</button>
+      <button class="sidebar-logout" onclick="logout()" title="Sair"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
     </div>
   </nav>
 
@@ -3294,7 +2485,7 @@ canvas#pesoChart {
           <div class="perfil-action" onclick="navigate('ciencia')">
             <div>
               <div class="action-lbl">A Ciência do Método</div>
-              <div class="action-sub">Por que o protocolo funciona</div>
+              <div class="action-sub">Hipertrofia · Déficit · Recuperação · Progressão</div>
             </div>
             <div class="action-arrow">›</div>
           </div>
@@ -3352,24 +2543,63 @@ canvas#pesoChart {
         <div class="page-sub">Por que o protocolo funciona — sem mistério</div>
       </div>
       <div class="wrap">
-        <div style="display:flex;flex-direction:column;gap:2px;">
-          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);padding:20px 16px;">
-            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Déficit Calórico</div>
-            <div style="font-size:14px;color:var(--muted);line-height:1.7;">Para perder gordura é necessário consumir menos energia do que o seu corpo gasta. Sem déficit calórico não há perda de gordura — independente de qualquer outro fator. O protocolo usa um déficit de 15-20%, sustentável e eficaz sem comprometer massa muscular.</div>
-          </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--green);padding:20px 16px;">
-            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Proteína Alta</div>
-            <div style="font-size:14px;color:var(--muted);line-height:1.7;">2g de proteína por kg de peso corporal preserva massa muscular durante o déficit, aumenta a saciedade e eleva o gasto energético pela termogênese da digestão. É o nutriente mais importante em uma fase de seca.</div>
-          </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--blue);padding:20px 16px;">
-            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Treino de Força</div>
-            <div style="font-size:14px;color:var(--muted);line-height:1.7;">O treino resistido sinaliza ao corpo para manter e construir músculo mesmo em déficit. Músculo aumenta o metabolismo basal — mais músculo = queima mais gordura mesmo em repouso.</div>
-          </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--amber);padding:20px 16px;">
-            <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;margin-bottom:8px;">Consistência como Variável</div>
-            <div style="font-size:14px;color:var(--muted);line-height:1.7;">Nenhum protocolo funciona sem adesão. 30 dias aplicados vale mais do que 6 meses de início e parada. O sistema de sequência e consistência foi criado especificamente para construir o hábito.</div>
-          </div>
+
+        <div class="ciencia-intro">
+          O Método Ananias Jr é construído sobre <strong>5 princípios fisiológicos comprovados</strong>. Não há segredo — apenas ciência aplicada com consistência. Cada pilar do protocolo tem uma razão de existir.
         </div>
+
+        <div class="ciencia-grid">
+
+          <div class="ciencia-card c-red">
+            <span class="ciencia-card-icon">🔥</span>
+            <div class="ciencia-card-title">Déficit Calórico</div>
+            <div class="ciencia-card-body">Para perder gordura, o gasto energético precisa superar o consumo. O protocolo usa déficit de 15–20% — eficaz e sustentável, sem sacrificar massa muscular.</div>
+            <span class="ciencia-card-tag">Emagrecimento</span>
+          </div>
+
+          <div class="ciencia-card c-green">
+            <span class="ciencia-card-icon">💪</span>
+            <div class="ciencia-card-title">Hipertrofia</div>
+            <div class="ciencia-card-body">O treino resistido cria microlesões que, com recuperação e proteína adequadas, resultam em músculo novo. Mais músculo = metabolismo mais alto em repouso.</div>
+            <span class="ciencia-card-tag">Composição Corporal</span>
+          </div>
+
+          <div class="ciencia-card c-blue">
+            <span class="ciencia-card-icon">🥩</span>
+            <div class="ciencia-card-title">Proteína Alta</div>
+            <div class="ciencia-card-body">2g/kg de peso preserva massa muscular no déficit, aumenta saciedade e eleva o gasto calórico pela termogênese. É o macronutriente mais crítico do protocolo.</div>
+            <span class="ciencia-card-tag">Nutrição</span>
+          </div>
+
+          <div class="ciencia-card c-amber">
+            <span class="ciencia-card-icon">😴</span>
+            <div class="ciencia-card-title">Recuperação Muscular</div>
+            <div class="ciencia-card-body">O músculo cresce fora da academia. Sono de qualidade, descanso entre treinos e hidratação adequada são tão importantes quanto o treino em si.</div>
+            <span class="ciencia-card-tag">Descanso</span>
+          </div>
+
+          <div class="ciencia-card c-red2">
+            <span class="ciencia-card-icon">📈</span>
+            <div class="ciencia-card-title">Progressão de Carga</div>
+            <div class="ciencia-card-body">O corpo se adapta ao estímulo. Aumentar progressivamente a carga ou volume garante que os músculos continuem sendo desafiados e evoluindo semana a semana.</div>
+            <span class="ciencia-card-tag">Evolução</span>
+          </div>
+
+          <div class="ciencia-card c-red">
+            <span class="ciencia-card-icon">🗓</span>
+            <div class="ciencia-card-title">Consistência</div>
+            <div class="ciencia-card-body">30 dias aplicados valem mais do que 6 meses inconsistentes. O protocolo foi projetado para construir o hábito — não apenas entregar o treino perfeito.</div>
+            <span class="ciencia-card-tag">Mentalidade</span>
+          </div>
+
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);padding:18px 16px;margin-top:4px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--red2);margin-bottom:8px;">Fundamento</div>
+          <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1.5px;color:var(--text);line-height:1.5;">"Resultado não vem de um treino perfeito. Vem do equilíbrio contínuo entre treino, alimentação, recuperação e disciplina."</div>
+          <div style="font-size:12px;color:var(--faint);margin-top:8px;font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;text-transform:uppercase;">— Ananias Jr</div>
+        </div>
+
       </div>
     </div>
 
@@ -3516,22 +2746,28 @@ canvas#pesoChart {
 <!-- BOTTOM NAV -->
 <div id="bottomNav">
   <button class="bn-item active" data-page="dashboard" onclick="navigate('dashboard');setBottomNav(this)">
-    <span class="bn-icon">🏠</span><span class="bn-lbl">Início</span>
+    <span class="bn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+    <span class="bn-lbl">Início</span>
   </button>
   <button class="bn-item" data-page="treino" onclick="navigate('treino');setBottomNav(this)">
-    <span class="bn-icon">💪</span><span class="bn-lbl">Treino</span>
+    <span class="bn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5a4.5 4.5 0 0 0 0 9"/><path d="M17.5 6.5a4.5 4.5 0 0 1 0 9"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.5 11h11"/></svg></span>
+    <span class="bn-lbl">Treino</span>
   </button>
   <button class="bn-item" data-page="videos" onclick="navigate('videos');setBottomNav(this)">
-    <span class="bn-icon">🎬</span><span class="bn-lbl">Vídeos</span>
+    <span class="bn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></span>
+    <span class="bn-lbl">Vídeos</span>
   </button>
   <button class="bn-item" data-page="dieta" onclick="navigate('dieta');setBottomNav(this)">
-    <span class="bn-icon">🥗</span><span class="bn-lbl">Nutrição</span>
+    <span class="bn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3c0 1.5.8 2.8 2 3.4V10H8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-3V8.4c1.2-.6 2-1.9 2-3.4a3 3 0 0 0-3-3z"/></svg></span>
+    <span class="bn-lbl">Nutrição</span>
   </button>
   <button class="bn-item" data-page="progresso" onclick="navigate('progresso');setBottomNav(this)">
-    <span class="bn-icon">📈</span><span class="bn-lbl">Progresso</span>
+    <span class="bn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+    <span class="bn-lbl">Progresso</span>
   </button>
   <button class="bn-item" data-page="perfil" onclick="navigate('perfil');setBottomNav(this)">
-    <span class="bn-icon">👤</span><span class="bn-lbl">Config</span>
+    <span class="bn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span>
+    <span class="bn-lbl">Config</span>
   </button>
 </div>
 
@@ -4080,9 +3316,15 @@ function obNext(step) {
     const altura = +document.getElementById('obAltura').value;
     const idade  = +document.getElementById('obIdade').value;
     if (!peso || !altura || !idade) {
-      if (!peso)   document.getElementById('obPeso').focus();
-      else if (!altura) document.getElementById('obAltura').focus();
-      else         document.getElementById('obIdade').focus();
+      const showErr = (id) => {
+        const el = document.getElementById(id);
+        el.focus();
+        el.style.borderColor = 'var(--red)';
+        setTimeout(() => el.style.borderColor = '', 1200);
+      };
+      if (!peso) showErr('obPeso');
+      else if (!altura) showErr('obAltura');
+      else showErr('obIdade');
       return;
     }
     const ativ = OB_ATIV_VALS[obAtivSel];
@@ -4124,11 +3366,10 @@ function obNext(step) {
 function obFinish() {
   localStorage.setItem('maj_onboarding_done', '1');
   document.getElementById('onboarding').classList.remove('open');
+  document.getElementById('lockScreen').style.display = 'none';
   const email = localStorage.getItem('maj_pending_email') || localStorage.getItem('maj_email') || '';
   const nome  = localStorage.getItem('maj_nome') || 'Atleta';
-  // Save email properly
   if (email) localStorage.setItem('maj_email', email);
-  // Now boot the full app
   document.getElementById('appShell').style.display = 'block';
   bootApp(email, nome);
 }
@@ -4141,17 +3382,38 @@ async function tryLogin() {
   const pass  = document.getElementById('passInp').value.trim().toUpperCase();
   const inp   = document.getElementById('passInp');
   const err   = document.getElementById('lockErr');
-  if (!email.includes('@')) { err.textContent='Email inválido'; inp.classList.add('error'); setTimeout(()=>inp.classList.remove('error'),600); return; }
+  if (!email || !email.includes('@')) {
+    err.textContent = 'Email inválido';
+    inp.classList.add('error');
+    setTimeout(() => inp.classList.remove('error'), 600);
+    return;
+  }
+  if (!pass) {
+    err.textContent = 'Digite a senha de acesso';
+    inp.classList.add('error');
+    setTimeout(() => inp.classList.remove('error'), 600);
+    inp.focus();
+    return;
+  }
+  // Try SHA-256 (HTTPS), fallback to direct compare (file:// / HTTP)
+  let authorized = false;
   try {
     const enc  = new TextEncoder().encode(pass);
     const buf  = await crypto.subtle.digest('SHA-256', enc);
-    const hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-    if (hash !== PASS_HASH) { err.textContent='Senha incorreta'; inp.classList.add('error'); setTimeout(()=>inp.classList.remove('error'),600); return; }
+    const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    authorized = (hash === PASS_HASH);
   } catch(e) {
-    // crypto.subtle fallback (non-HTTPS or old browser)
-    console.warn('crypto.subtle unavailable, using fallback');
-    if (pass !== 'ESPORTESEMPRE') { err.textContent='Senha incorreta'; inp.classList.add('error'); setTimeout(()=>inp.classList.remove('error'),600); return; }
+    authorized = (pass === 'ESPORTESEMPRE');
   }
+  if (!authorized) {
+    err.textContent = 'Senha incorreta';
+    inp.classList.add('error');
+    inp.value = '';
+    setTimeout(() => inp.classList.remove('error'), 600);
+    inp.focus();
+    return;
+  }
+  err.textContent = '';
   const name = email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1);
   if (document.getElementById('rememberMe').checked) {
     localStorage.setItem('maj_email', email);
@@ -5064,6 +4326,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const passInp = document.getElementById('passInp');
   if (passInp) passInp.addEventListener('keydown', e => {
     if (e.key === 'Enter') tryLogin();
+  });
+  const emailInp = document.getElementById('emailInp');
+  if (emailInp) emailInp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('passInp').focus();
   });
   setSex('M');
   document.addEventListener('keydown', e => {
