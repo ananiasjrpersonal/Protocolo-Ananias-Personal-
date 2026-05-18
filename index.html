@@ -3292,6 +3292,7 @@ function dadosSave(){
   const meta = Math.round(get*obj);
   const prot = Math.round(peso*2);
 
+  // Salvar dados — isso não pode falhar
   localStorage.setItem('maj_nome', nome);
   localStorage.setItem('maj_kcal', meta);
   localStorage.setItem('maj_prot', prot);
@@ -3301,20 +3302,26 @@ function dadosSave(){
     tmb:Math.round(tmb), get:get
   }));
 
-  // Update UI live
-  (function(){const _e=document.getElementById('statKcal');if(_e)_e.textContent=meta;})()
-  (function(){const _e=document.getElementById('statProt');if(_e)_e.textContent=prot;})()
-  document.getElementById('sidebarName').textContent = nome;
-  document.getElementById('sidebarInitials').textContent = nome.slice(0,2).toUpperCase();
-  document.getElementById('perfilName').textContent = nome;
-  document.getElementById('perfilAvatar').textContent = nome.slice(0,2).toUpperCase();
-  const sub = document.getElementById('perfilDadosSub');
-  if (sub) sub.textContent = peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM];
-  try { setGreeting(nome); } catch(e) {}
-  try { updateDietaSummary(); } catch(e) {}
-  try { updatePerfilPlan(); } catch(e) {}
-  try { calcWater(); } catch(e) {}
-  dadosClose();
+  // Atualizar UI — tudo em try/catch para que qualquer erro NÃO bloqueie o fechamento
+  try {
+    const _k = document.getElementById('statKcal'); if(_k) _k.textContent = meta;
+    const _p = document.getElementById('statProt'); if(_p) _p.textContent = prot;
+    const _sn = document.getElementById('sidebarName'); if(_sn) _sn.textContent = nome;
+    const _si = document.getElementById('sidebarInitials'); if(_si) _si.textContent = nome.slice(0,2).toUpperCase();
+    const _pn = document.getElementById('perfilName'); if(_pn) _pn.textContent = nome;
+    const _pa = document.getElementById('perfilAvatar'); if(_pa) _pa.textContent = nome.slice(0,2).toUpperCase();
+    const sub = document.getElementById('perfilDadosSub');
+    if (sub) sub.textContent = peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM];
+    setGreeting(nome);
+    updateDietaSummary();
+    updatePerfilPlan();
+    calcWater();
+  } catch(e) {
+    console.warn('dadosSave UI update error (ignorado):', e);
+  } finally {
+    // SEMPRE fecha o modal, independente de qualquer erro acima
+    dadosClose();
+  }
 }
 /* ── ONBOARDING ───────────────────────────────────── */
 let obObjetivoSel = 0; // 0=secar 1=manter 2=ganhar
