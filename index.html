@@ -2622,6 +2622,103 @@ canvas#pesoChart {
   transition: max-height .3s cubic-bezier(.4,0,.2,1);
 }
 .acc-item.open .acc-body { max-height: 600px; }
+
+/* ── ANANIAS PAGE EXTRA ────────────────────────────── */
+.ananias-hero-lead {
+  font-size: 14px; color: var(--text); line-height: 1.7;
+  margin: 16px 0;
+}
+.ananias-hero-btns {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px;
+}
+.aj-btn-primary {
+  display: inline-block; background: var(--red); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 13px 20px; text-decoration: none;
+  border: none; cursor: pointer; transition: background .2s; min-height: 44px;
+  line-height: 1.2; display: inline-flex; align-items: center;
+}
+.aj-btn-primary:hover { background: var(--red2); }
+.aj-btn-secondary {
+  background: transparent; border: 1px solid var(--border); color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 13px 20px; cursor: pointer;
+  transition: all .2s; min-height: 44px;
+}
+.aj-btn-secondary:hover { border-color: var(--red); color: var(--white); }
+.aj-btn-secondary-wpp {
+  display: inline-flex; align-items: center;
+  background: #25D366; color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; padding: 13px 20px; text-decoration: none;
+  border: none; cursor: pointer; transition: background .2s; min-height: 44px;
+}
+.aj-btn-secondary-wpp:hover { background: #128C7E; }
+
+.aj-texto { margin-bottom: 12px; }
+.aj-texto p {
+  font-size: 14px; color: var(--text); line-height: 1.8;
+  margin-bottom: 12px;
+}
+.aj-texto p:last-child { margin-bottom: 0; }
+
+.aj-pilares {
+  display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 20px;
+}
+.aj-pilar {
+  background: rgba(232,0,42,.08); border: 1px solid rgba(232,0,42,.2);
+  color: var(--text);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; padding: 7px 14px;
+}
+
+.aj-diferenciais { display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px; }
+.aj-dif {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--card); border: 1px solid var(--border);
+  padding: 13px 16px; font-size: 13px; color: var(--text);
+}
+.aj-dif span { font-size: 18px; flex-shrink: 0; }
+
+.aj-atend-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 4px;
+}
+@media (max-width: 500px) { .aj-atend-grid { grid-template-columns: 1fr; } }
+.aj-atend-card {
+  background: var(--card); border: 1px solid var(--border); padding: 16px;
+}
+.aj-atend-titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--white); margin-bottom: 10px;
+}
+.aj-atend-lista { font-size: 13px; color: var(--muted); line-height: 1.8; }
+
+.aj-frase-destaque {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 3px solid var(--red); padding: 20px 20px;
+  font-family: 'Bebas Neue', cursive; font-size: clamp(16px,3.5vw,20px);
+  letter-spacing: 1.5px; color: var(--text); line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.aj-encerramento {
+  background: linear-gradient(135deg,rgba(232,0,42,.1),transparent);
+  border: 1px solid rgba(232,0,42,.2);
+  padding: 28px 20px; text-align: center;
+}
+.aj-enc-titulo {
+  font-family: 'Bebas Neue', cursive; font-size: clamp(22px,5vw,32px);
+  letter-spacing: 2px; color: var(--white); margin-bottom: 12px;
+}
+.aj-enc-desc {
+  font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 20px;
+}
+.aj-enc-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 </style>
 </head>
 <body>
@@ -3308,74 +3405,96 @@ canvas#pesoChart {
 
     <!-- QUEM É ANANIAS -->
     <div class="page" id="pageAnanias">
-      <div class="page-hdr">
-        <div class="page-eyebrow">O Profissional por trás do Método</div>
-        <div class="page-title">Quem é Ananias</div>
-      </div>
-      <div class="wrap">
+      <div class="wrap" style="padding-top:24px;">
 
+        <!-- HERO -->
         <div class="ananias-hero-box">
           <div class="ananias-bg-text">AJ</div>
-          <div class="ananias-badge">
-            <span class="badge-dot"></span> Personal Trainer · Sinop, MT
-          </div>
+          <div class="ananias-badge"><span class="badge-dot"></span> Personal Trainer · Sinop, MT</div>
           <div class="ananias-nome">Ananias <em>Júnior</em></div>
           <div class="ananias-cargo">Personal Trainer · @ananiasjr_personal</div>
-          <div class="ananias-frase">
-            "Consistência vence intensidade.<br>
-            Apareça todos os dias e o resultado vem."
+          <div class="ananias-hero-lead">
+            12 anos transformando experiência de alto rendimento em treino real para pessoas reais.<br>
+            Da base dos grandes clubes do futebol brasileiro ao acompanhamento presencial e online de alunos no Brasil e exterior.
+          </div>
+          <div class="ananias-hero-btns">
+            <a href="https://wa.me/5566999999999" target="_blank" class="aj-btn-primary">Treinar com Ananias</a>
+            <button class="aj-btn-secondary" onclick="document.getElementById('ajMetodo').scrollIntoView({behavior:'smooth'})">Conhecer a metodologia</button>
           </div>
         </div>
 
+        <!-- NÚMEROS -->
         <div class="ananias-nums">
-          <div class="ananias-num-card">
-            <div class="ananias-num-val">+10</div>
-            <div class="ananias-num-lbl">Anos de Experiência</div>
+          <div class="ananias-num-card"><div class="ananias-num-val">12+</div><div class="ananias-num-lbl">Anos como Personal</div></div>
+          <div class="ananias-num-card"><div class="ananias-num-val">500+</div><div class="ananias-num-lbl">Alunos Transformados</div></div>
+          <div class="ananias-num-card"><div class="ananias-num-val">2</div><div class="ananias-num-lbl">Grandes Clubes</div></div>
+          <div class="ananias-num-card"><div class="ananias-num-val">🌎</div><div class="ananias-num-lbl">Brasil e Exterior</div></div>
+        </div>
+
+        <!-- SOBRE -->
+        <div class="divider"></div>
+        <div class="section-hdr" id="ajMetodo">Sobre Ananias</div>
+        <div class="aj-texto">
+          <p>Ananias vive o esporte desde os 11 anos. Cresceu dentro de centros de treinamento, alojamentos e categorias de base do futebol brasileiro, convivendo diariamente com disciplina, preparação física, recuperação e performance.</p>
+          <p>Passou por clubes como <strong>Paraná Clube</strong> e <strong>São Paulo FC</strong>, absorvendo conhecimento com profissionais da saúde, preparação física e treinamento esportivo ao longo de sua trajetória.</p>
+          <p>O futebol não foi apenas um caminho profissional. Foi a base da metodologia que hoje aplica aos seus alunos.</p>
+          <p>Após mais de 12 anos como personal trainer, desenvolveu a capacidade de adaptar treinos para diferentes objetivos, perfis e realidades — do atleta ao aluno iniciante.</p>
+          <p>Mais do que montar treinos, Ananias acredita em um processo completo — integrando os pilares fundamentais da performance e qualidade de vida:</p>
+        </div>
+        <div class="aj-pilares">
+          <div class="aj-pilar">🥗 Alimentação</div>
+          <div class="aj-pilar">💧 Hidratação</div>
+          <div class="aj-pilar">😴 Sono</div>
+          <div class="aj-pilar">🔄 Recuperação</div>
+          <div class="aj-pilar">📈 Constância</div>
+        </div>
+        <div class="aj-texto">
+          <p style="color:var(--muted);font-style:italic;">"Resultado não vem apenas do treino. Vem do equilíbrio entre os pilares que sustentam saúde, evolução e performance."</p>
+        </div>
+
+        <!-- DIFERENCIAIS -->
+        <div class="divider"></div>
+        <div class="section-hdr">Diferenciais</div>
+        <div class="aj-diferenciais">
+          <div class="aj-dif"><span>⚽</span> Formação esportiva desde os 11 anos</div>
+          <div class="aj-dif"><span>🏋️</span> Mais de 12 anos como personal trainer</div>
+          <div class="aj-dif"><span>🧠</span> Método adaptado para cada perfil</div>
+          <div class="aj-dif"><span>🌎</span> Atendimento online no Brasil e exterior</div>
+          <div class="aj-dif"><span>📍</span> Atendimento presencial em Sinop, MT</div>
+          <div class="aj-dif"><span>📈</span> Treinos com visão de performance e constância</div>
+        </div>
+
+        <!-- COMO FUNCIONA -->
+        <div class="divider"></div>
+        <div class="section-hdr">Como funciona o acompanhamento</div>
+        <div class="aj-atend-grid">
+          <div class="aj-atend-card">
+            <div class="aj-atend-titulo">📍 Presencial</div>
+            <div class="aj-atend-lista">Academias · Condomínios · Parques · Quadras · Campos · Domiciliar</div>
           </div>
-          <div class="ananias-num-card">
-            <div class="ananias-num-val">+500</div>
-            <div class="ananias-num-lbl">Alunos Transformados</div>
-          </div>
-          <div class="ananias-num-card">
-            <div class="ananias-num-val">30</div>
-            <div class="ananias-num-lbl">Dias do Protocolo</div>
-          </div>
-          <div class="ananias-num-card">
-            <div class="ananias-num-val">MT</div>
-            <div class="ananias-num-lbl">Sinop, MT</div>
+          <div class="aj-atend-card">
+            <div class="aj-atend-titulo">💻 Online</div>
+            <div class="aj-atend-lista">Treino personalizado · Acompanhamento contínuo · Ajustes frequentes · Suporte remoto</div>
           </div>
         </div>
 
+        <!-- FILOSOFIA -->
         <div class="divider"></div>
-        <div class="section-hdr">Filosofia</div>
-        <div class="filo-grid">
-          <div class="filo-card">
-            <div class="filo-card-title">Sem atalhos</div>
-            <div class="filo-card-desc">Resultado real vem de processo real. O método não promete milagre — entrega estrutura para quem quer aparecer todo dia.</div>
-          </div>
-          <div class="filo-card verde">
-            <div class="filo-card-title">Ciência na prática</div>
-            <div class="filo-card-desc">Déficit calórico, proteína adequada, treino resistido. Três pilares que a ciência valida e que o Ananias aplica há mais de uma década.</div>
-          </div>
-          <div class="filo-card azul">
-            <div class="filo-card-title">Acessível de verdade</div>
-            <div class="filo-card-desc">Casa ou academia, com ou sem equipamento. Feito pra vida real de quem mora em Sinop.</div>
-          </div>
+        <div class="aj-frase-destaque">
+          "Cada pessoa possui rotina, limitações, histórico e objetivos diferentes.<br>
+          O treino precisa se adaptar à vida do aluno — não o contrário."
         </div>
 
+        <!-- ENCERRAMENTO -->
         <div class="divider"></div>
-        <div class="section-hdr">Fale com o Ananias</div>
-        <a href="https://instagram.com/ananiasjr_personal" target="_blank"
-           style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);padding:16px;text-decoration:none;transition:border-color .2s;"
-           onmouseover="this.style.borderColor='rgba(232,0,42,.4)'"
-           onmouseout="this.style.borderColor='var(--border)'">
-          <span style="font-size:24px;">📸</span>
-          <div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--white);">@ananiasjr_personal</div>
-            <div style="font-size:12px;color:var(--muted);margin-top:2px;">Instagram · Dúvidas e acompanhamento</div>
+        <div class="aj-encerramento">
+          <div class="aj-enc-titulo">Performance, saúde e consistência.</div>
+          <div class="aj-enc-desc">Com experiência prática de quem vive o esporte há décadas e entende que evolução real acontece através da união entre treino, alimentação, recuperação e disciplina.</div>
+          <div class="aj-enc-btns">
+            <a href="https://wa.me/5566999999999" target="_blank" class="aj-btn-primary">Começar agora</a>
+            <a href="https://wa.me/5566999999999" target="_blank" class="aj-btn-secondary-wpp">💬 Falar no WhatsApp</a>
           </div>
-          <span style="margin-left:auto;color:var(--faint);font-size:18px;">›</span>
-        </a>
+        </div>
 
       </div>
     </div>
@@ -3991,24 +4110,17 @@ function obNext(step) {
 
 function obFinish() {
   localStorage.setItem('maj_onboarding_done', '1');
-  setTimeout(updatePerfilPlan, 100);
   document.getElementById('onboarding').classList.remove('open');
-  const email = localStorage.getItem('maj_email') || '';
-  const nome  = localStorage.getItem('maj_nome')  || 'Atleta';
+  const email = localStorage.getItem('maj_pending_email') || localStorage.getItem('maj_email') || '';
+  const nome  = localStorage.getItem('maj_nome') || 'Atleta';
+  // Save email properly
+  if (email) localStorage.setItem('maj_email', email);
+  // Now boot the full app
+  document.getElementById('appShell').style.display = 'block';
   bootApp(email, nome);
 }
 
-function maybeShowOnboarding() {
-  // Show onboarding if never completed OR if key data is missing
-  const done = localStorage.getItem('maj_onboarding_done');
-  const nome = localStorage.getItem('maj_nome');
-  const peso = JSON.parse(localStorage.getItem('maj_tmb_form')||'{}').dPeso;
-  if (!done || !nome || !peso) {
-    // Clear stale flag so onboarding runs fresh
-    localStorage.removeItem('maj_onboarding_done');
-    document.getElementById('onboarding').classList.add('open');
-  }
-}
+function maybeShowOnboarding() { /* handled inside bootApp */ }
 
 /* ── AUTH ─────────────────────────────────────────── */
 async function tryLogin() {
@@ -4038,7 +4150,21 @@ async function tryLogin() {
 }
 
 function bootApp(email, rawName) {
-  const nome = localStorage.getItem('maj_nome') || rawName;
+  // 1. Check if onboarding is needed FIRST — before showing anything
+  const done = localStorage.getItem('maj_onboarding_done');
+  const nome_saved = localStorage.getItem('maj_nome');
+  const peso_saved = JSON.parse(localStorage.getItem('maj_tmb_form')||'{}').dPeso;
+  if (!done || !nome_saved || !peso_saved) {
+    localStorage.removeItem('maj_onboarding_done');
+    // Store email for after onboarding
+    localStorage.setItem('maj_pending_email', email);
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('onboarding').classList.add('open');
+    return; // don't init app yet — obFinish() will call bootApp again
+  }
+
+  // 2. Data is complete — boot normally
+  const nome = nome_saved || rawName;
   document.getElementById('lockScreen').style.display = 'none';
   document.getElementById('appShell').style.display = 'block';
 
@@ -4047,14 +4173,12 @@ function bootApp(email, rawName) {
   document.getElementById('sidebarName').textContent = nome;
   document.getElementById('perfilAvatar').textContent = initials;
   document.getElementById('perfilName').textContent = nome;
-  document.getElementById('perfilEmail').textContent = email;
+  document.getElementById('perfilEmail').textContent = email || localStorage.getItem('maj_email') || '';
 
   // Restore calculated stats
   const k=localStorage.getItem('maj_kcal'), p=localStorage.getItem('maj_prot');
-  // statKcal/statProt removed from dashboard — data lives in dietaResumo
   const _kcalEl=document.getElementById('statKcal'); if(_kcalEl&&k) _kcalEl.textContent=k;
   const _protEl=document.getElementById('statProt'); if(_protEl&&p) _protEl.textContent=p;
-  // Populate dieta summary from saved TMB data
   updateDietaSummary();
 
   setGreeting(nome);
@@ -4067,7 +4191,7 @@ function bootApp(email, rawName) {
   buildExLists();
   buildHistorico();
   buildPesoChart();
-  maybeShowOnboarding();
+  renderDesafios();
 }
 
 function logout() { if(!confirm('Sair da conta?')) return; localStorage.removeItem('maj_auth'); location.reload(); }
