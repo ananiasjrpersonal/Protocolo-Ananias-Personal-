@@ -3731,7 +3731,17 @@ function calcWater() {
     cup.title = `Copo ${i+1} de ${numCups} · 250ml`;
     cup.setAttribute('aria-label', `Copo ${i+1}`);
     cup.onclick = () => {
-      waterCupsState[i] = !waterCupsState[i];
+      // Clicar em i: preenche 0..i. Se i já era o último preenchido, desmarca tudo a partir de i.
+      const lastFilled = waterCupsState.lastIndexOf(true);
+      if (lastFilled === i) {
+        // Desmarcar do i em diante
+        for (let j = i; j < waterCupsState.length; j++) waterCupsState[j] = false;
+      } else {
+        // Preencher tudo de 0 até i
+        for (let j = 0; j <= i; j++) waterCupsState[j] = true;
+        // Desmarcar o que vem depois de i
+        for (let j = i + 1; j < waterCupsState.length; j++) waterCupsState[j] = false;
+      }
       localStorage.setItem('maj_water_cups', JSON.stringify(waterCupsState));
       calcWater();
     };
