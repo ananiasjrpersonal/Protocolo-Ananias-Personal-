@@ -1398,35 +1398,49 @@ html, body { overflow-x: hidden; width: 100%; }
 
 /* ── ÁGUA ─────────────────────────────────────────── */
 .water-card {
-  background: var(--card); border: 1px solid rgba(41,182,246,.25);
-  border-left: 3px solid #29b6f6; padding: 18px 16px; margin-bottom: 16px;
+  background: var(--card); border: 1px solid var(--border);
+  padding: 18px 16px; margin-bottom: 16px;
 }
 .water-top {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; margin-bottom: 16px;
 }
-.water-meta { text-align: right; }
+.water-meta { display: flex; align-items: baseline; gap: 6px; }
 .water-litros {
-  font-family: 'Bebas Neue', cursive; font-size: 44px; line-height: 1;
-  color: #29b6f6; text-shadow: 0 0 20px rgba(41,182,246,.3);
+  font-family: 'Bebas Neue', cursive; font-size: 32px; line-height: 1;
+  color: var(--white);
 }
 .water-unit {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
   text-transform: uppercase; color: var(--faint);
 }
+/* barra de progresso de água */
+.water-bar-wrap {
+  margin-bottom: 10px;
+}
+.water-bar-track {
+  height: 4px; background: var(--border); position: relative; overflow: hidden;
+}
+.water-bar-fill {
+  height: 100%; background: var(--blue);
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+/* copos como dots minimalistas */
 .water-cups {
-  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;
+  display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; margin-top: 12px;
 }
 .water-cup {
-  font-size: 20px; cursor: pointer; opacity: .3;
-  transition: opacity .15s, transform .15s;
+  width: 20px; height: 20px; border-radius: 2px;
+  background: var(--border); cursor: pointer;
+  transition: background .15s, transform .1s;
+  border: none; padding: 0; flex-shrink: 0;
 }
-.water-cup.filled { opacity: 1; }
+.water-cup.filled { background: var(--blue); }
 .water-cup:hover { transform: scale(1.15); }
 .water-tip {
   font-size: 12px; color: var(--muted); line-height: 1.5;
-  border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px;
 }
 
 /* already */
@@ -2261,12 +2275,15 @@ canvas#pesoChart {
           <div class="water-top">
             <div>
               <div class="section-hdr" style="margin-bottom:2px;">Hidratação Diária</div>
-              <div style="font-size:12px;color:var(--muted);">Baseada no seu peso e nível de atividade</div>
+              <div style="font-size:12px;color:var(--muted);">Baseada no peso e atividade</div>
             </div>
             <div class="water-meta">
               <div class="water-litros" id="waterLitros">—</div>
-              <div class="water-unit">litros / dia</div>
+              <div class="water-unit">L / dia</div>
             </div>
+          </div>
+          <div class="water-bar-wrap">
+            <div class="water-bar-track"><div class="water-bar-fill" id="waterBarFill"></div></div>
           </div>
           <div class="water-cups" id="waterCups"></div>
           <div class="water-tip" id="waterTip"></div>
@@ -3227,10 +3244,12 @@ function dadosOpen(){
   [0,1,2].forEach(i=>document.getElementById('dObjM'+i).classList.toggle('sel',i===dObjSelM));
 
   document.getElementById('dadosModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 function dadosClose(){
   document.getElementById('dadosModal').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function dadosSave(){
@@ -3238,13 +3257,18 @@ function dadosSave(){
   const peso   = +document.getElementById('dPesoM').value;
   const altura = +document.getElementById('dAlturaM').value;
   const idade  = +document.getElementById('dIdadeM').value;
-  if(!nome||!peso||!altura||!idade){
-    if(!nome)   document.getElementById('dNome').focus();
-    else if(!peso)   document.getElementById('dPesoM').focus();
-    else if(!altura) document.getElementById('dAlturaM').focus();
-    else             document.getElementById('dIdadeM').focus();
-    return;
-  }
+  const markErr = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.borderColor = 'var(--red2)';
+    el.style.boxShadow = '0 0 0 2px rgba(232,0,42,.25)';
+    el.focus();
+    setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 1500);
+  };
+  if (!nome)   { markErr('dNome');   return; }
+  if (!peso)   { markErr('dPesoM');  return; }
+  if (!altura) { markErr('dAlturaM'); return; }
+  if (!idade)  { markErr('dIdadeM');  return; }
   const ativVals = [1.2,1.375,1.725];
   const objVals  = [0.8,1.0,1.1];
   const ativ = ativVals[dAtivSelM];
@@ -3684,13 +3708,13 @@ function calcWater() {
     waterCupsState = new Array(numCups).fill(false);
   }
 
-  // Render cups
+  // Render dots
   cupsEl.innerHTML = '';
   waterCupsState.forEach((filled, i) => {
-    const cup = document.createElement('span');
+    const cup = document.createElement('button');
     cup.className = 'water-cup' + (filled ? ' filled' : '');
-    cup.textContent = '💧';
-    cup.title = `Copo ${i+1} de ${numCups} (250ml)`;
+    cup.title = `Copo ${i+1} de ${numCups} · 250ml`;
+    cup.setAttribute('aria-label', `Copo ${i+1}`);
     cup.onclick = () => {
       waterCupsState[i] = !waterCupsState[i];
       localStorage.setItem('maj_water_cups', JSON.stringify(waterCupsState));
@@ -3699,13 +3723,17 @@ function calcWater() {
     cupsEl.appendChild(cup);
   });
 
-  // Tip
+  // Progress bar
   const consumed = waterCupsState.filter(Boolean).length;
-  const consumedL = (consumed * 0.25).toFixed(2);
+  const pct = numCups > 0 ? Math.round((consumed / numCups) * 100) : 0;
+  const barFill = document.getElementById('waterBarFill');
+  if (barFill) barFill.style.width = pct + '%';
+
+  // Tip
+  const consumedL = (consumed * 0.25).toFixed(1);
   const remaining = numCups - consumed;
-  let tip = `${consumed} de ${numCups} copos · ${consumedL}L de ${litros}L`;
-  if (remaining > 0) tip += ` · Faltam ${remaining} copos`;
-  else tip = `✓ Meta batida! ${litros}L consumidos hoje.`;
+  let tip = `${consumedL}L de ${litros}L · ${consumed}/${numCups} copos`;
+  if (remaining === 0) tip = `✓ Meta atingida — ${litros}L`;
   if (tipEl) tipEl.textContent = tip;
 
   // Save litros to form data
