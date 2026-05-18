@@ -1793,7 +1793,7 @@ canvas#pesoChart {
 
 /* ── MEUS DADOS MODAL ─────────────────────────────── */
 #dadosModal {
-  display: none; position: fixed; inset: 0; z-index: 400;
+  display: none; position: fixed; inset: 0; z-index: 9990;
   background: rgba(0,0,0,.88); align-items: center;
   justify-content: center; padding: 20px;
 }
@@ -3222,6 +3222,7 @@ function dSelObj(n){
 }
 
 function dadosOpen(){
+  closeSidebar();
   // Pre-fill with saved data
   const saved = JSON.parse(localStorage.getItem('maj_tmb_form')||'{}');
   document.getElementById('dNome').value    = localStorage.getItem('maj_nome')||'';
@@ -3521,8 +3522,9 @@ function navigate(page) {
   });
   closeSidebar(); window.scrollTo(0,0);
   // Page-specific init
-  if(page === 'videos') buildVideoPage();
-  if(page === 'dieta')  calcWater();
+  if(page === 'videos')  buildVideoPage();
+  if(page === 'dieta')   calcWater();
+  if(page === 'treino')  renderTreino();
   if(page === 'progresso') { buildPesoChart(); }
 }
 
@@ -4216,6 +4218,14 @@ function renderTreino() {
   setEl('treinoQtEx',    t.meta.ex);
   setEl('treinoMin',     t.meta.min);
   setEl('treinoSeries',  t.meta.series);
+
+  // Sincronizar tabs visuais com o estado JS atual
+  document.querySelectorAll('#treino-modal-tabs .tab').forEach((btn, i) => {
+    btn.classList.toggle('active', i === (['casa','academia'].indexOf(treinoModalidade)));
+  });
+  document.querySelectorAll('#treino-dia-tabs .tab').forEach((btn, i) => {
+    btn.classList.toggle('active', i === (['A','B','C'].indexOf(treinoDia)));
+  });
 
   const listId = 'exListAtivo';
   renderEx(listId, t.ex, treinoModalidade + treinoDia);
