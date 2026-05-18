@@ -2882,28 +2882,28 @@ canvas#pesoChart {
         <div class="dados-lbl">Sexo</div>
         <div class="dados-btn-group" style="margin-bottom:0;">
           <button class="dados-choice sel" id="dSexMM" onclick="dSelSexo('M')">M</button>
-          <button class="dados-choice" id="dSexFM" onclick="dSelSexo('F')">F</button>
+          <button type="button" class="dados-choice" id="dSexFM" onclick="dSelSexo('F')">F</button>
         </div>
       </div>
     </div>
 
     <div class="dados-lbl" style="margin-bottom:6px;">Frequência de Treino</div>
     <div class="dados-btn-group">
-      <button class="dados-choice" id="dAtivM0" onclick="dSelAtiv(0)">Não treino</button>
+      <button type="button" class="dados-choice" id="dAtivM0" onclick="dSelAtiv(0)">Não treino</button>
       <button class="dados-choice sel" id="dAtivM1" onclick="dSelAtiv(1)">1–3x / sem</button>
-      <button class="dados-choice" id="dAtivM2" onclick="dSelAtiv(2)">4x ou mais</button>
+      <button type="button" class="dados-choice" id="dAtivM2" onclick="dSelAtiv(2)">4x ou mais</button>
     </div>
 
     <div class="dados-lbl" style="margin:12px 0 6px;">Objetivo</div>
     <div class="dados-btn-group">
       <button class="dados-choice sel" id="dObjM0" onclick="dSelObj(0)">Secar</button>
-      <button class="dados-choice" id="dObjM1" onclick="dSelObj(1)">Manter</button>
-      <button class="dados-choice" id="dObjM2" onclick="dSelObj(2)">Ganhar</button>
+      <button type="button" class="dados-choice" id="dObjM1" onclick="dSelObj(1)">Manter</button>
+      <button type="button" class="dados-choice" id="dObjM2" onclick="dSelObj(2)">Ganhar</button>
     </div>
 
     <div class="dados-actions">
-      <button class="dados-save" onclick="dadosSave()">Salvar e Recalcular</button>
-      <button class="dados-cancel" onclick="dadosClose()">Cancelar</button>
+      <button type="button" class="dados-save" onclick="dadosSave()">Salvar e Recalcular</button>
+      <button type="button" class="dados-cancel" onclick="dadosClose()">Cancelar</button>
     </div>
   </div>
 </div>
@@ -3249,11 +3249,22 @@ function dadosOpen(){
 }
 
 function dadosClose(){
-  document.getElementById('dadosModal').classList.remove('open');
+  const modal = document.getElementById('dadosModal');
+  if (modal) modal.classList.remove('open');
   document.body.style.overflow = '';
+  // Garantia extra: esconder via style caso classList falhe
+  if (modal && modal.classList.contains('open')) {
+    modal.style.display = 'none';
+    setTimeout(() => { modal.style.display = ''; }, 50);
+  }
 }
 
 function dadosSave(){
+  // Fecha teclado virtual no iOS antes de qualquer processamento
+  ['dNome','dPesoM','dAlturaM','dIdadeM'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.blur();
+  });
   const nome   = document.getElementById('dNome').value.trim();
   const peso   = +document.getElementById('dPesoM').value;
   const altura = +document.getElementById('dAlturaM').value;
@@ -3299,10 +3310,10 @@ function dadosSave(){
   document.getElementById('perfilAvatar').textContent = nome.slice(0,2).toUpperCase();
   const sub = document.getElementById('perfilDadosSub');
   if (sub) sub.textContent = peso + 'kg · ' + altura + 'cm · ' + ['Secar','Manter','Ganhar'][dObjSelM];
-  setGreeting(nome);
-  updateDietaSummary();
-  updatePerfilPlan();
-  calcWater();
+  try { setGreeting(nome); } catch(e) {}
+  try { updateDietaSummary(); } catch(e) {}
+  try { updatePerfilPlan(); } catch(e) {}
+  try { calcWater(); } catch(e) {}
   dadosClose();
 }
 /* ── ONBOARDING ───────────────────────────────────── */
