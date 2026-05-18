@@ -1651,6 +1651,57 @@ function calcWater() {
   // Save litros to form data
   localStorage.setItem('maj_water_l', litros);
 }
+
+/* ── TREINO DE HOJE ───────────────────────────────── */
+function getNextTreino() {
+  // Find last training type from calendar
+  const keys = Object.keys(calData).sort().reverse();
+  let lastType = null;
+  for (const k of keys) {
+    const v = calData[k];
+    if (v === 'A' || v === 'B' || v === 'C') { lastType = v; break; }
+  }
+  // Cycle: A→B→C→A. If no history, start with A
+  const cycle = ['A','B','C'];
+  if (!lastType) return 'A';
+  return cycle[(cycle.indexOf(lastType) + 1) % 3];
+}
+
+function updateHojeTreino() {
+  const next = getNextTreino();
+  const mod  = treinoModalidade || 'casa';
+  const t    = (TREINOS[mod] && TREINOS[mod][next]) ? TREINOS[mod][next] : null;
+
+  const titleEl = document.getElementById('hojeTreinoTitulo');
+  const grupoEl = document.getElementById('hojeTreinoGrupo');
+  const badgeEl = document.getElementById('hojeTreinoBadge');
+
+  if (titleEl) titleEl.textContent = t ? t.titulo : 'Treino ' + next;
+  if (grupoEl) grupoEl.textContent = t ? t.grupo  : 'Selecione o local do treino';
+  if (badgeEl) badgeEl.textContent = next;
+}
+
+function irParaTreino() {
+  const next = getNextTreino();
+  navigate('treino');
+  // Set the correct day tab
+  setTimeout(() => {
+    treinoDia = next;
+    document.querySelectorAll('#treino-dia-tabs .tab').forEach((btn, i) => {
+      const dias = ['A','B','C'];
+      btn.classList.toggle('active', dias[i] === next);
+    });
+    renderTreino();
+  }, 50);
+}
+
+function toggleAcc(btn) {
+  const item = btn.closest('.acc-item');
+  const isOpen = item.classList.contains('open');
+  // Close all in same accordion
+  btn.closest('.accordion').querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
 /* ── DESAFIO 30 DIAS ──────────────────────────────── */
 let desafios = [];
 let desafioFocoSel = 0;
@@ -2051,6 +2102,57 @@ function calcWater() {
   // Save litros to form data
   localStorage.setItem('maj_water_l', litros);
 }
+
+/* ── TREINO DE HOJE ───────────────────────────────── */
+function getNextTreino() {
+  // Find last training type from calendar
+  const keys = Object.keys(calData).sort().reverse();
+  let lastType = null;
+  for (const k of keys) {
+    const v = calData[k];
+    if (v === 'A' || v === 'B' || v === 'C') { lastType = v; break; }
+  }
+  // Cycle: A→B→C→A. If no history, start with A
+  const cycle = ['A','B','C'];
+  if (!lastType) return 'A';
+  return cycle[(cycle.indexOf(lastType) + 1) % 3];
+}
+
+function updateHojeTreino() {
+  const next = getNextTreino();
+  const mod  = treinoModalidade || 'casa';
+  const t    = (TREINOS[mod] && TREINOS[mod][next]) ? TREINOS[mod][next] : null;
+
+  const titleEl = document.getElementById('hojeTreinoTitulo');
+  const grupoEl = document.getElementById('hojeTreinoGrupo');
+  const badgeEl = document.getElementById('hojeTreinoBadge');
+
+  if (titleEl) titleEl.textContent = t ? t.titulo : 'Treino ' + next;
+  if (grupoEl) grupoEl.textContent = t ? t.grupo  : 'Selecione o local do treino';
+  if (badgeEl) badgeEl.textContent = next;
+}
+
+function irParaTreino() {
+  const next = getNextTreino();
+  navigate('treino');
+  // Set the correct day tab
+  setTimeout(() => {
+    treinoDia = next;
+    document.querySelectorAll('#treino-dia-tabs .tab').forEach((btn, i) => {
+      const dias = ['A','B','C'];
+      btn.classList.toggle('active', dias[i] === next);
+    });
+    renderTreino();
+  }, 50);
+}
+
+function toggleAcc(btn) {
+  const item = btn.closest('.acc-item');
+  const isOpen = item.classList.contains('open');
+  // Close all in same accordion
+  btn.closest('.accordion').querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
 /* ── DESAFIO 30 DIAS ──────────────────────────────── */
 .desafio-wrap { margin-bottom: 20px; }
 
@@ -2416,6 +2518,110 @@ canvas#pesoChart {
   width: 100% !important; height: 160px !important;
   display: block;
 }
+
+/* ── TREINO DE HOJE ───────────────────────────────── */
+.hoje-treino-card {
+  background: linear-gradient(135deg, rgba(232,0,42,.15) 0%, rgba(232,0,42,.05) 100%);
+  border: 1px solid rgba(232,0,42,.35); border-left: 3px solid var(--red);
+  padding: 20px 16px; margin-bottom: 16px;
+}
+.hoje-treino-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 16px; gap: 12px;
+}
+.hoje-treino-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--red2); margin-bottom: 4px;
+}
+.hoje-treino-titulo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 32px; letter-spacing: 2px; color: var(--white); line-height: 1;
+}
+.hoje-treino-grupo {
+  font-size: 12px; color: var(--muted); margin-top: 4px;
+}
+.hoje-treino-badge {
+  width: 56px; height: 56px; flex-shrink: 0;
+  background: var(--red); color: #fff;
+  font-family: 'Bebas Neue', cursive; font-size: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 2px;
+}
+.hoje-treino-btn {
+  width: 100%; background: var(--red); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; padding: 14px; min-height: 48px;
+  border: none; cursor: pointer; transition: background .2s;
+}
+.hoje-treino-btn:hover { background: var(--red2); }
+
+/* ── MINI ANANIAS ─────────────────────────────────── */
+.mini-ananias {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  padding: 14px 16px; margin-bottom: 20px; cursor: pointer;
+  transition: border-color .2s;
+}
+.mini-ananias:hover { border-color: rgba(232,0,42,.35); }
+.mini-ananias-foto {
+  width: 48px; height: 48px; flex-shrink: 0;
+  border-radius: 50%; background: rgba(232,0,42,.12);
+  border: 2px solid rgba(232,0,42,.3);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.mini-ananias-foto span {
+  font-family: 'Bebas Neue', cursive; font-size: 16px; color: var(--red2);
+}
+.mini-ananias-foto img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.mini-ananias-nome {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--white);
+}
+.mini-ananias-frase {
+  font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.4;
+}
+.mini-ananias-arrow {
+  margin-left: auto; color: var(--faint); font-size: 20px;
+}
+
+/* ── ACCORDION ────────────────────────────────────── */
+.accordion { display: flex; flex-direction: column; gap: 2px; }
+.acc-item { background: var(--card); border: 1px solid var(--border); overflow: hidden; }
+.acc-header {
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; background: none; border: none;
+  cursor: pointer; text-align: left; transition: background .15s;
+  min-height: 52px;
+}
+.acc-header:hover { background: rgba(255,255,255,.03); }
+.acc-item.open .acc-header { background: rgba(232,0,42,.06); border-bottom: 1px solid var(--border); }
+.acc-icon { font-size: 18px; flex-shrink: 0; }
+.acc-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--white); flex: 1;
+}
+.acc-meta {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; letter-spacing: 1px; color: var(--faint);
+  white-space: nowrap;
+}
+.acc-chevron {
+  color: var(--faint); font-size: 20px; transition: transform .25s;
+  flex-shrink: 0; line-height: 1;
+}
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+.acc-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height .3s cubic-bezier(.4,0,.2,1);
+}
+.acc-item.open .acc-body { max-height: 600px; }
 </style>
 </head>
 <body>
@@ -2560,53 +2766,23 @@ canvas#pesoChart {
   <!-- SIDEBAR -->
   <nav id="sidebar">
     <div class="sidebar-section">
-      <div class="sidebar-section-lbl">Principal</div>
-      <div class="nav-item active" onclick="navigate('dashboard')">
-        <span class="nav-icon">🏠</span> Início
-      </div>
-      <div class="nav-item" onclick="navigate('treino')">
-        <span class="nav-icon">💪</span> Treino
-        <span class="nav-badge" id="navDiaBadge">0 dias</span>
-      </div>
-      <div class="nav-item" onclick="navigate('dieta')">
-        <span class="nav-icon">🥗</span> Nutrição
-      </div>
-      <div class="nav-item" onclick="navigate('progresso')">
-        <span class="nav-icon">📈</span> Progresso
-      </div>
-      <div class="nav-item" data-page="videos" onclick="navigate('videos')">
-        <span class="nav-icon">🎬</span> Vídeos
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-lbl">Conhecimento</div>
+      <div class="sidebar-section-lbl">Configurações</div>
+      <div class="nav-item" onclick="dadosOpen()"><span class="nav-icon">⚙️</span> Meus Dados</div>
       <div class="nav-item" data-page="ananias" onclick="navigate('ananias')"><span class="nav-icon">⭐</span> Quem é Ananias</div>
+      <div class="nav-item" data-page="ciencia" onclick="navigate('ciencia')"><span class="nav-icon">🔬</span> A Ciência</div>
+      <div class="nav-item" data-page="modulos" onclick="navigate('modulos')"><span class="nav-icon">⚡</span> Módulos</div>
     </div>
-    <div class="sidebar-section">
-      <div class="sidebar-section-lbl">Módulos</div>
-      <div class="nav-item" onclick="navigate('modulos')">
-        <span class="nav-icon">⚡</span> Todos os Módulos
-      </div>
-      <div class="nav-item" onclick="navigate('ciencia')">
-        <span class="nav-icon">🔬</span> A Ciência
-      </div>
-    </div>
-
     <div class="sidebar-section">
       <div class="sidebar-section-lbl">Conta</div>
-      <div class="nav-item" onclick="navigate('perfil')">
-        <span class="nav-icon">👤</span> Perfil
-      </div>
-      <div class="nav-item" onclick="navigate('suporte')">
-        <span class="nav-icon">💬</span> Suporte
-      </div>
+      <div class="nav-item" onclick="window.open('https://instagram.com/ananiasjr_personal','_blank')"><span class="nav-icon">💬</span> Suporte</div>
+      <div class="nav-item" onclick="desafioNovoOpen()"><span class="nav-icon">🎯</span> Novo Desafio</div>
+      <div class="nav-item" onclick="logout()"><span class="nav-icon" style="color:var(--red2)">✕</span> <span style="color:var(--red2)">Sair</span></div>
     </div>
 
     <div class="sidebar-user">
       <div class="sidebar-avatar" id="sidebarInitials">?</div>
       <div>
-        <div class="sidebar-name" id="sidebarName">Carregando…</div>
+        <div class="sidebar-name" id="sidebarName"></div>
         <div class="sidebar-plan">● Acesso Ativo</div>
       </div>
       <button class="sidebar-logout" onclick="logout()" title="Sair">✕</button>
@@ -2626,10 +2802,36 @@ canvas#pesoChart {
       </div>
       <div class="wrap">
 
+        <!-- SAUDAÇÃO -->
         <div class="dash-greeting">
-          <div class="dash-greeting-day" id="greetDay">Carregando…</div>
-          <h2 id="greetMsg">Bom dia, Atleta!</h2>
+          <div class="dash-greeting-day" id="greetDay"></div>
+          <h2 id="greetMsg">Bom dia!</h2>
           <p>Consistência é o que separa quem chega de quem desiste.</p>
+        </div>
+
+        <!-- TREINO DE HOJE -->
+        <div class="hoje-treino-card" id="hojeTreinoCard">
+          <div class="hoje-treino-top">
+            <div>
+              <div class="hoje-treino-eyebrow">Treino sugerido para hoje</div>
+              <div class="hoje-treino-titulo" id="hojeTreinoTitulo">Treino A</div>
+              <div class="hoje-treino-grupo" id="hojeTreinoGrupo">Toque para começar</div>
+            </div>
+            <div class="hoje-treino-badge" id="hojeTreinoBadge">A</div>
+          </div>
+          <button class="hoje-treino-btn" onclick="irParaTreino()">Começar Treino →</button>
+        </div>
+
+        <!-- MINI ANANIAS -->
+        <div class="mini-ananias" onclick="navigate('ananias')">
+          <div class="mini-ananias-foto" id="miniAnaniasFoto">
+            <span>AJ</span>
+          </div>
+          <div class="mini-ananias-txt">
+            <div class="mini-ananias-nome">Ananias Jr</div>
+            <div class="mini-ananias-frase">"Apareça todos os dias e o resultado vem."</div>
+          </div>
+          <div class="mini-ananias-arrow">›</div>
         </div>
 
         <!-- CALENDÁRIO -->
@@ -2786,88 +2988,94 @@ canvas#pesoChart {
         <!-- PLANO ALIMENTAR COM ABAS -->
         <div class="section-hdr" style="margin-top:20px;">Plano Seca Barriga</div>
 
-        <div class="meal-tabs" id="mealTabsRow">
-          <div class="meal-tab active" onclick="setMealTab(this,'m1')"><span class="meal-tab-icon">☀️</span><span class="meal-tab-lbl">Café</span></div>
-          <div class="meal-tab" onclick="setMealTab(this,'m2')"><span class="meal-tab-icon">🌞</span><span class="meal-tab-lbl">Almoço</span></div>
-          <div class="meal-tab" onclick="setMealTab(this,'m3')"><span class="meal-tab-icon">🍎</span><span class="meal-tab-lbl">Lanche</span></div>
-          <div class="meal-tab" onclick="setMealTab(this,'m4')"><span class="meal-tab-icon">🌙</span><span class="meal-tab-lbl">Jantar</span></div>
-          <div class="meal-tab" onclick="setMealTab(this,'m5')"><span class="meal-tab-icon">⚡</span><span class="meal-tab-lbl">Pós-Treino</span></div>
-        </div>
+        <div class="accordion" id="mealAccordion">
 
-        <div class="meal-panel active" id="m1">
-          <div class="meal-block">
-            <div class="meal-hdr">
-              <div class="meal-title">☀️ Café da Manhã</div>
-              <div class="meal-meta-row"><span class="meal-meta-item kcal">491 kcal</span><span class="meal-meta-item prot">25g proteína</span><span class="meal-meta-item tip">Energético · Proteico</span></div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <span class="acc-icon">☀️</span>
+              <span class="acc-title">Café da Manhã</span>
+              <span class="acc-meta">491 kcal · 25g prot</span>
+              <span class="acc-chevron">›</span>
+            </button>
+            <div class="acc-body">
+              <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+              <div class="food-row"><div class="food-name">Ovos mexidos</div><div class="food-qty">3 un</div><div class="food-kcal">210</div><div class="food-prot">18g</div></div>
+              <div class="food-row"><div class="food-name">Aveia em flocos</div><div class="food-qty">50g</div><div class="food-kcal">187</div><div class="food-prot">6g</div></div>
+              <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
+              <div class="food-row"><div class="food-name">Café preto sem açúcar</div><div class="food-qty">200ml</div><div class="food-kcal">5</div><div class="food-prot">0g</div></div>
+              <div class="meal-total-row"><span class="meal-total-item kcal">Total: 491 kcal</span><span class="meal-total-item prot">25g prot</span></div>
             </div>
-            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
-            <div class="food-row"><div class="food-name">Ovos mexidos</div><div class="food-qty">3 un</div><div class="food-kcal">210</div><div class="food-prot">18g</div></div>
-            <div class="food-row"><div class="food-name">Aveia em flocos</div><div class="food-qty">50g</div><div class="food-kcal">187</div><div class="food-prot">6g</div></div>
-            <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
-            <div class="food-row"><div class="food-name">Café preto sem açúcar</div><div class="food-qty">200ml</div><div class="food-kcal">5</div><div class="food-prot">0g</div></div>
-            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 491 kcal</span><span class="meal-total-item prot">25g prot</span></div>
           </div>
-        </div>
 
-        <div class="meal-panel" id="m2">
-          <div class="meal-block">
-            <div class="meal-hdr">
-              <div class="meal-title">🌞 Almoço</div>
-              <div class="meal-meta-row"><span class="meal-meta-item kcal">660 kcal</span><span class="meal-meta-item prot">73g proteína</span><span class="meal-meta-item tip">Maior refeição do dia</span></div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <span class="acc-icon">🌞</span>
+              <span class="acc-title">Almoço</span>
+              <span class="acc-meta">660 kcal · 73g prot</span>
+              <span class="acc-chevron">›</span>
+            </button>
+            <div class="acc-body">
+              <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+              <div class="food-row"><div class="food-name">Frango grelhado (peito)</div><div class="food-qty">200g</div><div class="food-kcal">330</div><div class="food-prot">62g</div></div>
+              <div class="food-row"><div class="food-name">Arroz integral</div><div class="food-qty">100g</div><div class="food-kcal">124</div><div class="food-prot">3g</div></div>
+              <div class="food-row"><div class="food-name">Feijão carioca</div><div class="food-qty">80g</div><div class="food-kcal">91</div><div class="food-prot">6g</div></div>
+              <div class="food-row"><div class="food-name">Salada verde (à vontade)</div><div class="food-qty">livre</div><div class="food-kcal">25</div><div class="food-prot">2g</div></div>
+              <div class="food-row"><div class="food-name">Azeite extra virgem</div><div class="food-qty">1 col.sopa</div><div class="food-kcal">90</div><div class="food-prot">0g</div></div>
+              <div class="meal-total-row"><span class="meal-total-item kcal">Total: 660 kcal</span><span class="meal-total-item prot">73g prot</span></div>
             </div>
-            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
-            <div class="food-row"><div class="food-name">Frango grelhado (peito)</div><div class="food-qty">200g</div><div class="food-kcal">330</div><div class="food-prot">62g</div></div>
-            <div class="food-row"><div class="food-name">Arroz integral</div><div class="food-qty">100g</div><div class="food-kcal">124</div><div class="food-prot">3g</div></div>
-            <div class="food-row"><div class="food-name">Feijão carioca</div><div class="food-qty">80g</div><div class="food-kcal">91</div><div class="food-prot">6g</div></div>
-            <div class="food-row"><div class="food-name">Salada verde (à vontade)</div><div class="food-qty">—</div><div class="food-kcal">25</div><div class="food-prot">2g</div></div>
-            <div class="food-row"><div class="food-name">Azeite extra virgem</div><div class="food-qty">1 col.sopa</div><div class="food-kcal">90</div><div class="food-prot">0g</div></div>
-            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 660 kcal</span><span class="meal-total-item prot">73g prot</span></div>
           </div>
-        </div>
 
-        <div class="meal-panel" id="m3">
-          <div class="meal-block">
-            <div class="meal-hdr">
-              <div class="meal-title">🍎 Lanche da Tarde</div>
-              <div class="meal-meta-row"><span class="meal-meta-item kcal">368 kcal</span><span class="meal-meta-item prot">39g proteína</span><span class="meal-meta-item tip">Leve · Anti-catabólico</span></div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <span class="acc-icon">🍎</span>
+              <span class="acc-title">Lanche da Tarde</span>
+              <span class="acc-meta">368 kcal · 39g prot</span>
+              <span class="acc-chevron">›</span>
+            </button>
+            <div class="acc-body">
+              <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+              <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">170g</div><div class="food-kcal">100</div><div class="food-prot">17g</div></div>
+              <div class="food-row"><div class="food-name">Castanha do Pará</div><div class="food-qty">3 un</div><div class="food-kcal">90</div><div class="food-prot">2g</div></div>
+              <div class="food-row"><div class="food-name">Maçã</div><div class="food-qty">1 un</div><div class="food-kcal">81</div><div class="food-prot">0g</div></div>
+              <div class="food-row"><div class="food-name">Whey Protein</div><div class="food-qty">25g</div><div class="food-kcal">97</div><div class="food-prot">20g</div></div>
+              <div class="meal-total-row"><span class="meal-total-item kcal">Total: 368 kcal</span><span class="meal-total-item prot">39g prot</span></div>
             </div>
-            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
-            <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">170g</div><div class="food-kcal">100</div><div class="food-prot">17g</div></div>
-            <div class="food-row"><div class="food-name">Castanha do Pará</div><div class="food-qty">3 un</div><div class="food-kcal">90</div><div class="food-prot">2g</div></div>
-            <div class="food-row"><div class="food-name">Maçã</div><div class="food-qty">1 un</div><div class="food-kcal">81</div><div class="food-prot">0g</div></div>
-            <div class="food-row"><div class="food-name">Whey Protein</div><div class="food-qty">25g</div><div class="food-kcal">97</div><div class="food-prot">20g</div></div>
-            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 368 kcal</span><span class="meal-total-item prot">39g prot</span></div>
           </div>
-        </div>
 
-        <div class="meal-panel" id="m4">
-          <div class="meal-block">
-            <div class="meal-hdr">
-              <div class="meal-title">🌙 Jantar</div>
-              <div class="meal-meta-row"><span class="meal-meta-item kcal">448 kcal</span><span class="meal-meta-item prot">59g proteína</span><span class="meal-meta-item tip">Leve · Proteico · Sem carboidrato pesado</span></div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <span class="acc-icon">🌙</span>
+              <span class="acc-title">Jantar</span>
+              <span class="acc-meta">448 kcal · 59g prot</span>
+              <span class="acc-chevron">›</span>
+            </button>
+            <div class="acc-body">
+              <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+              <div class="food-row"><div class="food-name">Atum em água</div><div class="food-qty">2 latas</div><div class="food-kcal">160</div><div class="food-prot">36g</div></div>
+              <div class="food-row"><div class="food-name">Batata doce assada</div><div class="food-qty">150g</div><div class="food-kcal">129</div><div class="food-prot">3g</div></div>
+              <div class="food-row"><div class="food-name">Brócolis cozido</div><div class="food-qty">120g</div><div class="food-kcal">41</div><div class="food-prot">3g</div></div>
+              <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">200g</div><div class="food-kcal">118</div><div class="food-prot">17g</div></div>
+              <div class="meal-total-row"><span class="meal-total-item kcal">Total: 448 kcal</span><span class="meal-total-item prot">59g prot</span></div>
             </div>
-            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
-            <div class="food-row"><div class="food-name">Atum em água</div><div class="food-qty">2 latas</div><div class="food-kcal">160</div><div class="food-prot">36g</div></div>
-            <div class="food-row"><div class="food-name">Batata doce assada</div><div class="food-qty">150g</div><div class="food-kcal">129</div><div class="food-prot">3g</div></div>
-            <div class="food-row"><div class="food-name">Brócolis cozido</div><div class="food-qty">120g</div><div class="food-kcal">41</div><div class="food-prot">3g</div></div>
-            <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">200g</div><div class="food-kcal">118</div><div class="food-prot">17g</div></div>
-            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 448 kcal</span><span class="meal-total-item prot">59g prot</span></div>
           </div>
-        </div>
 
-        <div class="meal-panel" id="m5">
-          <div class="meal-block">
-            <div class="meal-hdr">
-              <div class="meal-title">⚡ Pós-Treino</div>
-              <div class="meal-meta-row"><span class="meal-meta-item kcal">268 kcal</span><span class="meal-meta-item prot">25g proteína</span><span class="meal-meta-item tip">30min após treino</span></div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <span class="acc-icon">⚡</span>
+              <span class="acc-title">Pós-Treino</span>
+              <span class="acc-meta">268 kcal · 25g prot</span>
+              <span class="acc-chevron">›</span>
+            </button>
+            <div class="acc-body">
+              <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
+              <div class="food-row"><div class="food-name">Whey Protein</div><div class="food-qty">30g</div><div class="food-kcal">120</div><div class="food-prot">24g</div></div>
+              <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
+              <div class="food-row"><div class="food-name">Mel</div><div class="food-qty">1 col.chá</div><div class="food-kcal">21</div><div class="food-prot">0g</div></div>
+              <div class="food-row"><div class="food-name">Água de coco</div><div class="food-qty">200ml</div><div class="food-kcal">38</div><div class="food-prot">0g</div></div>
+              <div class="meal-total-row"><span class="meal-total-item kcal">Total: 268 kcal</span><span class="meal-total-item prot">25g prot</span></div>
             </div>
-            <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
-            <div class="food-row"><div class="food-name">Whey Protein</div><div class="food-qty">30g</div><div class="food-kcal">120</div><div class="food-prot">24g</div></div>
-            <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
-            <div class="food-row"><div class="food-name">Mel</div><div class="food-qty">1 col.chá</div><div class="food-kcal">21</div><div class="food-prot">0g</div></div>
-            <div class="food-row"><div class="food-name">Água de coco</div><div class="food-qty">200ml</div><div class="food-kcal">38</div><div class="food-prot">0g</div></div>
-            <div class="meal-total-row"><span class="meal-total-item kcal">Total: 268 kcal</span><span class="meal-total-item prot">25g prot</span></div>
           </div>
+
         </div>
 
       </div>
@@ -3849,6 +4057,7 @@ function bootApp(email, rawName) {
   calLoad();
   desafioLoad();
   buildMiniGrid();
+  updateHojeTreino();
   calcWater();
   buildExLists();
   buildHistorico();
@@ -4092,6 +4301,57 @@ function calcWater() {
 
   // Save litros to form data
   localStorage.setItem('maj_water_l', litros);
+}
+
+/* ── TREINO DE HOJE ───────────────────────────────── */
+function getNextTreino() {
+  // Find last training type from calendar
+  const keys = Object.keys(calData).sort().reverse();
+  let lastType = null;
+  for (const k of keys) {
+    const v = calData[k];
+    if (v === 'A' || v === 'B' || v === 'C') { lastType = v; break; }
+  }
+  // Cycle: A→B→C→A. If no history, start with A
+  const cycle = ['A','B','C'];
+  if (!lastType) return 'A';
+  return cycle[(cycle.indexOf(lastType) + 1) % 3];
+}
+
+function updateHojeTreino() {
+  const next = getNextTreino();
+  const mod  = treinoModalidade || 'casa';
+  const t    = (TREINOS[mod] && TREINOS[mod][next]) ? TREINOS[mod][next] : null;
+
+  const titleEl = document.getElementById('hojeTreinoTitulo');
+  const grupoEl = document.getElementById('hojeTreinoGrupo');
+  const badgeEl = document.getElementById('hojeTreinoBadge');
+
+  if (titleEl) titleEl.textContent = t ? t.titulo : 'Treino ' + next;
+  if (grupoEl) grupoEl.textContent = t ? t.grupo  : 'Selecione o local do treino';
+  if (badgeEl) badgeEl.textContent = next;
+}
+
+function irParaTreino() {
+  const next = getNextTreino();
+  navigate('treino');
+  // Set the correct day tab
+  setTimeout(() => {
+    treinoDia = next;
+    document.querySelectorAll('#treino-dia-tabs .tab').forEach((btn, i) => {
+      const dias = ['A','B','C'];
+      btn.classList.toggle('active', dias[i] === next);
+    });
+    renderTreino();
+  }, 50);
+}
+
+function toggleAcc(btn) {
+  const item = btn.closest('.acc-item');
+  const isOpen = item.classList.contains('open');
+  // Close all in same accordion
+  btn.closest('.accordion').querySelectorAll('.acc-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
 }
 /* ── DESAFIO 30 DIAS ──────────────────────────────── */
 let desafios = [];
@@ -4432,7 +4692,7 @@ function updateCalStats() {
   setEl('statSequencia', streak);
   const seqEl = document.getElementById('sequenciaNum'); if(seqEl) seqEl.textContent=streak;
   const statSeqEl = document.getElementById('statSequencia'); if(statSeqEl) statSeqEl.textContent=streak;
-  const nb = document.getElementById('navDiaBadge'); if(nb) nb.textContent=totalTrained+' dias';
+  // navDiaBadge removed from sidebar
 
   setEl('statSemTreinar', semTreinar);
   setEl('statMelhor',     best);
