@@ -2757,7 +2757,7 @@ canvas#pesoChart {
 
   <!-- TOPBAR -->
   <div id="topbar">
-    <div class="topbar-logo">Método <span>Ananias Jr</span><small>Plataforma de Performance</small></div>
+    <div class="topbar-logo">Método <span>Ananias Jr</span></div>
     <div class="topbar-right">
       <button class="topbar-btn" id="menuBtn" onclick="toggleSidebar()">☰</button>
     </div>
@@ -2797,8 +2797,7 @@ canvas#pesoChart {
     <!-- ── DASHBOARD ──────────────────────────────── -->
     <div class="page active" id="pageDashboard">
       <div class="page-hdr">
-        <div class="page-eyebrow"><span class="badge-dot"></span> Método Ananias Jr · <span id="dDia">2026</span></div>
-        <div class="page-title">Início</div>
+<div class="page-title" style="padding:20px 20px 0;">Início</div>
       </div>
       <div class="wrap">
 
@@ -2822,19 +2821,8 @@ canvas#pesoChart {
           <button class="hoje-treino-btn" onclick="irParaTreino()">Começar Treino →</button>
         </div>
 
-        <!-- MINI ANANIAS -->
-        <div class="mini-ananias" onclick="navigate('ananias')">
-          <div class="mini-ananias-foto" id="miniAnaniasFoto">
-            <span>AJ</span>
-          </div>
-          <div class="mini-ananias-txt">
-            <div class="mini-ananias-nome">Ananias Jr</div>
-            <div class="mini-ananias-frase">"Apareça todos os dias e o resultado vem."</div>
-          </div>
-          <div class="mini-ananias-arrow">›</div>
-        </div>
-
         <!-- CALENDÁRIO -->
+        <div class="section-hdr" style="margin-bottom:8px;">Registro de Treino</div>
         <div class="cal-wrap">
           <div class="cal-month-tabs" id="calMonthTabs"></div>
           <div class="cal-grid-wrap">
@@ -2854,6 +2842,17 @@ canvas#pesoChart {
           </div>
         </div>
 
+        <!-- MINI ANANIAS -->
+        <div class="mini-ananias" onclick="navigate('ananias')" style="margin-bottom:16px;">
+          <div class="mini-ananias-foto" id="miniAnaniasFoto">
+            <span>AJ</span>
+          </div>
+          <div class="mini-ananias-txt">
+            <div class="mini-ananias-nome">Ananias Jr</div>
+            <div class="mini-ananias-frase">"Apareça todos os dias e o resultado vem."</div>
+          </div>
+          <div class="mini-ananias-arrow">›</div>
+        </div>
 
         <div class="stats-row">
           <div class="stat-card">
@@ -4000,7 +3999,13 @@ function obFinish() {
 }
 
 function maybeShowOnboarding() {
-  if (!localStorage.getItem('maj_onboarding_done')) {
+  // Show onboarding if never completed OR if key data is missing
+  const done = localStorage.getItem('maj_onboarding_done');
+  const nome = localStorage.getItem('maj_nome');
+  const peso = JSON.parse(localStorage.getItem('maj_tmb_form')||'{}').dPeso;
+  if (!done || !nome || !peso) {
+    // Clear stale flag so onboarding runs fresh
+    localStorage.removeItem('maj_onboarding_done');
     document.getElementById('onboarding').classList.add('open');
   }
 }
@@ -4123,10 +4128,15 @@ function setGreeting(nome) {
   const days = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
   const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const dayStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-  const n = nome || localStorage.getItem('maj_nome') || 'Atleta';
+  // Use nome from onboarding first; strip email domain if fallback
+  let n = localStorage.getItem('maj_nome') || nome || 'Atleta';
+  if (n.includes('@')) n = n.split('@')[0];
+  n = n.charAt(0).toUpperCase() + n.slice(1);
   const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
-  document.getElementById('greetDay').textContent = dayStr;
-  document.getElementById('greetMsg').textContent = greeting + ', ' + n + '!';
+  const greetEl  = document.getElementById('greetMsg');
+  const dayEl    = document.getElementById('greetDay');
+  if (greetEl) greetEl.textContent = greeting + ', ' + n + '!';
+  if (dayEl)   dayEl.textContent   = dayStr;
 }
 
 
