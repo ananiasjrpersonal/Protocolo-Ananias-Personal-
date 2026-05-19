@@ -2118,100 +2118,212 @@ canvas#pesoChart {
   /* Card de treino mobile: esconder */
   #pageDashboard .hoje-treino-card { display: none; }
 
-  /* ── Painel treino desktop (coluna direita) ── */
+  /* ── Painel treino desktop — refeito ── */
+
+  /* Grid: coluna esquerda cresce, direita é o painel treino */
+  #pageDashboard .wrap {
+    max-width: 1280px;
+    grid-template-columns: 1fr 420px;
+    grid-template-areas:
+      "greeting  treino"
+      "cal       treino"
+      "stats     treino"
+      "breakdown treino"
+      "ananias   treino";
+    column-gap: 28px;
+  }
+  #pageDashboard .dash-treino-col {
+    grid-area: treino;
+    position: sticky;
+    top: calc(var(--nav-h) + 16px);
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Painel principal */
   .dt-panel {
     background: var(--card);
     border: 1px solid var(--border);
-    border-top: 2px solid var(--red);
+    border-top: 3px solid var(--red);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
+
+  /* Header do painel: mais impacto visual */
   .dt-panel-header {
-    padding: 18px 20px 14px;
+    padding: 22px 24px 18px;
     border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(232,0,42,.07) 0%, transparent 60%);
+    position: relative;
+  }
+  .dt-badge-bg {
+    position: absolute;
+    right: 20px; top: 50%; transform: translateY(-50%);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 80px; line-height: 1;
+    color: rgba(232,0,42,.08);
+    letter-spacing: -2px;
+    pointer-events: none;
+    user-select: none;
   }
   .dt-eyebrow {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 9px; font-weight: 700; letter-spacing: 4px;
-    text-transform: uppercase; color: var(--red2); margin-bottom: 6px;
+    font-size: 9px; font-weight: 700; letter-spacing: 5px;
+    text-transform: uppercase; color: var(--red2); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dt-eyebrow::before {
+    content: ''; display: block;
+    width: 16px; height: 2px; background: var(--red);
   }
   .dt-titulo {
     font-family: 'Bebas Neue', cursive;
-    font-size: 30px; letter-spacing: 2px; line-height: 1;
-    color: var(--white); margin-bottom: 3px;
+    font-size: 42px; letter-spacing: 3px; line-height: 1;
+    color: var(--white); margin-bottom: 4px;
   }
   .dt-grupo {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px; color: var(--muted);
+    font-size: 13px; color: var(--muted); letter-spacing: 1px;
+    text-transform: uppercase;
   }
-  .dt-meta {
-    display: flex;
+
+  /* Seletor modal/dia: compacto e integrado */
+  .dt-selectors {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     border-bottom: 1px solid var(--border);
   }
-  .dt-meta-item {
-    flex: 1; padding: 10px 8px; text-align: center;
+  .dt-sel-group {
+    padding: 10px 16px;
     border-right: 1px solid var(--border);
   }
-  .dt-meta-item:last-child { border-right: none; }
-  .dt-meta-v {
-    font-family: 'Bebas Neue', cursive; font-size: 22px;
-    color: var(--white); line-height: 1;
-  }
-  .dt-meta-l {
+  .dt-sel-group:last-child { border-right: none; }
+  .dt-sel-lbl {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 8px; font-weight: 700; letter-spacing: 2px;
-    text-transform: uppercase; color: var(--faint); margin-top: 2px;
+    font-size: 8px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--faint); margin-bottom: 6px;
   }
-  .dt-tabs {
-    display: flex;
+  .dt-sel-btns { display: flex; gap: 4px; }
+  .dt-sel-btn {
+    flex: 1; padding: 7px 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--muted);
+    background: var(--bg); border: 1px solid var(--border);
+    cursor: pointer; transition: all .15s; text-align: center;
+  }
+  .dt-sel-btn.active {
+    background: rgba(232,0,42,.12);
+    border-color: var(--red);
+    color: var(--red2);
+  }
+  .dt-sel-btn:hover:not(.active) { color: var(--white); border-color: var(--border2); }
+
+  /* Stats bar */
+  .dt-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     border-bottom: 1px solid var(--border);
   }
-  .dt-tab {
-    flex: 1; padding: 9px 4px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 10px; font-weight: 700; letter-spacing: 2px;
-    text-transform: uppercase; color: var(--muted);
-    background: transparent; border: none;
-    border-bottom: 2px solid transparent;
-    cursor: pointer; transition: all .15s;
+  .dt-stat {
+    padding: 14px 16px; text-align: center;
+    border-right: 1px solid var(--border);
   }
-  .dt-tab.active { color: var(--red2); border-bottom-color: var(--red); }
-  .dt-tab:hover  { color: var(--white); }
+  .dt-stat:last-child { border-right: none; }
+  .dt-stat-v {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 30px; line-height: 1;
+    color: var(--white);
+  }
+  .dt-stat-l {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--faint); margin-top: 3px;
+  }
+
+  /* Lista de exercícios — ocupa o espaço nobre */
   .dt-ex-list {
-    max-height: 340px; overflow-y: auto; padding: 4px 0;
+    max-height: 320px;
+    overflow-y: auto;
+    flex: 1;
   }
-  .dt-ex-list::-webkit-scrollbar { width: 2px; }
-  .dt-ex-list::-webkit-scrollbar-thumb { background: var(--border2); }
+  .dt-ex-list::-webkit-scrollbar { width: 3px; }
+  .dt-ex-list::-webkit-scrollbar-track { background: transparent; }
+  .dt-ex-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
   .dt-ex-row {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 16px;
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 20px;
     border-bottom: 1px solid rgba(255,255,255,.04);
+    transition: background .1s;
   }
+  .dt-ex-row:last-child { border-bottom: none; }
+  .dt-ex-row:hover { background: rgba(255,255,255,.02); }
   .dt-ex-num {
-    font-family: 'Bebas Neue', cursive; font-size: 16px;
-    color: var(--faint); width: 18px; flex-shrink: 0;
+    font-family: 'Bebas Neue', cursive; font-size: 18px;
+    color: rgba(232,0,42,.4); width: 22px; flex-shrink: 0; line-height: 1;
   }
+  .dt-ex-body { flex: 1; min-width: 0; }
   .dt-ex-name {
-    flex: 1; min-width: 0;
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px; font-weight: 700; letter-spacing: .5px;
+    font-size: 14px; font-weight: 700; letter-spacing: .5px;
     color: var(--white);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 1px;
   }
   .dt-ex-detail {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 10px; color: var(--muted);
-    white-space: nowrap;
+    font-size: 11px; color: var(--muted);
   }
+  .dt-ex-rest {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    color: var(--faint); white-space: nowrap; flex-shrink: 0;
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 3px 7px;
+  }
+
+  /* CTA */
   .dt-cta {
-    display: block; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; width: 100%;
     background: var(--red); color: #fff;
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px; font-weight: 700; letter-spacing: 5px;
-    text-transform: uppercase; padding: 14px;
-    border: none; cursor: pointer; transition: background .2s;
-    text-align: center;
+    font-size: 12px; font-weight: 700; letter-spacing: 5px;
+    text-transform: uppercase; padding: 16px;
+    border: none; cursor: pointer;
+    transition: background .2s;
   }
   .dt-cta:hover { background: var(--red2); }
+  .dt-cta svg { flex-shrink: 0; }
 
+  /* Segundo card: resumo do dia (stats de calendário) */
+  .dt-day-card {
+    margin-top: 4px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 20px;
+  }
+  .dt-day-item {}
+  .dt-day-lbl {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 8px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--faint); margin-bottom: 3px;
+  }
+  .dt-day-val {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 26px; line-height: 1; color: var(--white);
+  }
+  .dt-day-val.red   { color: var(--red2); }
+  .dt-day-val.green { color: var(--green); }
+
+  /* ── Treino page: duas colunas no desktop ── */
   /* ── Treino page: duas colunas no desktop ── */
   #pageTreino .wrap {
     display: grid;
@@ -2574,29 +2686,83 @@ canvas#pesoChart {
 
         <!-- COLUNA TREINO DESKTOP -->
         <div class="dash-treino-col">
+
+          <!-- Painel principal de treino -->
           <div class="dt-panel">
+
+            <!-- Header: título + badge visual -->
             <div class="dt-panel-header">
+              <div class="dt-badge-bg" id="dtBadgeBg">A</div>
               <div class="dt-eyebrow">Treino do Dia</div>
               <div class="dt-titulo" id="dtTitulo">—</div>
               <div class="dt-grupo" id="dtGrupo">—</div>
             </div>
-            <div class="dt-meta">
-              <div class="dt-meta-item"><div class="dt-meta-v" id="dtEx">—</div><div class="dt-meta-l">Exerc.</div></div>
-              <div class="dt-meta-item"><div class="dt-meta-v" id="dtMin">—</div><div class="dt-meta-l">Min</div></div>
-              <div class="dt-meta-item"><div class="dt-meta-v" id="dtSeries">—</div><div class="dt-meta-l">Séries</div></div>
+
+            <!-- Seletores: local e dia lado a lado -->
+            <div class="dt-selectors">
+              <div class="dt-sel-group">
+                <div class="dt-sel-lbl">Local</div>
+                <div class="dt-sel-btns">
+                  <button type="button" class="dt-sel-btn active" id="dtTabCasa"  onclick="dtSwitch('casa')">Casa</button>
+                  <button type="button" class="dt-sel-btn"        id="dtTabAcad"  onclick="dtSwitch('academia')">Academia</button>
+                </div>
+              </div>
+              <div class="dt-sel-group">
+                <div class="dt-sel-lbl">Treino</div>
+                <div class="dt-sel-btns">
+                  <button type="button" class="dt-sel-btn active" id="dtTabA" onclick="dtDay('A')">A</button>
+                  <button type="button" class="dt-sel-btn"        id="dtTabB" onclick="dtDay('B')">B</button>
+                  <button type="button" class="dt-sel-btn"        id="dtTabC" onclick="dtDay('C')">C</button>
+                </div>
+              </div>
             </div>
-            <div class="dt-tabs">
-              <button type="button" class="dt-tab active" id="dtTabCasa" onclick="dtSwitch('casa')">🏠 Casa</button>
-              <button type="button" class="dt-tab" id="dtTabAcad" onclick="dtSwitch('academia')">🏋 Academia</button>
+
+            <!-- Stats bar -->
+            <div class="dt-stats-bar">
+              <div class="dt-stat">
+                <div class="dt-stat-v" id="dtEx">—</div>
+                <div class="dt-stat-l">Exercícios</div>
+              </div>
+              <div class="dt-stat">
+                <div class="dt-stat-v" id="dtMin">—</div>
+                <div class="dt-stat-l">Minutos</div>
+              </div>
+              <div class="dt-stat">
+                <div class="dt-stat-v" id="dtSeries">—</div>
+                <div class="dt-stat-l">Séries</div>
+              </div>
             </div>
-            <div class="dt-tabs" style="margin-top:-1px;">
-              <button type="button" class="dt-tab active" id="dtTabA" onclick="dtDay('A')">A</button>
-              <button type="button" class="dt-tab" id="dtTabB" onclick="dtDay('B')">B</button>
-              <button type="button" class="dt-tab" id="dtTabC" onclick="dtDay('C')">C</button>
-            </div>
+
+            <!-- Lista de exercícios -->
             <div class="dt-ex-list" id="dtExList"></div>
-            <button type="button" class="dt-cta" onclick="navigate('treino')">Ver Treino Completo →</button>
+
+            <!-- CTA -->
+            <button type="button" class="dt-cta" onclick="navigate('treino')">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5a4.5 4.5 0 0 0 0 9"/><path d="M17.5 6.5a4.5 4.5 0 0 1 0 9"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.5 11h11"/></svg>
+              Abrir Treino Completo
+            </button>
           </div>
+
+          <!-- Card de progresso do dia -->
+          <div class="dt-day-card">
+            <div class="dt-day-item">
+              <div class="dt-day-lbl">Sequência Atual</div>
+              <div class="dt-day-val red" id="dtSeq">—</div>
+            </div>
+            <div class="dt-day-item">
+              <div class="dt-day-lbl">Dias Treinados</div>
+              <div class="dt-day-val" id="dtDias">—</div>
+            </div>
+            <div class="dt-day-item">
+              <div class="dt-day-lbl">Melhor Sequência</div>
+              <div class="dt-day-val green" id="dtMelhor">—</div>
+            </div>
+            <div class="dt-day-item">
+              <div class="dt-day-lbl">Meta Kcal</div>
+              <div class="dt-day-val" id="dtKcal">—</div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -4804,23 +4970,29 @@ function dtRender() {
   const t = TREINOS[treinoModalidade][treinoDia];
   if (!t) return;
   const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-  s('dtTitulo', t.titulo);
-  s('dtGrupo',  t.grupo);
-  s('dtEx',     t.meta.ex);
-  s('dtMin',    t.meta.min);
-  s('dtSeries', t.meta.series);
-  // Tabs modalidade
-  const tabs = { casa: 'dtTabCasa', academia: 'dtTabAcad' };
-  Object.entries(tabs).forEach(([k, id]) => {
-    const b = document.getElementById(id);
-    if (b) b.classList.toggle('active', k === treinoModalidade);
+
+  // Header
+  s('dtTitulo',  t.titulo);
+  s('dtGrupo',   t.grupo);
+  s('dtBadgeBg', treinoDia);
+
+  // Stats
+  s('dtEx',      t.meta.ex);
+  s('dtMin',     t.meta.min);
+  s('dtSeries',  t.meta.series);
+
+  // Seletores: local
+  ['casa','academia'].forEach(m => {
+    const b = document.getElementById(m === 'casa' ? 'dtTabCasa' : 'dtTabAcad');
+    if (b) b.classList.toggle('active', m === treinoModalidade);
   });
-  // Tabs dia
+  // Seletores: dia
   ['A','B','C'].forEach(d => {
     const b = document.getElementById('dtTab' + d);
     if (b) b.classList.toggle('active', d === treinoDia);
   });
-  // Lista exercícios
+
+  // Lista de exercícios melhorada
   const listEl = document.getElementById('dtExList');
   if (!listEl) return;
   listEl.innerHTML = '';
@@ -4828,11 +5000,49 @@ function dtRender() {
     const row = document.createElement('div');
     row.className = 'dt-ex-row';
     row.innerHTML =
-      '<div class="dt-ex-num">' + (i+1) + '</div>' +
-      '<div class="dt-ex-name">' + ex.n + '</div>' +
-      '<div class="dt-ex-detail">' + ex.d + '</div>';
+      '<div class="dt-ex-num">' + (i + 1) + '</div>' +
+      '<div class="dt-ex-body">' +
+        '<div class="dt-ex-name">' + ex.n + '</div>' +
+        '<div class="dt-ex-detail">' + ex.d + '</div>' +
+      '</div>' +
+      '<div class="dt-ex-rest">' + ex.rest + 's</div>';
     listEl.appendChild(row);
   });
+
+  // Card de progresso: puxar stats do calendário
+  try {
+    const cal   = JSON.parse(localStorage.getItem('maj_cal') || '{}');
+    const year  = new Date().getFullYear();
+    const days  = Object.keys(cal).filter(k => k.startsWith(year));
+    const total = days.length;
+
+    // Sequência atual
+    let seq = 0;
+    const today = new Date();
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(today); d.setDate(today.getDate() - i);
+      const key = d.toISOString().slice(0,10);
+      if (cal[key]) seq++; else break;
+    }
+    // Melhor sequência
+    let best = 0, cur = 0;
+    const sorted = days.sort();
+    sorted.forEach((k, i) => {
+      if (i === 0) { cur = 1; }
+      else {
+        const prev = new Date(sorted[i-1]);
+        const curr = new Date(k);
+        const diff = (curr - prev) / 86400000;
+        cur = diff === 1 ? cur + 1 : 1;
+      }
+      if (cur > best) best = cur;
+    });
+
+    s('dtSeq',    seq);
+    s('dtDias',   total);
+    s('dtMelhor', best);
+    s('dtKcal',   localStorage.getItem('maj_kcal') || '—');
+  } catch(e) {}
 }
 function dtSwitch(m) { treinoModalidade = m; renderTreino(); dtRender(); }
 function dtDay(d)    { treinoDia = d;        renderTreino(); dtRender(); }
