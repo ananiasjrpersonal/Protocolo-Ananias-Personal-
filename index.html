@@ -125,9 +125,7 @@ input, select { font-family: inherit; }
 .desk-treino-progress { display: none; }
 #desk-treino-toast { display: none; }
 
-@media (min-width: 900px) {
-  #topbar { padding: 0 24px; }
-}
+
 .topbar-logo {
   font-family: 'Bebas Neue', cursive;
   font-size: 18px; letter-spacing: 3px; line-height: 1;
@@ -158,11 +156,7 @@ input, select { font-family: inherit; }
   transform: translateX(-100%); transition: transform .28s cubic-bezier(.4,0,.2,1);
 }
 #sidebar.open { transform: translateX(0); }
-@media (min-width: 900px) {
-  #sidebar { transform: translateX(0); }
-  #menuBtn { display: none; }
-  #mainArea { margin-left: var(--sidebar-w); }
-}
+
 
 .sidebar-section {
   padding: 20px 12px 6px;
@@ -1860,22 +1854,7 @@ canvas#pesoChart {
 .dados-cancel:hover { color: var(--white); border-color: var(--border2); }
 
 /* ── DESKTOP RESPONSIVENESS ───────────────────────── */
-@media (min-width: 900px) {
-  #lockScreen { padding: 48px 20px; }
-  .lock-card { max-width: 400px; padding: 36px 32px; }
-  #onboarding { padding: 48px 20px; }
-  .ob-card { max-width: 480px; padding: 36px 32px; }
-  .wrap { padding: 28px 32px 80px; }
-  .page-hdr { padding: 36px 32px 0; }
-  .dash-greeting { padding: 28px 24px; }
-  .stats-row { grid-template-columns: repeat(4, 1fr); }
-  .modules-grid { grid-template-columns: repeat(3, 1fr); }
-  .medidas-grid { grid-template-columns: repeat(4, 1fr); }
-  .result-cards { grid-template-columns: repeat(4, 1fr); }
-  .ob-result-cards { grid-template-columns: repeat(4, 1fr); }
-  .treino-hdr { padding: 24px 20px; }
-  .video-grid { grid-template-columns: repeat(3, 1fr); }
-}
+
 
 /* ── CIÊNCIA CARDS ────────────────────────────────── */
 .ciencia-grid {
@@ -1885,7 +1864,7 @@ canvas#pesoChart {
   margin-bottom: 20px;
 }
 @media (min-width: 600px) { .ciencia-grid { grid-template-columns: 1fr 1fr; } }
-@media (min-width: 900px) { .ciencia-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
 
 .ciencia-card {
   background: var(--card); border: 1px solid var(--border);
@@ -1938,7 +1917,7 @@ canvas#pesoChart {
   margin-bottom: 20px;
 }
 @media (min-width: 600px) { .ciencia-grid { grid-template-columns: 1fr 1fr; } }
-@media (min-width: 900px) { .ciencia-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
 
 .ciencia-card {
   background: var(--card); border: 1px solid var(--border);
@@ -1993,6 +1972,31 @@ canvas#pesoChart {
    ║  MOBILE BLINDADO: nada aqui toca telas < 900px       ║
    ╚══════════════════════════════════════════════════════╝ */
 @media (min-width: 900px) {
+  /* absorvido de micro-bloco */
+  #topbar { padding: 0 24px; }
+  /* absorvido de micro-bloco */
+  #sidebar { transform: translateX(0); }
+  #menuBtn { display: none; }
+  #mainArea { margin-left: var(--sidebar-w); }
+  /* absorvido de micro-bloco */
+  #lockScreen { padding: 48px 20px; }
+  .lock-card { max-width: 400px; padding: 36px 32px; }
+  #onboarding { padding: 48px 20px; }
+  .ob-card { max-width: 480px; padding: 36px 32px; }
+  .wrap { padding: 28px 32px 80px; }
+  .page-hdr { padding: 36px 32px 0; }
+  .dash-greeting { padding: 28px 24px; }
+  .stats-row { grid-template-columns: repeat(4, 1fr); }
+  .modules-grid { grid-template-columns: repeat(3, 1fr); }
+  .medidas-grid { grid-template-columns: repeat(4, 1fr); }
+  .result-cards { grid-template-columns: repeat(4, 1fr); }
+  .ob-result-cards { grid-template-columns: repeat(4, 1fr); }
+  .treino-hdr { padding: 24px 20px; }
+  .video-grid { grid-template-columns: repeat(3, 1fr); }
+  /* absorvido de micro-bloco */
+  .ciencia-grid { grid-template-columns: 1fr 1fr 1fr; }
+  /* absorvido de micro-bloco */
+  .ciencia-grid { grid-template-columns: 1fr 1fr 1fr; }
 
   /* ── Variáveis desktop ── */
   :root {
@@ -2765,6 +2769,129 @@ canvas#pesoChart {
   .prog-week-day.today   { outline: 1px solid rgba(255,255,255,.2); }
 
 } /* fim @media 900px */
+
+
+/* ── TELA DE CONCLUSÃO DE TREINO ──────────────────── */
+#treinoConclusao {
+  display: none;
+  position: fixed; inset: 0; z-index: 8000;
+  background: var(--bg);
+  flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 32px;
+  text-align: center;
+}
+#treinoConclusao.open { display: flex; }
+
+.conclusao-check {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: rgba(0,230,118,.1);
+  border: 2px solid rgba(0,230,118,.4);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 28px;
+  animation: checkPop .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes checkPop {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.conclusao-check svg { animation: checkDraw .3s ease .2s both; }
+@keyframes checkDraw {
+  from { stroke-dashoffset: 40; opacity: 0; }
+  to   { stroke-dashoffset: 0;  opacity: 1; }
+}
+
+.conclusao-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 5px;
+  text-transform: uppercase; color: var(--green);
+  margin-bottom: 10px;
+}
+.conclusao-titulo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 48px; letter-spacing: 4px; line-height: 1;
+  color: var(--white); margin-bottom: 6px;
+}
+.conclusao-grupo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; color: var(--muted); letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 36px;
+}
+.conclusao-stats {
+  display: flex; gap: 2px; width: 100%; max-width: 320px;
+  margin-bottom: 36px;
+}
+.conclusao-stat {
+  flex: 1; background: var(--card);
+  border: 1px solid var(--border);
+  padding: 16px 8px; text-align: center;
+}
+.conclusao-stat-v {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 32px; line-height: 1; color: var(--white);
+}
+.conclusao-stat-l {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--faint); margin-top: 4px;
+}
+.conclusao-frase {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; color: var(--muted); line-height: 1.6;
+  max-width: 280px; margin-bottom: 40px;
+}
+.conclusao-frase strong { color: var(--white); }
+.conclusao-btns { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 320px; }
+.conclusao-btn-primary {
+  background: var(--red); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 5px;
+  text-transform: uppercase; padding: 16px;
+  border: none; cursor: pointer; transition: background .2s;
+}
+.conclusao-btn-primary:hover { background: var(--red2); }
+.conclusao-btn-secondary {
+  background: transparent; color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 14px;
+  border: 1px solid var(--border); cursor: pointer;
+  transition: all .2s;
+}
+.conclusao-btn-secondary:hover { color: var(--white); border-color: var(--border2); }
+
+
+/* ── SWIPE ENTRE TREINOS (mobile) ─────────────────── */
+.ex-list {
+  transition: opacity .18s ease;
+}
+.ex-list.swipe-out-left  { opacity: 0; transform: translateX(-24px); transition: opacity .15s, transform .15s; }
+.ex-list.swipe-out-right { opacity: 0; transform: translateX(24px);  transition: opacity .15s, transform .15s; }
+.ex-list.swipe-in        { opacity: 1; transform: translateX(0);      transition: opacity .2s ease, transform .2s ease; }
+
+/* Indicador de swipe (aparece só uma vez) */
+#swipeHint {
+  display: none;
+  position: fixed;
+  bottom: calc(var(--tab-h, 60px) + 16px);
+  left: 50%; transform: translateX(-50%);
+  background: rgba(255,255,255,.08);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.1);
+  padding: 8px 16px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted);
+  z-index: 600; white-space: nowrap;
+  animation: hintFade 2.5s ease 1s both;
+}
+@keyframes hintFade {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  20%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
 
 </style>
 </head>
@@ -4303,8 +4430,6 @@ function dadosSave(){
   // 5. ATUALIZAR UI — em try/finally para fechar SEMPRE
   try {
     const setTxt = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
-    setTxt('statKcal', meta);
-    setTxt('statProt', prot);
     setTxt('sidebarName', nome);
     setTxt('sidebarInitials', nome.slice(0,2).toUpperCase());
     setTxt('perfilName', nome);
@@ -4492,8 +4617,6 @@ function bootApp(email, rawName) {
 
   // Restore calculated stats
   const k=localStorage.getItem('maj_kcal'), p=localStorage.getItem('maj_prot');
-  const _kcalEl=document.getElementById('statKcal'); if(_kcalEl&&k) _kcalEl.textContent=k;
-  const _protEl=document.getElementById('statProt'); if(_protEl&&p) _protEl.textContent=p;
   updateDietaSummary();
 
   setGreeting(nome);
@@ -5168,7 +5291,6 @@ function updateCalStats() {
   const setEl = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
   setEl('statDias',      totalTrained);
   setEl('statSequencia', streak);
-  const seqEl = document.getElementById('sequenciaNum'); if(seqEl) seqEl.textContent=streak;
   const statSeqEl = document.getElementById('statSequencia'); if(statSeqEl) statSeqEl.textContent=streak;
   // navDiaBadge removed from sidebar
 
@@ -5293,6 +5415,7 @@ function renderEx(containerId, treinos, storageKey) {
       if(idx===-1) cur.push(i); else cur.splice(idx,1);
       localStorage.setItem('maj_ex_'+stKey, JSON.stringify(cur));
       if (typeof deskUpdateProgress === 'function') deskUpdateProgress();
+      checkTreinoConcluido();
     };
     frag.appendChild(row);
   });
@@ -5395,8 +5518,6 @@ function saveMedidas() {
 (function() {
   const k = localStorage.getItem('maj_kcal');
   const p = localStorage.getItem('maj_prot');
-  const _kcalEl2=document.getElementById('statKcal'); if(_kcalEl2&&k) _kcalEl2.textContent=k;
-  const _protEl2=document.getElementById('statProt'); if(_protEl2&&p) _protEl2.textContent=p;
 })();
 
 /* esc moved to DOMContentLoaded */
@@ -5549,6 +5670,150 @@ function deskUpdateKpis() {
   } catch(e) {}
 }
 
+
+/* ── TELA DE CONCLUSÃO DE TREINO ─────────────────── */
+const CONCLUSAO_FRASES = ['<strong>Mais um dia de trabalho feito.</strong><br>Consistência é o que separa quem chega de quem desiste.', '<strong>Não é sobre motivação.</strong><br>É sobre disciplina. E você apareceu hoje.', '<strong>O músculo cresce fora da academia.</strong><br>Agora é recuperar, hidratar e descansar.', '<strong>Cada treino é um voto.</strong><br>Você está votando por quem quer se tornar.', '<strong>Feito é melhor que perfeito.</strong><br>Você veio, treinou, venceu o dia.'];
+
+function checkTreinoConcluido() {
+  const list = document.getElementById('exListAtivo');
+  if (!list) return;
+  const items = list.querySelectorAll('.ex-item');
+  const done  = list.querySelectorAll('.ex-item.done');
+  if (items.length === 0 || done.length < items.length) return;
+
+  // Pequeno delay para a animação do último item terminar
+  setTimeout(mostrarConclusao, 400);
+}
+
+function mostrarConclusao() {
+  const t = TREINOS[treinoModalidade][treinoDia];
+  if (!t) return;
+
+  const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  s('conclusaoTitulo', t.titulo);
+  s('conclusaoGrupo',  t.grupo);
+  s('conclusaoEx',     t.meta.ex);
+  s('conclusaoMin',    t.meta.min);
+  s('conclusaoSeries', t.meta.series);
+
+  // Frase aleatória
+  const fraseEl = document.getElementById('conclusaoFrase');
+  if (fraseEl) fraseEl.innerHTML = CONCLUSAO_FRASES[Math.floor(Math.random() * CONCLUSAO_FRASES.length)];
+
+  const modal = document.getElementById('treinoConclusao');
+  if (modal) { modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
+
+  // Vibrar no mobile (padrão suave)
+  if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+}
+
+function conclusaoRegistrar() {
+  // Registrar hoje no calendário com o dia do treino (A/B/C)
+  calLoad();
+  const now = new Date();
+  const key = calKey(now.getFullYear(), now.getMonth(), now.getDate());
+  calData[key] = treinoDia;
+  calSave();
+  if (typeof updateCalStats === 'function') updateCalStats();
+  if (typeof renderCalDays  === 'function') renderCalDays();
+  conclusaoFechar();
+  // Navegar para home para o aluno ver o registro
+  navigate('dashboard');
+}
+
+function conclusaoFechar() {
+  const modal = document.getElementById('treinoConclusao');
+  if (modal) { modal.classList.remove('open'); document.body.style.overflow = ''; }
+}
+
+
+/* ── SWIPE ENTRE TREINOS A/B/C ───────────────────── */
+(function() {
+  const DIAS = ['A', 'B', 'C'];
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let isSwiping   = false;
+  const THRESHOLD = 50;   // px mínimos para considerar swipe
+  const RATIO     = 1.5;  // swipe horizontal deve ser mais longo que vertical
+
+  function getExList() { return document.getElementById('exListAtivo'); }
+
+  function swipePara(diaNovo, direcao) {
+    const el = getExList();
+    if (!el) return;
+
+    // Animar saída
+    el.classList.add(direcao === 'left' ? 'swipe-out-left' : 'swipe-out-right');
+
+    setTimeout(() => {
+      // Mudar treino
+      treinoDia = diaNovo;
+      renderTreino();
+      if (typeof dtRender === 'function') dtRender();
+
+      // Animar entrada
+      el.classList.remove('swipe-out-left', 'swipe-out-right');
+      el.classList.add('swipe-in');
+      setTimeout(() => el.classList.remove('swipe-in'), 250);
+    }, 160);
+  }
+
+  function onTouchStart(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    isSwiping   = false;
+  }
+
+  function onTouchEnd(e) {
+    if (!e.changedTouches.length) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+
+    // Só swipe horizontal (dx dominante e acima do threshold)
+    if (Math.abs(dx) < THRESHOLD) return;
+    if (Math.abs(dy) * RATIO > Math.abs(dx)) return;
+
+    const curIdx = DIAS.indexOf(treinoDia);
+    if (dx < 0 && curIdx < DIAS.length - 1) {
+      // Swipe esquerda → próximo treino
+      swipePara(DIAS[curIdx + 1], 'left');
+    } else if (dx > 0 && curIdx > 0) {
+      // Swipe direita → treino anterior
+      swipePara(DIAS[curIdx - 1], 'right');
+    }
+  }
+
+  // Anexar listeners quando a página de treino estiver visível
+  function attachSwipe() {
+    const el = getExList();
+    if (!el || el._swipeAttached) return;
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchend',   onTouchEnd,   { passive: true });
+    el._swipeAttached = true;
+
+    // Mostrar hint na primeira vez
+    const hint = document.getElementById('swipeHint');
+    if (hint && !localStorage.getItem('maj_swipe_hint_seen')) {
+      hint.style.display = 'block';
+      localStorage.setItem('maj_swipe_hint_seen', '1');
+      setTimeout(() => { hint.style.display = 'none'; }, 4000);
+    }
+  }
+
+  // Observer para detectar quando a aba treino fica ativa
+  const pageObs = new MutationObserver(() => {
+    const page = document.getElementById('pageTreino');
+    if (page && page.classList.contains('active')) attachSwipe();
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const page = document.getElementById('pageTreino');
+    if (page) pageObs.observe(page, { attributes: true, attributeFilter: ['class'] });
+    // Caso já esteja ativa
+    if (page && page.classList.contains('active')) attachSwipe();
+  });
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
   const passInp = document.getElementById('passInp');
   if (passInp) passInp.addEventListener('keydown', e => {
@@ -5572,5 +5837,47 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+
+    <!-- ── TELA DE CONCLUSÃO DE TREINO ──────────── -->
+    <div id="treinoConclusao">
+      <div class="conclusao-check">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+          stroke="#00e676" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+          style="stroke-dasharray:40;stroke-dashoffset:0;">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div class="conclusao-eyebrow">Treino Concluído</div>
+      <div class="conclusao-titulo" id="conclusaoTitulo">Treino A</div>
+      <div class="conclusao-grupo" id="conclusaoGrupo">—</div>
+      <div class="conclusao-stats">
+        <div class="conclusao-stat">
+          <div class="conclusao-stat-v" id="conclusaoEx">—</div>
+          <div class="conclusao-stat-l">Exerc.</div>
+        </div>
+        <div class="conclusao-stat">
+          <div class="conclusao-stat-v" id="conclusaoMin">—</div>
+          <div class="conclusao-stat-l">Min</div>
+        </div>
+        <div class="conclusao-stat">
+          <div class="conclusao-stat-v" id="conclusaoSeries">—</div>
+          <div class="conclusao-stat-l">Séries</div>
+        </div>
+      </div>
+      <div class="conclusao-frase" id="conclusaoFrase">
+        <strong>Mais um dia de trabalho feito.</strong><br>
+        Consistência é o que separa quem chega de quem desiste.
+      </div>
+      <div class="conclusao-btns">
+        <button type="button" class="conclusao-btn-primary" onclick="conclusaoRegistrar()">
+          Registrar e Voltar
+        </button>
+        <button type="button" class="conclusao-btn-secondary" onclick="conclusaoFechar()">
+          Fechar sem registrar
+        </button>
+      </div>
+    </div>
+
+    <div id="swipeHint">← deslize para mudar treino →</div>
 </body>
 </html>
