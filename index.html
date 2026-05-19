@@ -3003,10 +3003,7 @@ canvas#pesoChart {
 }
 
 /* ── TELA DE PROGRAMA ATIVO ───────────────────────── */
-#pagePrograma {
-  display: none;
-}
-#pagePrograma.active-prog { display: block; }
+/* pagePrograma usa o sistema padrão .page/.page.active */
 
 .prog-nav-back {
   display: flex; align-items: center; gap: 8px;
@@ -5282,24 +5279,10 @@ function progAtivar(id) {
 let progDiaAtual = 'A';
 
 function progAbrir(id) {
-  const prog = PROGRAMAS.find(p => p.id === id);
-  if (!prog) return;
-  progDiaAtual = 'A';
-  // Preencher header
-  const s = (el, v) => { const e = document.getElementById(el); if (e) e.textContent = v; };
-  s('progEyebrow', prog.eyebrow);
-  s('progTitulo',  prog.nome);
-  s('progDesc',    prog.desc);
-  // Tabs
-  ['A','B','C'].forEach(d => {
-    const btn = document.getElementById('pdTab' + d);
-    if (btn) btn.classList.toggle('active', d === 'A');
-  });
-  // Renderizar treino A
-  progRenderDia(prog, 'A');
-  // Renderizar dieta
-  progRenderDieta(prog);
-  navigate('programa');
+  // Garante que o programa está ativo e navega direto para o Treino
+  if (programaAtivo !== id) progAtivar(id);
+  treinoDia = 'A';
+  navigate('treino');
 }
 
 function progVerDia(dia) {
@@ -6158,9 +6141,9 @@ function renderTreino() {
   setEl('treinoMin',     t.meta.min);
   setEl('treinoSeries',  t.meta.series);
 
-  // Tabs de modalidade: só mostra se for treino padrão (casa/academia)
+  // Tabs de modalidade: sempre visíveis
   const modalTabs = document.getElementById('treino-modal-tabs');
-  if (modalTabs) modalTabs.style.display = useModal ? '' : 'none';
+  if (modalTabs) modalTabs.style.display = '';
 
   // Tabs de dia A/B/C — sempre visíveis
   document.querySelectorAll('#treino-dia-tabs .tab').forEach((btn, i) => {
