@@ -121,6 +121,9 @@ input, select { font-family: inherit; }
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
 #desk-nav { display: none; }
+.prog-kpis { display: none; }
+.desk-treino-progress { display: none; }
+#desk-treino-toast { display: none; }
 
 @media (min-width: 900px) {
   #topbar { padding: 0 24px; }
@@ -2368,6 +2371,399 @@ canvas#pesoChart {
   /* ── Ciência: 3 colunas ── */
   .ciencia-grid { grid-template-columns: repeat(3, 1fr); }
 
+
+  /* ════════════════════════════════════════════════════
+     PÁGINA TREINO — Desktop premium
+     ════════════════════════════════════════════════════ */
+
+  #pageTreino .page-hdr {
+    max-width: 1100px;
+    padding: 36px 48px 0;
+  }
+  #pageTreino .page-hdr .page-title { font-size: 52px; letter-spacing: 4px; }
+  #pageTreino .page-hdr .page-sub   { margin-top: 4px; font-size: 13px; }
+
+  #pageTreino .wrap {
+    max-width: 1100px;
+    padding: 28px 48px 48px;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: auto 1fr;
+    column-gap: 32px;
+    align-items: start;
+  }
+
+  /* Coluna esquerda: seletor vertical */
+  #pageTreino .treino-col-tabs {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: sticky;
+    top: calc(var(--nav-h) + 24px);
+  }
+  #pageTreino .treino-col-tabs .tabs {
+    flex-direction: column;
+    gap: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+  #pageTreino .treino-col-tabs .tab {
+    text-align: left;
+    padding: 11px 14px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    color: var(--muted);
+    margin-bottom: 2px;
+    transition: all .15s;
+  }
+  #pageTreino .treino-col-tabs .tab:hover {
+    color: var(--white);
+    border-color: var(--border2);
+    background: rgba(255,255,255,.03);
+  }
+  #pageTreino .treino-col-tabs .tab.active {
+    color: var(--white);
+    border-color: rgba(232,0,42,.5);
+    background: rgba(232,0,42,.07);
+    font-weight: 700;
+  }
+  #pageTreino .treino-col-tabs .tabs:first-child { margin-bottom: 16px; }
+
+  /* Coluna direita: header + lista */
+  #pageTreino .treino-hdr {
+    grid-column: 2;
+    grid-row: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 0 0 20px;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  #pageTreino .treino-hdr h2 {
+    font-size: 44px;
+    letter-spacing: 3px;
+  }
+  #pageTreino .treino-hdr p {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  #pageTreino .treino-meta {
+    display: flex;
+    gap: 28px;
+    align-items: flex-end;
+    padding-bottom: 4px;
+  }
+  #pageTreino .meta { text-align: right; }
+  #pageTreino .meta .v { font-size: 32px; }
+  #pageTreino .meta .l { font-size: 9px; letter-spacing: 3px; }
+
+  /* Lista de exercícios desktop: card premium */
+  #pageTreino .ex-list {
+    grid-column: 2;
+    grid-row: 2;
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 16px;
+  }
+  #pageTreino .ex-item {
+    display: grid;
+    grid-template-columns: 48px 1fr 100px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    transition: border-color .15s, background .15s, transform .1s;
+    cursor: pointer;
+  }
+  #pageTreino .ex-item:hover {
+    border-color: rgba(232,0,42,.25);
+    background: rgba(255,255,255,.02);
+  }
+  #pageTreino .ex-item.done {
+    background: rgba(232,0,42,.05);
+    border-color: rgba(232,0,42,.2);
+  }
+  #pageTreino .ex-item.done .ex-name {
+    text-decoration: line-through;
+    color: var(--faint);
+  }
+  #pageTreino .ex-n {
+    width: 48px;
+    font-size: 15px;
+    color: var(--faint);
+    border-right: 1px solid var(--border);
+  }
+  #pageTreino .ex-item.done .ex-n {
+    color: var(--red2);
+    border-right-color: rgba(232,0,42,.2);
+  }
+  #pageTreino .ex-body { padding: 16px 16px; }
+  #pageTreino .ex-name { font-size: 14px; letter-spacing: .5px; }
+  #pageTreino .ex-detail { font-size: 12px; margin-top: 3px; }
+  #pageTreino .ex-timer-btn {
+    height: 100%;
+    font-size: 11px;
+    letter-spacing: 1px;
+    border-left: 1px solid var(--border);
+    transition: color .15s, background .15s;
+    min-width: 100px;
+  }
+  #pageTreino .ex-timer-btn:hover {
+    color: var(--white);
+    background: rgba(255,255,255,.03);
+  }
+
+  /* Contador de progresso inline — desktop only */
+  .desk-treino-progress { display: flex; }
+  .desk-treino-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    margin-bottom: 4px;
+  }
+  .desk-treino-progress-track {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    margin: 0 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .desk-treino-progress-fill {
+    height: 100%;
+    background: var(--red);
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+  }
+  .desk-treino-progress-lbl {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted); white-space: nowrap;
+  }
+  .desk-treino-progress-lbl.done-lbl { color: var(--green); }
+
+  /* Conclusão de treino — toast elegante */
+  #desk-treino-toast {
+    display: none;
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--card);
+    border: 1px solid rgba(0,230,118,.3);
+    border-left: 3px solid var(--green);
+    padding: 16px 20px;
+    z-index: 8000;
+    min-width: 280px;
+    animation: slideInRight .3s cubic-bezier(.4,0,.2,1);
+  }
+  #desk-treino-toast.show { display: block; }
+  @keyframes slideInRight {
+    from { transform: translateX(40px); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+  }
+  .toast-lbl {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px; font-weight: 700; letter-spacing: 4px;
+    text-transform: uppercase; color: var(--green); margin-bottom: 4px;
+  }
+  .toast-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 20px; letter-spacing: 2px; color: var(--white);
+  }
+  .toast-sub {
+    font-size: 12px; color: var(--muted); margin-top: 2px;
+  }
+
+  /* ════════════════════════════════════════════════════
+     PÁGINA PROGRESSO — Desktop premium
+     ════════════════════════════════════════════════════ */
+
+  #pageProgresso .page-hdr {
+    max-width: 1100px;
+    padding: 36px 48px 0;
+  }
+  #pageProgresso .page-hdr .page-title { font-size: 52px; letter-spacing: 4px; }
+
+  #pageProgresso .wrap {
+    max-width: 1100px;
+    padding: 28px 48px 48px;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "kpis       kpis"
+      "chart      registro"
+      "historico  registro";
+    column-gap: 28px;
+    row-gap: 24px;
+    align-items: start;
+  }
+
+  /* KPIs: linha de destaques no topo */
+  .prog-kpis { display: grid; }
+  .prog-kpis {
+    grid-area: kpis;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+  }
+  .prog-kpi {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 20px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .prog-kpi::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  }
+  .prog-kpi.k-red::after   { background: var(--red); }
+  .prog-kpi.k-green::after { background: var(--green); }
+  .prog-kpi.k-blue::after  { background: var(--blue); }
+  .prog-kpi.k-amber::after { background: var(--amber); }
+  .prog-kpi-lbl {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px; font-weight: 700; letter-spacing: 4px;
+    text-transform: uppercase; color: var(--faint); margin-bottom: 8px;
+  }
+  .prog-kpi-val {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 40px; line-height: 1; color: var(--white);
+  }
+  .prog-kpi-val.accent { color: var(--red2); }
+  .prog-kpi-val.green  { color: var(--green); }
+  .prog-kpi-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: 1px;
+  }
+
+  /* Gráfico de peso: área maior */
+  .peso-chart-wrap {
+    grid-area: chart;
+  }
+  #pageProgresso .peso-chart-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 24px 24px 20px;
+    margin-bottom: 0;
+  }
+  #pageProgresso .peso-chart-title {
+    font-size: 13px; letter-spacing: 2px;
+  }
+  .chart-canvas-wrap canvas {
+    max-height: 220px;
+  }
+
+  /* Histórico */
+  .historico-list {
+    grid-area: historico;
+  }
+  #pageProgresso .historico-list {
+    background: transparent;
+    border: none;
+  }
+  #pageProgresso .hist-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    margin-bottom: 2px;
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    align-items: center;
+    padding: 14px 20px;
+    gap: 20px;
+    transition: border-color .15s;
+  }
+  #pageProgresso .hist-item:hover { border-color: var(--border2); }
+  #pageProgresso .hist-date {
+    font-size: 10px; letter-spacing: 2px;
+  }
+  #pageProgresso .hist-vals { gap: 24px; }
+  #pageProgresso .hist-val  { font-size: 22px; }
+
+  /* Coluna direita: registro de medidas */
+  .medidas-block {
+    grid-area: registro;
+    position: sticky;
+    top: calc(var(--nav-h) + 24px);
+  }
+  #pageProgresso .medidas-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--red);
+    padding: 20px;
+    margin-bottom: 0;
+  }
+  #pageProgresso .medidas-block .section-hdr {
+    margin: 0 0 16px;
+    font-size: 10px; letter-spacing: 4px;
+  }
+  #pageProgresso .medidas-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  #pageProgresso .medida-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 12px;
+    transition: border-color .15s;
+  }
+  #pageProgresso .medida-card:focus-within {
+    border-color: rgba(232,0,42,.4);
+  }
+  #pageProgresso .save-medidas {
+    width: 100%;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 5px;
+    text-transform: uppercase;
+    padding: 14px;
+    cursor: pointer;
+    transition: background .2s;
+    margin-top: 8px;
+  }
+  #pageProgresso .save-medidas:hover { background: var(--red2); }
+
+  /* Esconder section-hdr avulso que fica antes de medidas no mobile */
+  #pageProgresso .divider,
+  #pageProgresso > .wrap > .section-hdr { display: none; }
+
+  /* Consistência semanal — barra minimalista */
+  .prog-week-bar {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+    height: 48px;
+  }
+  .prog-week-day {
+    flex: 1;
+    background: var(--border);
+    border-radius: 1px;
+    min-height: 4px;
+    transition: background .2s;
+    position: relative;
+  }
+  .prog-week-day.trained { background: var(--red); }
+  .prog-week-day.today   { outline: 1px solid rgba(255,255,255,.2); }
+
 } /* fim @media 900px */
 
 </style>
@@ -2807,9 +3203,25 @@ canvas#pesoChart {
             <div class="meta"><span class="v" id="treinoSeries">—</span><span class="l">Séries</span></div>
           </div>
         </div>
+        <!-- Barra de progresso desktop -->
+        <div class="desk-treino-progress" id="deskTreinoProgress">
+          <span class="desk-treino-progress-lbl" id="deskProgressLbl">0 / 0 exercícios</span>
+          <div class="desk-treino-progress-track">
+            <div class="desk-treino-progress-fill" id="deskProgressFill"></div>
+          </div>
+          <span class="desk-treino-progress-lbl" id="deskProgressPct">0%</span>
+        </div>
+
         <div class="ex-list" id="exListAtivo"></div>
 
       </div>
+    </div>
+
+    <!-- Toast de conclusão desktop -->
+    <div id="desk-treino-toast">
+      <div class="toast-lbl">✓ Treino Concluído</div>
+      <div class="toast-title" id="toastTreinoNome">Treino A</div>
+      <div class="toast-sub" id="toastTreinoSub">Todos os exercícios completados</div>
     </div>
 
     <!-- ── DIETA ──────────────────────────────────── -->
@@ -2962,6 +3374,29 @@ canvas#pesoChart {
       </div>
       <div class="wrap">
 
+        <!-- KPIs desktop (hidden mobile) -->
+        <div class="prog-kpis" id="progKpis">
+          <div class="prog-kpi k-red">
+            <div class="prog-kpi-lbl">Sequência Atual</div>
+            <div class="prog-kpi-val accent" id="kpiSeq">—</div>
+            <div class="prog-kpi-sub">dias consecutivos</div>
+          </div>
+          <div class="prog-kpi k-green">
+            <div class="prog-kpi-lbl">Melhor Sequência</div>
+            <div class="prog-kpi-val green" id="kpiBest">—</div>
+            <div class="prog-kpi-sub">dias consecutivos</div>
+          </div>
+          <div class="prog-kpi k-blue">
+            <div class="prog-kpi-lbl">Treinos no Mês</div>
+            <div class="prog-kpi-val" id="kpiMes">—</div>
+            <div class="prog-kpi-sub">este mês</div>
+          </div>
+          <div class="prog-kpi k-amber">
+            <div class="prog-kpi-lbl">Total Registrado</div>
+            <div class="prog-kpi-val" id="kpiTotal">—</div>
+            <div class="prog-kpi-sub">treinos no histórico</div>
+          </div>
+        </div>
 
         <!-- GRÁFICO EVOLUÇÃO DE PESO -->
         <div class="peso-chart-wrap" id="pesoChartWrap">
@@ -2981,6 +3416,7 @@ canvas#pesoChart {
 
         <div class="section-hdr">Registrar Medidas</div>
         <div class="medidas-block">
+          <div class="section-hdr" style="margin:0 0 16px;display:none;" id="medidasHdrDesk">Registrar Medidas</div>
           <div class="medidas-grid">
             <div class="medida-card">
               <div class="medida-lbl">Peso (kg)</div>
@@ -4071,6 +4507,7 @@ function bootApp(email, rawName) {
   setTimeout(dtRender, 50);
   buildHistorico();
   buildPesoChart();
+  setTimeout(deskUpdateKpis, 100);
   renderDesafios();
 }
 
@@ -4116,7 +4553,7 @@ function navigate(page) {
   if(page === 'videos')   buildVideoPage();
   if(page === 'dieta')    calcWater();
   if(page === 'treino')   renderTreino();
-  if(page === 'progresso') buildPesoChart();
+  if(page === 'progresso') { buildPesoChart(); deskUpdateKpis(); }
   if(page === 'dashboard') dtRender();
 }
 
@@ -4855,6 +5292,7 @@ function renderEx(containerId, treinos, storageKey) {
       const idx = cur.indexOf(i);
       if(idx===-1) cur.push(i); else cur.splice(idx,1);
       localStorage.setItem('maj_ex_'+stKey, JSON.stringify(cur));
+      if (typeof deskUpdateProgress === 'function') deskUpdateProgress();
     };
     frag.appendChild(row);
   });
@@ -5046,6 +5484,70 @@ function dtRender() {
 }
 function dtSwitch(m) { treinoModalidade = m; renderTreino(); dtRender(); }
 function dtDay(d)    { treinoDia = d;        renderTreino(); dtRender(); }
+
+
+/* ── DESKTOP: barra progresso treino ─────────────── */
+function deskUpdateProgress() {
+  const list = document.getElementById('exListAtivo');
+  if (!list) return;
+  const items = list.querySelectorAll('.ex-item');
+  const done  = list.querySelectorAll('.ex-item.done');
+  const total = items.length;
+  const n     = done.length;
+  if (!total) return;
+  const pct = Math.round((n / total) * 100);
+  const fill = document.getElementById('deskProgressFill');
+  const lbl  = document.getElementById('deskProgressLbl');
+  const pctEl = document.getElementById('deskProgressPct');
+  if (fill)  fill.style.width = pct + '%';
+  if (lbl)   { lbl.textContent = n + ' / ' + total + ' exercícios'; lbl.className = 'desk-treino-progress-lbl' + (n === total ? ' done-lbl' : ''); }
+  if (pctEl) pctEl.textContent = pct + '%';
+  // Toast de conclusão
+  if (n === total && total > 0) {
+    const toast = document.getElementById('desk-treino-toast');
+    const nome  = document.getElementById('toastTreinoNome');
+    const sub   = document.getElementById('toastTreinoSub');
+    if (nome) nome.textContent = document.getElementById('treinoTitulo')?.textContent || 'Treino';
+    if (sub)  sub.textContent  = total + ' exercícios completados · ' + new Date().toLocaleDateString('pt-BR', {weekday:'long'});
+    if (toast) {
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 5000);
+    }
+  }
+}
+
+/* ── DESKTOP: KPIs de progresso ─────────────────── */
+function deskUpdateKpis() {
+  try {
+    const cal    = JSON.parse(localStorage.getItem('maj_cal') || '{}');
+    const all    = Object.keys(cal).sort();
+    const total  = all.length;
+    const now    = new Date();
+    const ym     = now.toISOString().slice(0,7);
+    const mes    = all.filter(k => k.startsWith(ym)).length;
+
+    // Sequência atual
+    let seq = 0;
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(now); d.setDate(now.getDate() - i);
+      if (cal[d.toISOString().slice(0,10)]) seq++; else break;
+    }
+    // Melhor sequência
+    let best = 0, cur = 0;
+    all.forEach((k, i) => {
+      if (i === 0) { cur = 1; }
+      else {
+        const diff = (new Date(k) - new Date(all[i-1])) / 86400000;
+        cur = diff === 1 ? cur + 1 : 1;
+      }
+      if (cur > best) best = cur;
+    });
+
+    const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+    s('kpiSeq', seq);  s('kpiBest', best);
+    s('kpiMes', mes);  s('kpiTotal', total);
+  } catch(e) {}
+}
 
 document.addEventListener('DOMContentLoaded', function() {
   const passInp = document.getElementById('passInp');
