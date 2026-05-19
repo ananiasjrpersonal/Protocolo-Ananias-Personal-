@@ -3489,7 +3489,7 @@ canvas#pesoChart {
         <div class="page-eyebrow">Módulo · Treino</div>
         <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div class="page-title">Treinos</div>
-          <button class="edit-data-btn" onclick="dadosOpen()">✏ Meus Dados</button>
+          <div id="treinoProgramaBadge" style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red2);background:rgba(232,0,42,.08);border:1px solid rgba(232,0,42,.2);padding:4px 10px;display:none;"></div>
         </div>
         <div class="page-sub">Selecione o local e o treino do dia</div>
       </div>
@@ -3587,7 +3587,7 @@ canvas#pesoChart {
         </div>
 
         <!-- PLANO ALIMENTAR COM ABAS -->
-        <div class="section-hdr" style="margin-top:20px;">Plano Seca Barriga</div>
+        <div class="section-hdr" style="margin-top:20px;" id="dietaPlanLabel">Plano Alimentar</div>
 
         <div class="accordion" id="mealAccordion">
 
@@ -4885,7 +4885,8 @@ const PROGRAMAS = [
       { refeicao: 'Pós-Treino / Jantar', alimentos: 'Patinho ou tilápia 180g + batata doce 150g + legumes', kcal: '~520 kcal · 42g prot' },
       { refeicao: 'Ceia', alimentos: 'Queijo cottage 100g ou whey + castanhas', kcal: '~200 kcal · 18g prot' },
     ]
-  },
+  ,
+    dietaDetalhada: [{"refeicao": "Café da Manhã", "icon": "☀️", "alimentos": [{"n": "Ovos mexidos", "q": "3 un", "k": 210, "p": "18g"}, {"n": "Aveia em flocos", "q": "50g", "k": 187, "p": "6g"}, {"n": "Banana prata", "q": "1 un", "k": 89, "p": "1g"}, {"n": "Café preto sem açúcar", "q": "200ml", "k": 5, "p": "0g"}], "totalKcal": 491, "totalProt": 25}, {"refeicao": "Almoço", "icon": "🌞", "alimentos": [{"n": "Frango grelhado (peito)", "q": "200g", "k": 330, "p": "62g"}, {"n": "Arroz integral", "q": "100g", "k": 124, "p": "3g"}, {"n": "Feijão carioca", "q": "80g", "k": 91, "p": "6g"}, {"n": "Salada verde", "q": "livre", "k": 25, "p": "2g"}, {"n": "Azeite extra virgem", "q": "1 col.sopa", "k": 90, "p": "0g"}], "totalKcal": 660, "totalProt": 73}, {"refeicao": "Lanche da Tarde", "icon": "🍎", "alimentos": [{"n": "Iogurte grego natural", "q": "170g", "k": 100, "p": "17g"}, {"n": "Castanha do Pará", "q": "3 un", "k": 90, "p": "2g"}, {"n": "Maçã", "q": "1 un", "k": 81, "p": "0g"}, {"n": "Whey Protein", "q": "25g", "k": 97, "p": "20g"}], "totalKcal": 368, "totalProt": 39}, {"refeicao": "Jantar", "icon": "🌙", "alimentos": [{"n": "Atum em água", "q": "2 latas", "k": 160, "p": "36g"}, {"n": "Batata doce assada", "q": "150g", "k": 129, "p": "3g"}, {"n": "Brócolis cozido", "q": "120g", "k": 41, "p": "3g"}, {"n": "Iogurte grego natural", "q": "200g", "k": 118, "p": "17g"}], "totalKcal": 448, "totalProt": 59}, {"refeicao": "Pós-Treino", "icon": "⚡", "alimentos": [{"n": "Whey Protein", "q": "30g", "k": 120, "p": "24g"}, {"n": "Banana prata", "q": "1 un", "k": 89, "p": "1g"}, {"n": "Mel", "q": "1 col.chá", "k": 21, "p": "0g"}, {"n": "Água de coco", "q": "200ml", "k": 38, "p": "0g"}], "totalKcal": 268, "totalProt": 25}]},
   {
     id: 'manter',
     nome: 'Manter',
@@ -4940,7 +4941,8 @@ const PROGRAMAS = [
       { refeicao: 'Jantar', alimentos: 'Proteína 180g + batata doce ou massa integral + legumes', kcal: '~560 kcal · 40g prot' },
       { refeicao: 'Ceia Opcional', alimentos: 'Queijo cottage + nozes', kcal: '~180 kcal · 15g prot' },
     ]
-  },
+  ,
+    dietaDetalhada: [{"refeicao": "Café da Manhã", "icon": "☀️", "alimentos": [{"n": "Pão integral", "q": "2 fatias", "k": 160, "p": "8g"}, {"n": "Ovos mexidos", "q": "3 un", "k": 210, "p": "18g"}, {"n": "Queijo minas frescal", "q": "50g", "k": 57, "p": "6g"}, {"n": "Suco de laranja natural", "q": "200ml", "k": 88, "p": "1g"}], "totalKcal": 515, "totalProt": 33}, {"refeicao": "Almoço", "icon": "🌞", "alimentos": [{"n": "Proteína magra (frango/carne)", "q": "200g", "k": 310, "p": "50g"}, {"n": "Arroz branco", "q": "150g", "k": 195, "p": "4g"}, {"n": "Feijão", "q": "100g", "k": 114, "p": "8g"}, {"n": "Salada variada com azeite", "q": "livre", "k": 80, "p": "2g"}], "totalKcal": 699, "totalProt": 64}, {"refeicao": "Lanche da Tarde", "icon": "🍎", "alimentos": [{"n": "Iogurte grego", "q": "200g", "k": 118, "p": "20g"}, {"n": "Granola", "q": "30g", "k": 130, "p": "3g"}, {"n": "Mel", "q": "1 col.chá", "k": 21, "p": "0g"}], "totalKcal": 269, "totalProt": 23}, {"refeicao": "Jantar", "icon": "🌙", "alimentos": [{"n": "Proteína (peixe/ovo/frango)", "q": "180g", "k": 270, "p": "40g"}, {"n": "Batata doce ou massa integral", "q": "150g", "k": 150, "p": "3g"}, {"n": "Legumes refogados", "q": "150g", "k": 80, "p": "3g"}, {"n": "Azeite", "q": "1 col.sopa", "k": 90, "p": "0g"}], "totalKcal": 590, "totalProt": 46}, {"refeicao": "Ceia", "icon": "⚡", "alimentos": [{"n": "Queijo cottage", "q": "100g", "k": 98, "p": "11g"}, {"n": "Nozes ou castanhas", "q": "20g", "k": 130, "p": "3g"}], "totalKcal": 228, "totalProt": 14}]},
   {
     id: 'crescer',
     nome: 'Crescer',
@@ -4997,7 +4999,8 @@ const PROGRAMAS = [
       { refeicao: 'Pós-Treino / Jantar', alimentos: 'Carne magra 250g + macarrão integral + legumes', kcal: '~680 kcal · 55g prot' },
       { refeicao: 'Ceia', alimentos: 'Caseína ou cottage 200g + castanhas 30g', kcal: '~310 kcal · 28g prot' },
     ]
-  },
+  ,
+    dietaDetalhada: [{"refeicao": "Café da Manhã", "icon": "☀️", "alimentos": [{"n": "Omelete", "q": "4 ovos", "k": 280, "p": "24g"}, {"n": "Aveia", "q": "80g", "k": 299, "p": "10g"}, {"n": "Banana", "q": "1 un", "k": 89, "p": "1g"}, {"n": "Whey Protein", "q": "30g", "k": 120, "p": "24g"}], "totalKcal": 788, "totalProt": 59}, {"refeicao": "Lanche da Manhã", "icon": "🍎", "alimentos": [{"n": "Iogurte grego", "q": "200g", "k": 118, "p": "20g"}, {"n": "Granola", "q": "30g", "k": 130, "p": "3g"}, {"n": "Mel", "q": "1 col.chá", "k": 21, "p": "0g"}, {"n": "Frutas vermelhas", "q": "80g", "k": 45, "p": "1g"}], "totalKcal": 314, "totalProt": 24}, {"refeicao": "Almoço", "icon": "🌞", "alimentos": [{"n": "Frango grelhado", "q": "250g", "k": 415, "p": "78g"}, {"n": "Arroz integral", "q": "200g", "k": 248, "p": "5g"}, {"n": "Feijão", "q": "80g", "k": 91, "p": "6g"}, {"n": "Salada + azeite", "q": "livre", "k": 95, "p": "2g"}], "totalKcal": 849, "totalProt": 91}, {"refeicao": "Pré-Treino", "icon": "⚡", "alimentos": [{"n": "Batata doce", "q": "150g", "k": 129, "p": "3g"}, {"n": "Frango", "q": "120g", "k": 199, "p": "37g"}, {"n": "Banana", "q": "1 un", "k": 89, "p": "1g"}], "totalKcal": 417, "totalProt": 41}, {"refeicao": "Jantar", "icon": "🌙", "alimentos": [{"n": "Carne magra ou salmão", "q": "250g", "k": 380, "p": "55g"}, {"n": "Macarrão integral", "q": "150g", "k": 209, "p": "8g"}, {"n": "Legumes", "q": "150g", "k": 80, "p": "3g"}], "totalKcal": 669, "totalProt": 66}, {"refeicao": "Ceia", "icon": "🌟", "alimentos": [{"n": "Caseína ou cottage", "q": "200g", "k": 196, "p": "22g"}, {"n": "Castanhas", "q": "30g", "k": 195, "p": "5g"}], "totalKcal": 391, "totalProt": 27}]},
 
   /* ── PREMIUM ──────────────────────────────────── */
   {
@@ -5268,6 +5271,9 @@ function progAtivar(id) {
     }));
   }
   buildMetodoPage();
+  renderDietaAtiva();
+  renderTreino();
+  updateProgAtivoBadge();
   // Feedback visual
   if (navigator.vibrate) navigator.vibrate(60);
 }
@@ -5383,6 +5389,7 @@ function bootApp(email, rawName) {
   buildExLists();
   updateProgAtivoBadge();
   setTimeout(dtRender, 50);
+  setTimeout(renderDietaAtiva, 60);
   buildHistorico();
   buildPesoChart();
   setTimeout(deskUpdateKpis, 100);
@@ -5432,7 +5439,7 @@ function navigate(page) {
   // Page-specific init
   if(page === 'videos')   buildVideoPage();
   if(page === 'metodo')   { buildMetodoPage(); updateProgAtivoBadge(); }
-  if(page === 'dieta')    calcWater();
+  if(page === 'dieta')    { calcWater(); renderDietaAtiva(); }
   if(page === 'treino')   renderTreino();
   if(page === 'progresso') { buildPesoChart(); deskUpdateKpis(); }
   if(page === 'dashboard') dtRender();
@@ -6128,8 +6135,21 @@ function setDiaTreino(btn, dia) {
   renderTreino();
 }
 
+function getTreinoAtivo() {
+  // Retorna o treino do programa ativo se disponível, senão usa TREINOS padrão
+  const prog = PROGRAMAS.find(function(p){ return p.id === programaAtivo; });
+  if (prog && prog.treino && prog.treino[treinoDia]) {
+    // Programa base tem treino próprio — usar ele
+    // Modalidade é ignorada para programas (eles têm um treino único por dia)
+    return { t: prog.treino[treinoDia], key: prog.id + '_' + treinoDia, useModal: false };
+  }
+  // Fallback: TREINOS padrão (casa/academia)
+  const t = TREINOS[treinoModalidade] && TREINOS[treinoModalidade][treinoDia];
+  return { t: t, key: treinoModalidade + treinoDia, useModal: true };
+}
+
 function renderTreino() {
-  const t = TREINOS[treinoModalidade][treinoDia];
+  const { t, key, useModal } = getTreinoAtivo();
   if (!t) return;
   const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   setEl('treinoTitulo',  t.titulo);
@@ -6138,15 +6158,24 @@ function renderTreino() {
   setEl('treinoMin',     t.meta.min);
   setEl('treinoSeries',  t.meta.series);
 
-  // Sincronizar tabs visuais com o estado JS atual
-  document.querySelectorAll('#treino-modal-tabs .tab').forEach((btn, i) => {
-    btn.classList.toggle('active', i === (['casa','academia'].indexOf(treinoModalidade)));
-  });
+  // Tabs de modalidade: só mostra se for treino padrão (casa/academia)
+  const modalTabs = document.getElementById('treino-modal-tabs');
+  if (modalTabs) modalTabs.style.display = useModal ? '' : 'none';
+
+  // Tabs de dia A/B/C — sempre visíveis
   document.querySelectorAll('#treino-dia-tabs .tab').forEach((btn, i) => {
     btn.classList.toggle('active', i === (['A','B','C'].indexOf(treinoDia)));
   });
 
-  renderEx('exListAtivo', t.ex, treinoModalidade + treinoDia);
+  // Badge do programa ativo no header do treino
+  const progBadge = document.getElementById('treinoProgramaBadge');
+  if (progBadge) {
+    const prog = PROGRAMAS.find(function(p){ return p.id === programaAtivo; });
+    progBadge.textContent = prog ? prog.nome : '';
+    progBadge.style.display = prog ? '' : 'none';
+  }
+
+  renderEx('exListAtivo', t.ex, key);
 
   // Atualizar painel desktop também
 }
@@ -6565,6 +6594,63 @@ function conclusaoFechar() {
   });
 
   
+
+
+/* ── DIETA DINÂMICA ──────────────────────────────── */
+function renderDietaAtiva() {
+  var prog = PROGRAMAS.find(function(p){ return p.id === programaAtivo; });
+
+  // Título do plano
+  var label = document.getElementById('dietaPlanLabel');
+  if (label) label.textContent = prog ? 'Plano · ' + prog.nome : 'Plano Alimentar';
+
+  var acc = document.getElementById('mealAccordion');
+  if (!acc) return;
+
+  // Se programa não tem dietaDetalhada, manter o accordion atual
+  if (!prog || !prog.dietaDetalhada) return;
+
+  acc.innerHTML = '';
+  prog.dietaDetalhada.forEach(function(ref) {
+    var totalKcal = ref.totalKcal || ref.alimentos.reduce(function(s,a){return s+a.k;},0);
+    var totalProt = ref.totalProt || ref.alimentos.reduce(function(s,a){return s+parseInt(a.p);},0);
+
+    var item = document.createElement('div');
+    item.className = 'acc-item';
+
+    var foodRows = ref.alimentos.map(function(a){
+      return '<div class="food-row">' +
+        '<div class="food-name">' + a.n + '</div>' +
+        '<div class="food-qty">' + a.q + '</div>' +
+        '<div class="food-kcal">' + a.k + '</div>' +
+        '<div class="food-prot">' + a.p + '</div>' +
+        '</div>';
+    }).join('');
+
+    item.innerHTML =
+      '<button class="acc-header" onclick="toggleAcc(this)">' +
+        '<span class="acc-icon">' + (ref.icon || '🍽') + '</span>' +
+        '<span class="acc-title">' + ref.refeicao + '</span>' +
+        '<span class="acc-meta">' + totalKcal + ' kcal · ' + totalProt + 'g prot</span>' +
+        '<span class="acc-chevron">›</span>' +
+      '</button>' +
+      '<div class="acc-body">' +
+        '<div class="meal-cols">' +
+          '<div class="meal-col-lbl">Alimento</div>' +
+          '<div class="meal-col-lbl c">Qtd</div>' +
+          '<div class="meal-col-lbl r">kcal</div>' +
+          '<div class="meal-col-lbl g">Prot</div>' +
+        '</div>' +
+        foodRows +
+        '<div class="meal-total-row">' +
+          '<span class="meal-total-item kcal">Total: ' + totalKcal + ' kcal</span>' +
+          '<span class="meal-total-item prot">' + totalProt + 'g prot</span>' +
+        '</div>' +
+      '</div>';
+
+    acc.appendChild(item);
+  });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const page = document.getElementById('pageTreino');
