@@ -124,6 +124,7 @@ input, select { font-family: inherit; }
 .prog-kpis { display: none; }
 .desk-treino-progress { display: none; }
 #desk-treino-toast { display: none; }
+.dash-treino-col { display: none; }
 
 
 .topbar-logo {
@@ -2140,11 +2141,11 @@ canvas#pesoChart {
     column-gap: 28px;
   }
   #pageDashboard .dash-treino-col {
+    display: flex;
     grid-area: treino;
     position: sticky;
     top: calc(var(--nav-h) + 16px);
     align-self: start;
-    display: flex;
     flex-direction: column;
     gap: 0;
   }
@@ -3812,13 +3813,7 @@ canvas#pesoChart {
             </div>
             <div class="action-arrow">›</div>
           </div>
-          <div class="perfil-action" onclick="desafioNovoOpen()">
-            <div>
-              <div class="action-lbl">Desafios 30 Dias</div>
-              <div class="action-sub" id="perfilDesafioSub">Iniciar ou acompanhar desafios ativos</div>
-            </div>
-            <div class="action-arrow">›</div>
-          </div>
+
           <div class="perfil-action" onclick="navigate('ciencia')">
             <div>
               <div class="action-lbl">A Ciência do Método</div>
@@ -4824,6 +4819,529 @@ async function tryLogin() {
   }
   bootApp(email, name);
 }
+
+/* ══════════════════════════════════════════════════
+   PROGRAMAS — FOCO DO ATLETA
+   premium: false = incluso no pacote
+   premium: true  = compra separada
+   acesso: controlado por localStorage 'maj_prog_acesso'
+   Arquitetura pronta para Supabase
+   ══════════════════════════════════════════════════ */
+
+const PROGRAMAS = [
+  /* ── BASE ────────────────────────────────────── */
+  {
+    id: 'secar',
+    nome: 'Secar',
+    eyebrow: 'Programa Base',
+    desc: 'Déficit calórico controlado com treino resistido. Perder gordura preservando músculo.',
+    duracao: '8 semanas',
+    frequencia: '3–4x / sem',
+    objetivo: 0, // 0=secar
+    premium: false,
+    treino: {
+      A: {
+        titulo: 'Peito e Tríceps', grupo: 'Superior Empurra',
+        meta: { ex: 6, min: 45, series: 18 },
+        ex: [
+          { n: 'Flexão de Braços', d: '4x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Supino com Halteres', d: '3x 12 · descanso 60s', rest: 60, video: '' },
+          { n: 'Crucifixo', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Tríceps Testa', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Mergulho no Banco', d: '3x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Flexão Diamante', d: '3x falha · descanso 60s', rest: 60, video: '' },
+        ]
+      },
+      B: {
+        titulo: 'Costas e Bíceps', grupo: 'Superior Puxa',
+        meta: { ex: 6, min: 45, series: 18 },
+        ex: [
+          { n: 'Remada Curvada', d: '4x 12 · descanso 60s', rest: 60, video: '' },
+          { n: 'Pull-up ou Barra Assistida', d: '4x 8 · descanso 90s', rest: 90, video: '' },
+          { n: 'Remada Unilateral', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Rosca Direta', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Rosca Martelo', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Rosca Concentrada', d: '3x 10 · descanso 45s', rest: 45, video: '' },
+        ]
+      },
+      C: {
+        titulo: 'Pernas e Core', grupo: 'Inferior + Abdômen',
+        meta: { ex: 7, min: 50, series: 21 },
+        ex: [
+          { n: 'Agachamento Livre', d: '4x 15 · descanso 60s', rest: 60, video: '' },
+          { n: 'Afundo', d: '3x 12 cada perna · descanso 45s', rest: 45, video: '' },
+          { n: 'Cadeira Extensora', d: '3x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Cadeira Flexora', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Panturrilha em Pé', d: '4x 20 · descanso 30s', rest: 30, video: '' },
+          { n: 'Prancha', d: '3x 45s · descanso 30s', rest: 30, video: '' },
+          { n: 'Abdominal Bicicleta', d: '3x 20 · descanso 30s', rest: 30, video: '' },
+        ]
+      }
+    },
+    dieta: [
+      { refeicao: 'Café da Manhã', alimentos: 'Omelete 3 ovos + aveia 50g + fruta pequena', kcal: '~430 kcal · 28g prot' },
+      { refeicao: 'Almoço', alimentos: 'Frango grelhado 180g + arroz integral 150g + salada verde à vontade', kcal: '~580 kcal · 45g prot' },
+      { refeicao: 'Lanche Pré-Treino', alimentos: 'Banana + whey 30g ou iogurte grego', kcal: '~280 kcal · 25g prot' },
+      { refeicao: 'Pós-Treino / Jantar', alimentos: 'Patinho ou tilápia 180g + batata doce 150g + legumes', kcal: '~520 kcal · 42g prot' },
+      { refeicao: 'Ceia', alimentos: 'Queijo cottage 100g ou whey + castanhas', kcal: '~200 kcal · 18g prot' },
+    ]
+  },
+  {
+    id: 'manter',
+    nome: 'Manter',
+    eyebrow: 'Programa Base',
+    desc: 'Calorias na manutenção. Treino para consolidar ganhos e manter composição corporal.',
+    duracao: 'Contínuo',
+    frequencia: '3x / sem',
+    objetivo: 1,
+    premium: false,
+    treino: {
+      A: {
+        titulo: 'Full Body A', grupo: 'Corpo Completo',
+        meta: { ex: 6, min: 50, series: 18 },
+        ex: [
+          { n: 'Agachamento', d: '4x 10 · descanso 90s', rest: 90, video: '' },
+          { n: 'Supino', d: '4x 10 · descanso 90s', rest: 90, video: '' },
+          { n: 'Remada Curvada', d: '3x 10 · descanso 75s', rest: 75, video: '' },
+          { n: 'Desenvolvimento de Ombros', d: '3x 12 · descanso 60s', rest: 60, video: '' },
+          { n: 'Rosca Direta', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Tríceps Pulley', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+        ]
+      },
+      B: {
+        titulo: 'Full Body B', grupo: 'Corpo Completo',
+        meta: { ex: 6, min: 50, series: 18 },
+        ex: [
+          { n: 'Leg Press', d: '4x 12 · descanso 75s', rest: 75, video: '' },
+          { n: 'Puxada Frontal', d: '4x 10 · descanso 75s', rest: 75, video: '' },
+          { n: 'Crucifixo', d: '3x 12 · descanso 60s', rest: 60, video: '' },
+          { n: 'Elevação Lateral', d: '3x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Rosca Martelo', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Tríceps Francês', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+        ]
+      },
+      C: {
+        titulo: 'Full Body C', grupo: 'Corpo Completo + Core',
+        meta: { ex: 6, min: 45, series: 18 },
+        ex: [
+          { n: 'Stiff', d: '4x 10 · descanso 75s', rest: 75, video: '' },
+          { n: 'Flexão de Braços', d: '4x 15 · descanso 60s', rest: 60, video: '' },
+          { n: 'Remada Unilateral', d: '3x 10 cada · descanso 60s', rest: 60, video: '' },
+          { n: 'Afundo', d: '3x 12 cada · descanso 60s', rest: 60, video: '' },
+          { n: 'Prancha', d: '4x 45s · descanso 30s', rest: 30, video: '' },
+          { n: 'Abdominal Infra', d: '3x 15 · descanso 30s', rest: 30, video: '' },
+        ]
+      }
+    },
+    dieta: [
+      { refeicao: 'Café da Manhã', alimentos: 'Pão integral 2 fatias + ovos mexidos 3un + suco natural', kcal: '~480 kcal · 26g prot' },
+      { refeicao: 'Almoço', alimentos: 'Proteína magra 200g + arroz + feijão + salada', kcal: '~650 kcal · 48g prot' },
+      { refeicao: 'Lanche', alimentos: 'Iogurte grego + granola 30g + mel', kcal: '~280 kcal · 18g prot' },
+      { refeicao: 'Jantar', alimentos: 'Proteína 180g + batata doce ou massa integral + legumes', kcal: '~560 kcal · 40g prot' },
+      { refeicao: 'Ceia Opcional', alimentos: 'Queijo cottage + nozes', kcal: '~180 kcal · 15g prot' },
+    ]
+  },
+  {
+    id: 'crescer',
+    nome: 'Crescer',
+    eyebrow: 'Programa Base',
+    desc: 'Superávit calórico controlado com treino de força progressivo para ganho de massa.',
+    duracao: '12 semanas',
+    frequencia: '4x / sem',
+    objetivo: 2,
+    premium: false,
+    treino: {
+      A: {
+        titulo: 'Peito e Bíceps', grupo: 'Superior — Empurra + Puxa',
+        meta: { ex: 6, min: 55, series: 20 },
+        ex: [
+          { n: 'Supino Reto', d: '5x 8 · descanso 90s', rest: 90, video: '' },
+          { n: 'Supino Inclinado', d: '4x 10 · descanso 75s', rest: 75, video: '' },
+          { n: 'Crucifixo Inclinado', d: '3x 12 · descanso 60s', rest: 60, video: '' },
+          { n: 'Rosca Direta Barra', d: '4x 10 · descanso 60s', rest: 60, video: '' },
+          { n: 'Rosca Scott', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Rosca Concentrada', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+        ]
+      },
+      B: {
+        titulo: 'Costas e Tríceps', grupo: 'Superior — Puxa + Empurra',
+        meta: { ex: 6, min: 55, series: 20 },
+        ex: [
+          { n: 'Levantamento Terra', d: '5x 5 · descanso 120s', rest: 120, video: '' },
+          { n: 'Puxada Fechada', d: '4x 8 · descanso 90s', rest: 90, video: '' },
+          { n: 'Remada Curvada', d: '4x 10 · descanso 75s', rest: 75, video: '' },
+          { n: 'Tríceps Pulley', d: '4x 12 · descanso 60s', rest: 60, video: '' },
+          { n: 'Tríceps Testa', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Mergulho no Banco', d: '3x falha · descanso 60s', rest: 60, video: '' },
+        ]
+      },
+      C: {
+        titulo: 'Pernas e Ombros', grupo: 'Inferior + Deltoide',
+        meta: { ex: 7, min: 60, series: 23 },
+        ex: [
+          { n: 'Agachamento Livre', d: '5x 8 · descanso 120s', rest: 120, video: '' },
+          { n: 'Leg Press 45°', d: '4x 12 · descanso 75s', rest: 75, video: '' },
+          { n: 'Extensora', d: '3x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Flexora', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Desenvolvimento Arnold', d: '4x 10 · descanso 75s', rest: 75, video: '' },
+          { n: 'Elevação Lateral', d: '4x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Panturrilha em Pé', d: '5x 20 · descanso 30s', rest: 30, video: '' },
+        ]
+      }
+    },
+    dieta: [
+      { refeicao: 'Café da Manhã', alimentos: 'Omelete 4 ovos + aveia 80g + banana + whey 30g', kcal: '~680 kcal · 55g prot' },
+      { refeicao: 'Lanche Manhã', alimentos: 'Iogurte grego 200g + granola + mel + frutas vermelhas', kcal: '~350 kcal · 22g prot' },
+      { refeicao: 'Almoço', alimentos: 'Frango 250g + arroz 200g + batata doce 150g + salada', kcal: '~780 kcal · 62g prot' },
+      { refeicao: 'Pré-Treino', alimentos: 'Banana + pasta de amendoim 30g + whey 30g', kcal: '~420 kcal · 35g prot' },
+      { refeicao: 'Pós-Treino / Jantar', alimentos: 'Carne magra 250g + macarrão integral + legumes', kcal: '~680 kcal · 55g prot' },
+      { refeicao: 'Ceia', alimentos: 'Caseína ou cottage 200g + castanhas 30g', kcal: '~310 kcal · 28g prot' },
+    ]
+  },
+
+  /* ── PREMIUM ──────────────────────────────────── */
+  {
+    id: 'seca-barriga',
+    nome: 'Seca Barriga',
+    eyebrow: 'Programa Premium',
+    desc: 'Protocolo intensivo de 30 dias focado em redução de gordura abdominal com treino HIIT e dieta anti-inflamatória.',
+    duracao: '30 dias',
+    frequencia: '5x / sem',
+    objetivo: 0,
+    premium: true,
+    treino: {
+      A: {
+        titulo: 'HIIT + Core A', grupo: 'Cardio e Abdômen',
+        meta: { ex: 6, min: 40, series: 18 },
+        ex: [
+          { n: 'Burpee', d: '4x 10 · descanso 30s', rest: 30, video: '' },
+          { n: 'Mountain Climber', d: '4x 30s · descanso 20s', rest: 20, video: '' },
+          { n: 'Abdominal Crunch', d: '4x 20 · descanso 30s', rest: 30, video: '' },
+          { n: 'Prancha com Rotação', d: '3x 30s · descanso 20s', rest: 20, video: '' },
+          { n: 'Jumping Jack', d: '3x 45s · descanso 20s', rest: 20, video: '' },
+          { n: 'Abdominal Infra (Elevação de Pernas)', d: '4x 15 · descanso 30s', rest: 30, video: '' },
+        ]
+      },
+      B: {
+        titulo: 'Força + Core B', grupo: 'Resistência e Abdômen',
+        meta: { ex: 6, min: 45, series: 18 },
+        ex: [
+          { n: 'Agachamento Sumô', d: '4x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Afundo com Rotação', d: '3x 12 cada · descanso 45s', rest: 45, video: '' },
+          { n: 'Remada Curvada Leve', d: '4x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Prancha Lateral', d: '3x 30s cada · descanso 20s', rest: 20, video: '' },
+          { n: 'Russian Twist', d: '4x 20 · descanso 30s', rest: 30, video: '' },
+          { n: 'Superman', d: '3x 15 · descanso 30s', rest: 30, video: '' },
+        ]
+      },
+      C: {
+        titulo: 'Cardio Ativo', grupo: 'Queima e Mobilidade',
+        meta: { ex: 5, min: 35, series: 15 },
+        ex: [
+          { n: 'Caminhada ou Corrida Leve', d: '20 min contínuos', rest: 0, video: '' },
+          { n: 'Polichinelo', d: '3x 1min · descanso 30s', rest: 30, video: '' },
+          { n: 'Prancha', d: '4x 45s · descanso 20s', rest: 20, video: '' },
+          { n: 'Abdominal Bicicleta', d: '3x 20 · descanso 30s', rest: 30, video: '' },
+          { n: 'Alongamento Final', d: '10 min · cadeia posterior e lateral', rest: 0, video: '' },
+        ]
+      }
+    },
+    dieta: [
+      { refeicao: 'Café da Manhã', alimentos: 'Smoothie proteico: whey + espinafre + banana + aveia', kcal: '~380 kcal · 30g prot' },
+      { refeicao: 'Almoço', alimentos: 'Salmão 180g + quinoa 100g + salada verde + azeite', kcal: '~520 kcal · 42g prot' },
+      { refeicao: 'Lanche', alimentos: 'Maçã + whey 30g ou ovo cozido x2', kcal: '~220 kcal · 22g prot' },
+      { refeicao: 'Jantar', alimentos: 'Peito de frango 180g + legumes assados + batata doce pequena', kcal: '~450 kcal · 40g prot' },
+      { refeicao: 'Evitar', alimentos: 'Álcool, frituras, ultraprocessados, açúcar refinado, refrigerante', kcal: '— anti-inflamatório' },
+    ]
+  },
+  {
+    id: 'projeto-verao',
+    nome: 'Projeto Verão',
+    eyebrow: 'Programa Premium',
+    desc: 'Definição muscular acelerada em 60 dias. Treino de alto volume com dieta de recomposição corporal.',
+    duracao: '60 dias',
+    frequencia: '5x / sem',
+    objetivo: 0,
+    premium: true,
+    treino: {
+      A: {
+        titulo: 'Peito, Tríceps e Ombro', grupo: 'Push Day',
+        meta: { ex: 7, min: 55, series: 21 },
+        ex: [
+          { n: 'Supino Reto', d: '4x 10 · descanso 60s', rest: 60, video: '' },
+          { n: 'Supino Inclinado Halteres', d: '3x 12 · descanso 60s', rest: 60, video: '' },
+          { n: 'Crucifixo Crossover', d: '3x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Desenvolvimento', d: '4x 10 · descanso 60s', rest: 60, video: '' },
+          { n: 'Elevação Lateral', d: '4x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Tríceps Pulley', d: '3x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Tríceps Corda', d: '3x 15 · descanso 45s', rest: 45, video: '' },
+        ]
+      },
+      B: {
+        titulo: 'Costas e Bíceps', grupo: 'Pull Day',
+        meta: { ex: 6, min: 50, series: 18 },
+        ex: [
+          { n: 'Puxada Frontal Aberta', d: '4x 10 · descanso 60s', rest: 60, video: '' },
+          { n: 'Remada Sentada', d: '4x 12 · descanso 60s', rest: 60, video: '' },
+          { n: 'Remada Unilateral', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Rosca Direta', d: '4x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Rosca Alternada', d: '3x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Rosca 21', d: '3x · descanso 60s', rest: 60, video: '' },
+        ]
+      },
+      C: {
+        titulo: 'Pernas — Quadríceps', grupo: 'Leg Day A',
+        meta: { ex: 6, min: 55, series: 20 },
+        ex: [
+          { n: 'Agachamento', d: '5x 10 · descanso 90s', rest: 90, video: '' },
+          { n: 'Leg Press', d: '4x 15 · descanso 75s', rest: 75, video: '' },
+          { n: 'Extensora', d: '3x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Hack Squat', d: '3x 12 · descanso 60s', rest: 60, video: '' },
+          { n: 'Panturrilha Sentado', d: '4x 20 · descanso 30s', rest: 30, video: '' },
+          { n: 'Prancha', d: '4x 45s · descanso 20s', rest: 20, video: '' },
+        ]
+      }
+    },
+    dieta: [
+      { refeicao: 'Café da Manhã', alimentos: 'Ovos (3 inteiros + 2 claras) + tapioca 50g + fruta', kcal: '~450 kcal · 38g prot' },
+      { refeicao: 'Lanche Manhã', alimentos: 'Whey isolado 30g + banana + amendoim 20g', kcal: '~320 kcal · 28g prot' },
+      { refeicao: 'Almoço', alimentos: 'Frango 220g + arroz integral 120g + salada + azeite', kcal: '~620 kcal · 52g prot' },
+      { refeicao: 'Pré-Treino (60 min antes)', alimentos: 'Batata doce 100g + frango 100g', kcal: '~300 kcal · 25g prot' },
+      { refeicao: 'Pós-Treino', alimentos: 'Whey 40g + banana', kcal: '~280 kcal · 32g prot' },
+      { refeicao: 'Jantar', alimentos: 'Tilápia ou carne magra 200g + legumes + azeite', kcal: '~420 kcal · 40g prot' },
+    ]
+  },
+  {
+    id: 'trimestre-ouro',
+    nome: 'Trimestre de Ouro',
+    eyebrow: 'Programa Premium',
+    desc: 'O protocolo mais completo do Método. 90 dias de transformação total — treino, dieta e mentalidade.',
+    duracao: '90 dias',
+    frequencia: '5–6x / sem',
+    objetivo: 0,
+    premium: true,
+    treino: {
+      A: {
+        titulo: 'Força — Peito e Costas', grupo: 'Superior Composto',
+        meta: { ex: 6, min: 60, series: 20 },
+        ex: [
+          { n: 'Supino Reto Barra', d: '5x 5 · descanso 120s', rest: 120, video: '' },
+          { n: 'Puxada Frontal Pegada Fechada', d: '5x 6 · descanso 120s', rest: 120, video: '' },
+          { n: 'Supino Inclinado Halteres', d: '3x 10 · descanso 75s', rest: 75, video: '' },
+          { n: 'Remada Curvada', d: '3x 10 · descanso 75s', rest: 75, video: '' },
+          { n: 'Crucifixo Polia', d: '3x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Face Pull', d: '3x 15 · descanso 45s', rest: 45, video: '' },
+        ]
+      },
+      B: {
+        titulo: 'Força — Pernas', grupo: 'Inferior Composto',
+        meta: { ex: 6, min: 65, series: 20 },
+        ex: [
+          { n: 'Agachamento Barra', d: '5x 5 · descanso 180s', rest: 180, video: '' },
+          { n: 'Levantamento Terra Romeno', d: '4x 8 · descanso 120s', rest: 120, video: '' },
+          { n: 'Leg Press', d: '4x 12 · descanso 90s', rest: 90, video: '' },
+          { n: 'Flexora', d: '3x 12 · descanso 60s', rest: 60, video: '' },
+          { n: 'Agachamento Búlgaro', d: '3x 10 cada · descanso 60s', rest: 60, video: '' },
+          { n: 'Panturrilha em Pé', d: '5x 20 · descanso 30s', rest: 30, video: '' },
+        ]
+      },
+      C: {
+        titulo: 'Volume + Condicionamento', grupo: 'Funcional e Core',
+        meta: { ex: 7, min: 55, series: 22 },
+        ex: [
+          { n: 'Circuito Metabólico (3 rounds)', d: 'Burpee 10 + Agach 15 + Remada 10', rest: 60, video: '' },
+          { n: 'Desenvolvimento com Halteres', d: '4x 12 · descanso 60s', rest: 60, video: '' },
+          { n: 'Elevação Lateral', d: '4x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Rosca Direta', d: '4x 12 · descanso 45s', rest: 45, video: '' },
+          { n: 'Tríceps Pulley', d: '4x 15 · descanso 45s', rest: 45, video: '' },
+          { n: 'Prancha', d: '4x 60s · descanso 20s', rest: 20, video: '' },
+          { n: 'Abdominal com Peso', d: '3x 15 · descanso 30s', rest: 30, video: '' },
+        ]
+      }
+    },
+    dieta: [
+      { refeicao: 'Café da Manhã', alimentos: 'Omelete 4 ovos + aveia 80g + mix de frutas + café s/ açúcar', kcal: '~580 kcal · 42g prot' },
+      { refeicao: 'Lanche Manhã', alimentos: 'Whey 40g + pasta de amendoim 30g + maçã', kcal: '~380 kcal · 34g prot' },
+      { refeicao: 'Almoço', alimentos: 'Frango 250g + arroz integral 150g + feijão 80g + salada + azeite', kcal: '~720 kcal · 58g prot' },
+      { refeicao: 'Pré-Treino', alimentos: 'Batata doce 120g + frango 120g ou banana + whey', kcal: '~380 kcal · 32g prot' },
+      { refeicao: 'Pós-Treino', alimentos: 'Whey isolado 40g + dextrose 30g', kcal: '~280 kcal · 36g prot' },
+      { refeicao: 'Jantar', alimentos: 'Salmão ou carne 220g + quinoa 100g + legumes', kcal: '~580 kcal · 50g prot' },
+      { refeicao: 'Ceia', alimentos: 'Caseína 30g + amêndoas 20g', kcal: '~250 kcal · 26g prot' },
+    ]
+  },
+];
+
+/* ── ESTADO DO PROGRAMA ATIVO ──────────────────── */
+let programaAtivo = localStorage.getItem('maj_programa_ativo') || 'secar';
+
+/* Arquitetura Supabase-ready:
+   Futuramente: { id, acesso: ['seca-barriga','projeto-verao'] }
+   virá do banco por usuário logado.
+   Por ora: localStorage 'maj_prog_acesso' = JSON array de IDs liberados */
+function progTemAcesso(id) {
+  const prog = PROGRAMAS.find(p => p.id === id);
+  if (!prog) return false;
+  if (!prog.premium) return true; // base: sempre liberado
+  const liberados = JSON.parse(localStorage.getItem('maj_prog_acesso') || '[]');
+  return liberados.includes(id);
+}
+
+/* ── BUILD DA PÁGINA MÉTODO ───────────────────── */
+function buildMetodoPage() {
+  var baseGrid    = document.getElementById('metodoBaseGrid');
+  var premiumGrid = document.getElementById('metodoPremiumGrid');
+  if (!baseGrid || !premiumGrid) return;
+  baseGrid.innerHTML = '';
+  premiumGrid.innerHTML = '';
+
+  PROGRAMAS.forEach(function(prog) {
+    var ativo    = prog.id === programaAtivo;
+    var temAcess = progTemAcesso(prog.id);
+    var card = document.createElement('div');
+    card.className = 'prog-card' +
+      (ativo ? ' prog-ativo' : '') +
+      (prog.premium && !temAcess ? ' prog-premium' : '');
+
+    if (ativo) {
+      var bEl = document.createElement('div');
+      bEl.className = 'prog-badge-ativo';
+      bEl.textContent = 'Programa Ativo';
+      card.appendChild(bEl);
+    } else if (prog.premium) {
+      var bEl = document.createElement('div');
+      bEl.className = 'prog-badge-premium';
+      bEl.textContent = 'Premium';
+      card.appendChild(bEl);
+    }
+
+    var top = document.createElement('div'); top.className = 'prog-card-top';
+    var info = document.createElement('div'); info.className = 'prog-card-info';
+    var titulo = document.createElement('div'); titulo.className = 'prog-titulo';
+    titulo.textContent = prog.nome;
+    var desc = document.createElement('div'); desc.className = 'prog-desc';
+    desc.textContent = prog.desc;
+    info.appendChild(titulo); info.appendChild(desc); top.appendChild(info);
+    if (prog.premium && !temAcess) {
+      var lock = document.createElement('div'); lock.className = 'prog-card-lock';
+      lock.innerHTML = '&#128274;';
+      top.appendChild(lock);
+    }
+    card.appendChild(top);
+
+    var meta = document.createElement('div'); meta.className = 'prog-meta';
+    meta.innerHTML =
+      '<div class="prog-meta-item"><strong>' + prog.duracao + '</strong>Duração</div>' +
+      '<div class="prog-meta-item"><strong>' + prog.frequencia + '</strong>Frequência</div>';
+    card.appendChild(meta);
+
+    var btn = document.createElement('button'); btn.type = 'button';
+    if (temAcess && !ativo) {
+      btn.className = 'prog-btn-iniciar';
+      btn.textContent = 'Ativar Programa';
+      (function(id) { btn.addEventListener('click', function(){ progAtivar(id); }); })(prog.id);
+    } else if (ativo) {
+      btn.className = 'prog-btn-iniciar';
+      btn.textContent = 'Ver Programa →';
+      (function(id) { btn.addEventListener('click', function(){ progAbrir(id); }); })(prog.id);
+    } else {
+      btn.className = 'prog-btn-adquirir';
+      btn.textContent = 'Adquirir Programa';
+      btn.disabled = true;
+    }
+    card.appendChild(btn);
+
+    (prog.premium ? premiumGrid : baseGrid).appendChild(card);
+  });
+}
+
+/* ── ATIVAR PROGRAMA ─────────────────────────── */
+function progAtivar(id) {
+  programaAtivo = id;
+  localStorage.setItem('maj_programa_ativo', id);
+  // Sincronizar objetivo com o programa (para cálculos de dieta)
+  const prog = PROGRAMAS.find(p => p.id === id);
+  if (prog) {
+    dObjSelM = prog.objetivo;
+    localStorage.setItem('maj_tmb_form', JSON.stringify({
+      ...JSON.parse(localStorage.getItem('maj_tmb_form') || '{}'),
+      obj: String([0.8,1.0,1.1][prog.objetivo])
+    }));
+  }
+  buildMetodoPage();
+  // Feedback visual
+  if (navigator.vibrate) navigator.vibrate(60);
+}
+
+/* ── ABRIR TELA DO PROGRAMA ──────────────────── */
+let progDiaAtual = 'A';
+
+function progAbrir(id) {
+  const prog = PROGRAMAS.find(p => p.id === id);
+  if (!prog) return;
+  progDiaAtual = 'A';
+  // Preencher header
+  const s = (el, v) => { const e = document.getElementById(el); if (e) e.textContent = v; };
+  s('progEyebrow', prog.eyebrow);
+  s('progTitulo',  prog.nome);
+  s('progDesc',    prog.desc);
+  // Tabs
+  ['A','B','C'].forEach(d => {
+    const btn = document.getElementById('pdTab' + d);
+    if (btn) btn.classList.toggle('active', d === 'A');
+  });
+  // Renderizar treino A
+  progRenderDia(prog, 'A');
+  // Renderizar dieta
+  progRenderDieta(prog);
+  navigate('programa');
+}
+
+function progVerDia(dia) {
+  progDiaAtual = dia;
+  ['A','B','C'].forEach(d => {
+    const btn = document.getElementById('pdTab' + d);
+    if (btn) btn.classList.toggle('active', d === dia);
+  });
+  const prog = PROGRAMAS.find(p => p.id === programaAtivo);
+  if (prog) progRenderDia(prog, dia);
+}
+
+function progRenderDia(prog, dia) {
+  const t   = prog.treino[dia];
+  const el  = document.getElementById('progExList');
+  if (!el || !t) return;
+  el.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  t.ex.forEach((ex, i) => {
+    const row = document.createElement('div');
+    row.className = 'ex-item';
+    row.innerHTML = `<div class="ex-n">${i+1}</div><div class="ex-body"><div class="ex-name">${ex.n}</div><div class="ex-detail">${ex.d}</div></div><button class="ex-timer-btn" type="button" onclick="event.stopPropagation();openTimer('${ex.n}',${ex.rest || 60})">⏱ ${ex.rest || 60}s</button>`;
+    frag.appendChild(row);
+  });
+  el.appendChild(frag);
+}
+
+function progRenderDieta(prog) {
+  const el = document.getElementById('progDietaWrap');
+  if (!el) return;
+  el.innerHTML = '';
+  prog.dieta.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'prog-dieta-item';
+    div.innerHTML = `<div class="prog-dieta-refeicao">${item.refeicao}</div><div class="prog-dieta-alimentos">${item.alimentos}</div><div class="prog-dieta-kcal">${item.kcal}</div>`;
+    el.appendChild(div);
+  });
+}
+
+
+function updateProgAtivoBadge() {
+  const progId = localStorage.getItem('maj_programa_ativo') || 'secar';
+  const progNomes = { secar:'Secar', manter:'Manter', crescer:'Crescer',
+    'seca-barriga':'Seca Barriga', 'projeto-verao':'Projeto Verão', 'trimestre-ouro':'Trimestre de Ouro' };
+  const el = document.getElementById('dashProgAtivo');
+  if (el) el.textContent = progNomes[progId] || 'Método';
+}
+
 
 function bootApp(email, rawName) {
   // 1. Check if onboarding is needed FIRST — before showing anything
@@ -6047,527 +6565,6 @@ function conclusaoFechar() {
   });
 
   
-/* ══════════════════════════════════════════════════
-   PROGRAMAS — FOCO DO ATLETA
-   premium: false = incluso no pacote
-   premium: true  = compra separada
-   acesso: controlado por localStorage 'maj_prog_acesso'
-   Arquitetura pronta para Supabase
-   ══════════════════════════════════════════════════ */
-
-const PROGRAMAS = [
-  /* ── BASE ────────────────────────────────────── */
-  {
-    id: 'secar',
-    nome: 'Secar',
-    eyebrow: 'Programa Base',
-    desc: 'Déficit calórico controlado com treino resistido. Perder gordura preservando músculo.',
-    duracao: '8 semanas',
-    frequencia: '3–4x / sem',
-    objetivo: 0, // 0=secar
-    premium: false,
-    treino: {
-      A: {
-        titulo: 'Peito e Tríceps', grupo: 'Superior Empurra',
-        meta: { ex: 6, min: 45, series: 18 },
-        ex: [
-          { n: 'Flexão de Braços', d: '4x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Supino com Halteres', d: '3x 12 · descanso 60s', rest: 60, video: '' },
-          { n: 'Crucifixo', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Tríceps Testa', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Mergulho no Banco', d: '3x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Flexão Diamante', d: '3x falha · descanso 60s', rest: 60, video: '' },
-        ]
-      },
-      B: {
-        titulo: 'Costas e Bíceps', grupo: 'Superior Puxa',
-        meta: { ex: 6, min: 45, series: 18 },
-        ex: [
-          { n: 'Remada Curvada', d: '4x 12 · descanso 60s', rest: 60, video: '' },
-          { n: 'Pull-up ou Barra Assistida', d: '4x 8 · descanso 90s', rest: 90, video: '' },
-          { n: 'Remada Unilateral', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Rosca Direta', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Rosca Martelo', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Rosca Concentrada', d: '3x 10 · descanso 45s', rest: 45, video: '' },
-        ]
-      },
-      C: {
-        titulo: 'Pernas e Core', grupo: 'Inferior + Abdômen',
-        meta: { ex: 7, min: 50, series: 21 },
-        ex: [
-          { n: 'Agachamento Livre', d: '4x 15 · descanso 60s', rest: 60, video: '' },
-          { n: 'Afundo', d: '3x 12 cada perna · descanso 45s', rest: 45, video: '' },
-          { n: 'Cadeira Extensora', d: '3x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Cadeira Flexora', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Panturrilha em Pé', d: '4x 20 · descanso 30s', rest: 30, video: '' },
-          { n: 'Prancha', d: '3x 45s · descanso 30s', rest: 30, video: '' },
-          { n: 'Abdominal Bicicleta', d: '3x 20 · descanso 30s', rest: 30, video: '' },
-        ]
-      }
-    },
-    dieta: [
-      { refeicao: 'Café da Manhã', alimentos: 'Omelete 3 ovos + aveia 50g + fruta pequena', kcal: '~430 kcal · 28g prot' },
-      { refeicao: 'Almoço', alimentos: 'Frango grelhado 180g + arroz integral 150g + salada verde à vontade', kcal: '~580 kcal · 45g prot' },
-      { refeicao: 'Lanche Pré-Treino', alimentos: 'Banana + whey 30g ou iogurte grego', kcal: '~280 kcal · 25g prot' },
-      { refeicao: 'Pós-Treino / Jantar', alimentos: 'Patinho ou tilápia 180g + batata doce 150g + legumes', kcal: '~520 kcal · 42g prot' },
-      { refeicao: 'Ceia', alimentos: 'Queijo cottage 100g ou whey + castanhas', kcal: '~200 kcal · 18g prot' },
-    ]
-  },
-  {
-    id: 'manter',
-    nome: 'Manter',
-    eyebrow: 'Programa Base',
-    desc: 'Calorias na manutenção. Treino para consolidar ganhos e manter composição corporal.',
-    duracao: 'Contínuo',
-    frequencia: '3x / sem',
-    objetivo: 1,
-    premium: false,
-    treino: {
-      A: {
-        titulo: 'Full Body A', grupo: 'Corpo Completo',
-        meta: { ex: 6, min: 50, series: 18 },
-        ex: [
-          { n: 'Agachamento', d: '4x 10 · descanso 90s', rest: 90, video: '' },
-          { n: 'Supino', d: '4x 10 · descanso 90s', rest: 90, video: '' },
-          { n: 'Remada Curvada', d: '3x 10 · descanso 75s', rest: 75, video: '' },
-          { n: 'Desenvolvimento de Ombros', d: '3x 12 · descanso 60s', rest: 60, video: '' },
-          { n: 'Rosca Direta', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Tríceps Pulley', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-        ]
-      },
-      B: {
-        titulo: 'Full Body B', grupo: 'Corpo Completo',
-        meta: { ex: 6, min: 50, series: 18 },
-        ex: [
-          { n: 'Leg Press', d: '4x 12 · descanso 75s', rest: 75, video: '' },
-          { n: 'Puxada Frontal', d: '4x 10 · descanso 75s', rest: 75, video: '' },
-          { n: 'Crucifixo', d: '3x 12 · descanso 60s', rest: 60, video: '' },
-          { n: 'Elevação Lateral', d: '3x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Rosca Martelo', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Tríceps Francês', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-        ]
-      },
-      C: {
-        titulo: 'Full Body C', grupo: 'Corpo Completo + Core',
-        meta: { ex: 6, min: 45, series: 18 },
-        ex: [
-          { n: 'Stiff', d: '4x 10 · descanso 75s', rest: 75, video: '' },
-          { n: 'Flexão de Braços', d: '4x 15 · descanso 60s', rest: 60, video: '' },
-          { n: 'Remada Unilateral', d: '3x 10 cada · descanso 60s', rest: 60, video: '' },
-          { n: 'Afundo', d: '3x 12 cada · descanso 60s', rest: 60, video: '' },
-          { n: 'Prancha', d: '4x 45s · descanso 30s', rest: 30, video: '' },
-          { n: 'Abdominal Infra', d: '3x 15 · descanso 30s', rest: 30, video: '' },
-        ]
-      }
-    },
-    dieta: [
-      { refeicao: 'Café da Manhã', alimentos: 'Pão integral 2 fatias + ovos mexidos 3un + suco natural', kcal: '~480 kcal · 26g prot' },
-      { refeicao: 'Almoço', alimentos: 'Proteína magra 200g + arroz + feijão + salada', kcal: '~650 kcal · 48g prot' },
-      { refeicao: 'Lanche', alimentos: 'Iogurte grego + granola 30g + mel', kcal: '~280 kcal · 18g prot' },
-      { refeicao: 'Jantar', alimentos: 'Proteína 180g + batata doce ou massa integral + legumes', kcal: '~560 kcal · 40g prot' },
-      { refeicao: 'Ceia Opcional', alimentos: 'Queijo cottage + nozes', kcal: '~180 kcal · 15g prot' },
-    ]
-  },
-  {
-    id: 'crescer',
-    nome: 'Crescer',
-    eyebrow: 'Programa Base',
-    desc: 'Superávit calórico controlado com treino de força progressivo para ganho de massa.',
-    duracao: '12 semanas',
-    frequencia: '4x / sem',
-    objetivo: 2,
-    premium: false,
-    treino: {
-      A: {
-        titulo: 'Peito e Bíceps', grupo: 'Superior — Empurra + Puxa',
-        meta: { ex: 6, min: 55, series: 20 },
-        ex: [
-          { n: 'Supino Reto', d: '5x 8 · descanso 90s', rest: 90, video: '' },
-          { n: 'Supino Inclinado', d: '4x 10 · descanso 75s', rest: 75, video: '' },
-          { n: 'Crucifixo Inclinado', d: '3x 12 · descanso 60s', rest: 60, video: '' },
-          { n: 'Rosca Direta Barra', d: '4x 10 · descanso 60s', rest: 60, video: '' },
-          { n: 'Rosca Scott', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Rosca Concentrada', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-        ]
-      },
-      B: {
-        titulo: 'Costas e Tríceps', grupo: 'Superior — Puxa + Empurra',
-        meta: { ex: 6, min: 55, series: 20 },
-        ex: [
-          { n: 'Levantamento Terra', d: '5x 5 · descanso 120s', rest: 120, video: '' },
-          { n: 'Puxada Fechada', d: '4x 8 · descanso 90s', rest: 90, video: '' },
-          { n: 'Remada Curvada', d: '4x 10 · descanso 75s', rest: 75, video: '' },
-          { n: 'Tríceps Pulley', d: '4x 12 · descanso 60s', rest: 60, video: '' },
-          { n: 'Tríceps Testa', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Mergulho no Banco', d: '3x falha · descanso 60s', rest: 60, video: '' },
-        ]
-      },
-      C: {
-        titulo: 'Pernas e Ombros', grupo: 'Inferior + Deltoide',
-        meta: { ex: 7, min: 60, series: 23 },
-        ex: [
-          { n: 'Agachamento Livre', d: '5x 8 · descanso 120s', rest: 120, video: '' },
-          { n: 'Leg Press 45°', d: '4x 12 · descanso 75s', rest: 75, video: '' },
-          { n: 'Extensora', d: '3x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Flexora', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Desenvolvimento Arnold', d: '4x 10 · descanso 75s', rest: 75, video: '' },
-          { n: 'Elevação Lateral', d: '4x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Panturrilha em Pé', d: '5x 20 · descanso 30s', rest: 30, video: '' },
-        ]
-      }
-    },
-    dieta: [
-      { refeicao: 'Café da Manhã', alimentos: 'Omelete 4 ovos + aveia 80g + banana + whey 30g', kcal: '~680 kcal · 55g prot' },
-      { refeicao: 'Lanche Manhã', alimentos: 'Iogurte grego 200g + granola + mel + frutas vermelhas', kcal: '~350 kcal · 22g prot' },
-      { refeicao: 'Almoço', alimentos: 'Frango 250g + arroz 200g + batata doce 150g + salada', kcal: '~780 kcal · 62g prot' },
-      { refeicao: 'Pré-Treino', alimentos: 'Banana + pasta de amendoim 30g + whey 30g', kcal: '~420 kcal · 35g prot' },
-      { refeicao: 'Pós-Treino / Jantar', alimentos: 'Carne magra 250g + macarrão integral + legumes', kcal: '~680 kcal · 55g prot' },
-      { refeicao: 'Ceia', alimentos: 'Caseína ou cottage 200g + castanhas 30g', kcal: '~310 kcal · 28g prot' },
-    ]
-  },
-
-  /* ── PREMIUM ──────────────────────────────────── */
-  {
-    id: 'seca-barriga',
-    nome: 'Seca Barriga',
-    eyebrow: 'Programa Premium',
-    desc: 'Protocolo intensivo de 30 dias focado em redução de gordura abdominal com treino HIIT e dieta anti-inflamatória.',
-    duracao: '30 dias',
-    frequencia: '5x / sem',
-    objetivo: 0,
-    premium: true,
-    treino: {
-      A: {
-        titulo: 'HIIT + Core A', grupo: 'Cardio e Abdômen',
-        meta: { ex: 6, min: 40, series: 18 },
-        ex: [
-          { n: 'Burpee', d: '4x 10 · descanso 30s', rest: 30, video: '' },
-          { n: 'Mountain Climber', d: '4x 30s · descanso 20s', rest: 20, video: '' },
-          { n: 'Abdominal Crunch', d: '4x 20 · descanso 30s', rest: 30, video: '' },
-          { n: 'Prancha com Rotação', d: '3x 30s · descanso 20s', rest: 20, video: '' },
-          { n: 'Jumping Jack', d: '3x 45s · descanso 20s', rest: 20, video: '' },
-          { n: 'Abdominal Infra (Elevação de Pernas)', d: '4x 15 · descanso 30s', rest: 30, video: '' },
-        ]
-      },
-      B: {
-        titulo: 'Força + Core B', grupo: 'Resistência e Abdômen',
-        meta: { ex: 6, min: 45, series: 18 },
-        ex: [
-          { n: 'Agachamento Sumô', d: '4x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Afundo com Rotação', d: '3x 12 cada · descanso 45s', rest: 45, video: '' },
-          { n: 'Remada Curvada Leve', d: '4x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Prancha Lateral', d: '3x 30s cada · descanso 20s', rest: 20, video: '' },
-          { n: 'Russian Twist', d: '4x 20 · descanso 30s', rest: 30, video: '' },
-          { n: 'Superman', d: '3x 15 · descanso 30s', rest: 30, video: '' },
-        ]
-      },
-      C: {
-        titulo: 'Cardio Ativo', grupo: 'Queima e Mobilidade',
-        meta: { ex: 5, min: 35, series: 15 },
-        ex: [
-          { n: 'Caminhada ou Corrida Leve', d: '20 min contínuos', rest: 0, video: '' },
-          { n: 'Polichinelo', d: '3x 1min · descanso 30s', rest: 30, video: '' },
-          { n: 'Prancha', d: '4x 45s · descanso 20s', rest: 20, video: '' },
-          { n: 'Abdominal Bicicleta', d: '3x 20 · descanso 30s', rest: 30, video: '' },
-          { n: 'Alongamento Final', d: '10 min · cadeia posterior e lateral', rest: 0, video: '' },
-        ]
-      }
-    },
-    dieta: [
-      { refeicao: 'Café da Manhã', alimentos: 'Smoothie proteico: whey + espinafre + banana + aveia', kcal: '~380 kcal · 30g prot' },
-      { refeicao: 'Almoço', alimentos: 'Salmão 180g + quinoa 100g + salada verde + azeite', kcal: '~520 kcal · 42g prot' },
-      { refeicao: 'Lanche', alimentos: 'Maçã + whey 30g ou ovo cozido x2', kcal: '~220 kcal · 22g prot' },
-      { refeicao: 'Jantar', alimentos: 'Peito de frango 180g + legumes assados + batata doce pequena', kcal: '~450 kcal · 40g prot' },
-      { refeicao: 'Evitar', alimentos: 'Álcool, frituras, ultraprocessados, açúcar refinado, refrigerante', kcal: '— anti-inflamatório' },
-    ]
-  },
-  {
-    id: 'projeto-verao',
-    nome: 'Projeto Verão',
-    eyebrow: 'Programa Premium',
-    desc: 'Definição muscular acelerada em 60 dias. Treino de alto volume com dieta de recomposição corporal.',
-    duracao: '60 dias',
-    frequencia: '5x / sem',
-    objetivo: 0,
-    premium: true,
-    treino: {
-      A: {
-        titulo: 'Peito, Tríceps e Ombro', grupo: 'Push Day',
-        meta: { ex: 7, min: 55, series: 21 },
-        ex: [
-          { n: 'Supino Reto', d: '4x 10 · descanso 60s', rest: 60, video: '' },
-          { n: 'Supino Inclinado Halteres', d: '3x 12 · descanso 60s', rest: 60, video: '' },
-          { n: 'Crucifixo Crossover', d: '3x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Desenvolvimento', d: '4x 10 · descanso 60s', rest: 60, video: '' },
-          { n: 'Elevação Lateral', d: '4x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Tríceps Pulley', d: '3x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Tríceps Corda', d: '3x 15 · descanso 45s', rest: 45, video: '' },
-        ]
-      },
-      B: {
-        titulo: 'Costas e Bíceps', grupo: 'Pull Day',
-        meta: { ex: 6, min: 50, series: 18 },
-        ex: [
-          { n: 'Puxada Frontal Aberta', d: '4x 10 · descanso 60s', rest: 60, video: '' },
-          { n: 'Remada Sentada', d: '4x 12 · descanso 60s', rest: 60, video: '' },
-          { n: 'Remada Unilateral', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Rosca Direta', d: '4x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Rosca Alternada', d: '3x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Rosca 21', d: '3x · descanso 60s', rest: 60, video: '' },
-        ]
-      },
-      C: {
-        titulo: 'Pernas — Quadríceps', grupo: 'Leg Day A',
-        meta: { ex: 6, min: 55, series: 20 },
-        ex: [
-          { n: 'Agachamento', d: '5x 10 · descanso 90s', rest: 90, video: '' },
-          { n: 'Leg Press', d: '4x 15 · descanso 75s', rest: 75, video: '' },
-          { n: 'Extensora', d: '3x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Hack Squat', d: '3x 12 · descanso 60s', rest: 60, video: '' },
-          { n: 'Panturrilha Sentado', d: '4x 20 · descanso 30s', rest: 30, video: '' },
-          { n: 'Prancha', d: '4x 45s · descanso 20s', rest: 20, video: '' },
-        ]
-      }
-    },
-    dieta: [
-      { refeicao: 'Café da Manhã', alimentos: 'Ovos (3 inteiros + 2 claras) + tapioca 50g + fruta', kcal: '~450 kcal · 38g prot' },
-      { refeicao: 'Lanche Manhã', alimentos: 'Whey isolado 30g + banana + amendoim 20g', kcal: '~320 kcal · 28g prot' },
-      { refeicao: 'Almoço', alimentos: 'Frango 220g + arroz integral 120g + salada + azeite', kcal: '~620 kcal · 52g prot' },
-      { refeicao: 'Pré-Treino (60 min antes)', alimentos: 'Batata doce 100g + frango 100g', kcal: '~300 kcal · 25g prot' },
-      { refeicao: 'Pós-Treino', alimentos: 'Whey 40g + banana', kcal: '~280 kcal · 32g prot' },
-      { refeicao: 'Jantar', alimentos: 'Tilápia ou carne magra 200g + legumes + azeite', kcal: '~420 kcal · 40g prot' },
-    ]
-  },
-  {
-    id: 'trimestre-ouro',
-    nome: 'Trimestre de Ouro',
-    eyebrow: 'Programa Premium',
-    desc: 'O protocolo mais completo do Método. 90 dias de transformação total — treino, dieta e mentalidade.',
-    duracao: '90 dias',
-    frequencia: '5–6x / sem',
-    objetivo: 0,
-    premium: true,
-    treino: {
-      A: {
-        titulo: 'Força — Peito e Costas', grupo: 'Superior Composto',
-        meta: { ex: 6, min: 60, series: 20 },
-        ex: [
-          { n: 'Supino Reto Barra', d: '5x 5 · descanso 120s', rest: 120, video: '' },
-          { n: 'Puxada Frontal Pegada Fechada', d: '5x 6 · descanso 120s', rest: 120, video: '' },
-          { n: 'Supino Inclinado Halteres', d: '3x 10 · descanso 75s', rest: 75, video: '' },
-          { n: 'Remada Curvada', d: '3x 10 · descanso 75s', rest: 75, video: '' },
-          { n: 'Crucifixo Polia', d: '3x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Face Pull', d: '3x 15 · descanso 45s', rest: 45, video: '' },
-        ]
-      },
-      B: {
-        titulo: 'Força — Pernas', grupo: 'Inferior Composto',
-        meta: { ex: 6, min: 65, series: 20 },
-        ex: [
-          { n: 'Agachamento Barra', d: '5x 5 · descanso 180s', rest: 180, video: '' },
-          { n: 'Levantamento Terra Romeno', d: '4x 8 · descanso 120s', rest: 120, video: '' },
-          { n: 'Leg Press', d: '4x 12 · descanso 90s', rest: 90, video: '' },
-          { n: 'Flexora', d: '3x 12 · descanso 60s', rest: 60, video: '' },
-          { n: 'Agachamento Búlgaro', d: '3x 10 cada · descanso 60s', rest: 60, video: '' },
-          { n: 'Panturrilha em Pé', d: '5x 20 · descanso 30s', rest: 30, video: '' },
-        ]
-      },
-      C: {
-        titulo: 'Volume + Condicionamento', grupo: 'Funcional e Core',
-        meta: { ex: 7, min: 55, series: 22 },
-        ex: [
-          { n: 'Circuito Metabólico (3 rounds)', d: 'Burpee 10 + Agach 15 + Remada 10', rest: 60, video: '' },
-          { n: 'Desenvolvimento com Halteres', d: '4x 12 · descanso 60s', rest: 60, video: '' },
-          { n: 'Elevação Lateral', d: '4x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Rosca Direta', d: '4x 12 · descanso 45s', rest: 45, video: '' },
-          { n: 'Tríceps Pulley', d: '4x 15 · descanso 45s', rest: 45, video: '' },
-          { n: 'Prancha', d: '4x 60s · descanso 20s', rest: 20, video: '' },
-          { n: 'Abdominal com Peso', d: '3x 15 · descanso 30s', rest: 30, video: '' },
-        ]
-      }
-    },
-    dieta: [
-      { refeicao: 'Café da Manhã', alimentos: 'Omelete 4 ovos + aveia 80g + mix de frutas + café s/ açúcar', kcal: '~580 kcal · 42g prot' },
-      { refeicao: 'Lanche Manhã', alimentos: 'Whey 40g + pasta de amendoim 30g + maçã', kcal: '~380 kcal · 34g prot' },
-      { refeicao: 'Almoço', alimentos: 'Frango 250g + arroz integral 150g + feijão 80g + salada + azeite', kcal: '~720 kcal · 58g prot' },
-      { refeicao: 'Pré-Treino', alimentos: 'Batata doce 120g + frango 120g ou banana + whey', kcal: '~380 kcal · 32g prot' },
-      { refeicao: 'Pós-Treino', alimentos: 'Whey isolado 40g + dextrose 30g', kcal: '~280 kcal · 36g prot' },
-      { refeicao: 'Jantar', alimentos: 'Salmão ou carne 220g + quinoa 100g + legumes', kcal: '~580 kcal · 50g prot' },
-      { refeicao: 'Ceia', alimentos: 'Caseína 30g + amêndoas 20g', kcal: '~250 kcal · 26g prot' },
-    ]
-  },
-];
-
-/* ── ESTADO DO PROGRAMA ATIVO ──────────────────── */
-let programaAtivo = localStorage.getItem('maj_programa_ativo') || 'secar';
-
-/* Arquitetura Supabase-ready:
-   Futuramente: { id, acesso: ['seca-barriga','projeto-verao'] }
-   virá do banco por usuário logado.
-   Por ora: localStorage 'maj_prog_acesso' = JSON array de IDs liberados */
-function progTemAcesso(id) {
-  const prog = PROGRAMAS.find(p => p.id === id);
-  if (!prog) return false;
-  if (!prog.premium) return true; // base: sempre liberado
-  const liberados = JSON.parse(localStorage.getItem('maj_prog_acesso') || '[]');
-  return liberados.includes(id);
-}
-
-/* ── BUILD DA PÁGINA MÉTODO ───────────────────── */
-function buildMetodoPage() {
-  var baseGrid    = document.getElementById('metodoBaseGrid');
-  var premiumGrid = document.getElementById('metodoPremiumGrid');
-  if (!baseGrid || !premiumGrid) return;
-  baseGrid.innerHTML = '';
-  premiumGrid.innerHTML = '';
-
-  PROGRAMAS.forEach(function(prog) {
-    var ativo    = prog.id === programaAtivo;
-    var temAcess = progTemAcesso(prog.id);
-    var card = document.createElement('div');
-    card.className = 'prog-card' +
-      (ativo ? ' prog-ativo' : '') +
-      (prog.premium && !temAcess ? ' prog-premium' : '');
-
-    if (ativo) {
-      var bEl = document.createElement('div');
-      bEl.className = 'prog-badge-ativo';
-      bEl.textContent = 'Programa Ativo';
-      card.appendChild(bEl);
-    } else if (prog.premium) {
-      var bEl = document.createElement('div');
-      bEl.className = 'prog-badge-premium';
-      bEl.textContent = 'Premium';
-      card.appendChild(bEl);
-    }
-
-    var top = document.createElement('div'); top.className = 'prog-card-top';
-    var info = document.createElement('div'); info.className = 'prog-card-info';
-    var titulo = document.createElement('div'); titulo.className = 'prog-titulo';
-    titulo.textContent = prog.nome;
-    var desc = document.createElement('div'); desc.className = 'prog-desc';
-    desc.textContent = prog.desc;
-    info.appendChild(titulo); info.appendChild(desc); top.appendChild(info);
-    if (prog.premium && !temAcess) {
-      var lock = document.createElement('div'); lock.className = 'prog-card-lock';
-      lock.innerHTML = '&#128274;';
-      top.appendChild(lock);
-    }
-    card.appendChild(top);
-
-    var meta = document.createElement('div'); meta.className = 'prog-meta';
-    meta.innerHTML =
-      '<div class="prog-meta-item"><strong>' + prog.duracao + '</strong>Duração</div>' +
-      '<div class="prog-meta-item"><strong>' + prog.frequencia + '</strong>Frequência</div>';
-    card.appendChild(meta);
-
-    var btn = document.createElement('button'); btn.type = 'button';
-    if (temAcess && !ativo) {
-      btn.className = 'prog-btn-iniciar';
-      btn.textContent = 'Ativar Programa';
-      (function(id) { btn.addEventListener('click', function(){ progAtivar(id); }); })(prog.id);
-    } else if (ativo) {
-      btn.className = 'prog-btn-iniciar';
-      btn.textContent = 'Ver Programa →';
-      (function(id) { btn.addEventListener('click', function(){ progAbrir(id); }); })(prog.id);
-    } else {
-      btn.className = 'prog-btn-adquirir';
-      btn.textContent = 'Adquirir Programa';
-      btn.disabled = true;
-    }
-    card.appendChild(btn);
-
-    (prog.premium ? premiumGrid : baseGrid).appendChild(card);
-  });
-}
-
-/* ── ATIVAR PROGRAMA ─────────────────────────── */
-function progAtivar(id) {
-  programaAtivo = id;
-  localStorage.setItem('maj_programa_ativo', id);
-  // Sincronizar objetivo com o programa (para cálculos de dieta)
-  const prog = PROGRAMAS.find(p => p.id === id);
-  if (prog) {
-    dObjSelM = prog.objetivo;
-    localStorage.setItem('maj_tmb_form', JSON.stringify({
-      ...JSON.parse(localStorage.getItem('maj_tmb_form') || '{}'),
-      obj: String([0.8,1.0,1.1][prog.objetivo])
-    }));
-  }
-  buildMetodoPage();
-  // Feedback visual
-  if (navigator.vibrate) navigator.vibrate(60);
-}
-
-/* ── ABRIR TELA DO PROGRAMA ──────────────────── */
-let progDiaAtual = 'A';
-
-function progAbrir(id) {
-  const prog = PROGRAMAS.find(p => p.id === id);
-  if (!prog) return;
-  progDiaAtual = 'A';
-  // Preencher header
-  const s = (el, v) => { const e = document.getElementById(el); if (e) e.textContent = v; };
-  s('progEyebrow', prog.eyebrow);
-  s('progTitulo',  prog.nome);
-  s('progDesc',    prog.desc);
-  // Tabs
-  ['A','B','C'].forEach(d => {
-    const btn = document.getElementById('pdTab' + d);
-    if (btn) btn.classList.toggle('active', d === 'A');
-  });
-  // Renderizar treino A
-  progRenderDia(prog, 'A');
-  // Renderizar dieta
-  progRenderDieta(prog);
-  navigate('programa');
-}
-
-function progVerDia(dia) {
-  progDiaAtual = dia;
-  ['A','B','C'].forEach(d => {
-    const btn = document.getElementById('pdTab' + d);
-    if (btn) btn.classList.toggle('active', d === dia);
-  });
-  const prog = PROGRAMAS.find(p => p.id === programaAtivo);
-  if (prog) progRenderDia(prog, dia);
-}
-
-function progRenderDia(prog, dia) {
-  const t   = prog.treino[dia];
-  const el  = document.getElementById('progExList');
-  if (!el || !t) return;
-  el.innerHTML = '';
-  const frag = document.createDocumentFragment();
-  t.ex.forEach((ex, i) => {
-    const row = document.createElement('div');
-    row.className = 'ex-item';
-    row.innerHTML = `<div class="ex-n">${i+1}</div><div class="ex-body"><div class="ex-name">${ex.n}</div><div class="ex-detail">${ex.d}</div></div><button class="ex-timer-btn" type="button" onclick="event.stopPropagation();openTimer('${ex.n}',${ex.rest || 60})">⏱ ${ex.rest || 60}s</button>`;
-    frag.appendChild(row);
-  });
-  el.appendChild(frag);
-}
-
-function progRenderDieta(prog) {
-  const el = document.getElementById('progDietaWrap');
-  if (!el) return;
-  el.innerHTML = '';
-  prog.dieta.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'prog-dieta-item';
-    div.innerHTML = `<div class="prog-dieta-refeicao">${item.refeicao}</div><div class="prog-dieta-alimentos">${item.alimentos}</div><div class="prog-dieta-kcal">${item.kcal}</div>`;
-    el.appendChild(div);
-  });
-}
-
-
-function updateProgAtivoBadge() {
-  const progId = localStorage.getItem('maj_programa_ativo') || 'secar';
-  const progNomes = { secar:'Secar', manter:'Manter', crescer:'Crescer',
-    'seca-barriga':'Seca Barriga', 'projeto-verao':'Projeto Verão', 'trimestre-ouro':'Trimestre de Ouro' };
-  const el = document.getElementById('dashProgAtivo');
-  if (el) el.textContent = progNomes[progId] || 'Método';
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     const page = document.getElementById('pageTreino');
