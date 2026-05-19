@@ -1924,6 +1924,148 @@ canvas#pesoChart {
 }
 .ciencia-intro strong { color: var(--white); }
 
+
+/* ══════════════════════════════════════════════════
+   DESKTOP LAYOUT — min-width: 900px
+   Mobile blindado: nenhuma regra abaixo afeta telas < 900px
+   ══════════════════════════════════════════════════ */
+@media (min-width: 900px) {
+
+  /* ── Bottom nav: esconde no desktop ── */
+  #bottomNav { display: none; }
+
+  /* ── Main area com margem da sidebar fixa ── */
+  #mainArea { margin-left: var(--sidebar-w); }
+
+  /* ── Páginas: scroll livre, sem padding de bottom nav ── */
+  .page.active { padding-bottom: 40px; }
+  .wrap { padding-bottom: 40px; }
+
+  /* ══ DASHBOARD: duas colunas ══════════════════════ */
+  #pageDashboard .wrap {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    grid-template-rows: auto;
+    column-gap: 20px;
+    align-items: start;
+    padding-top: 24px;
+  }
+
+  /* Coluna esquerda: saudação + calendário + mini-ananias + stats */
+  #pageDashboard .dash-greeting   { grid-column: 1; grid-row: 1; }
+  #pageDashboard .cal-section     { grid-column: 1; grid-row: 2; }
+  #pageDashboard .mini-ananias    { grid-column: 1; grid-row: 3; }
+  #pageDashboard .stats-section   { grid-column: 1; grid-row: 4; }
+
+  /* Coluna direita: treino do dia sticky */
+  #pageDashboard .right-col {
+    grid-column: 2;
+    grid-row: 1 / 5;
+    position: sticky;
+    top: calc(var(--nav-h) + 24px);
+  }
+
+  /* Greeting menor no desktop — já tem mais contexto visual */
+  #pageDashboard .dash-greeting { padding: 0 0 20px; }
+  #pageDashboard .dash-greeting::before { display: none; }
+  #pageDashboard .dash-greeting h2 { font-size: clamp(28px, 3vw, 38px); }
+
+  /* ── Treino card na coluna direita ── */
+  .desktop-treino-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--red);
+    overflow: hidden;
+  }
+  .desktop-treino-header {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .desktop-treino-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px; font-weight: 700; letter-spacing: 4px;
+    text-transform: uppercase; color: var(--red2); margin-bottom: 8px;
+  }
+  .desktop-treino-titulo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 32px; letter-spacing: 2px; line-height: 1; color: var(--white);
+    margin-bottom: 4px;
+  }
+  .desktop-treino-grupo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; color: var(--muted); letter-spacing: 1px;
+  }
+  .desktop-treino-meta {
+    display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  }
+  .desktop-treino-meta .dmeta {
+    flex: 1; padding: 12px 16px; text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .desktop-treino-meta .dmeta:last-child { border-right: none; }
+  .desktop-treino-meta .dmeta-v {
+    font-family: 'Bebas Neue', cursive; font-size: 24px;
+    color: var(--white); line-height: 1;
+  }
+  .desktop-treino-meta .dmeta-l {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--faint); margin-top: 2px;
+  }
+  .desktop-treino-tabs {
+    display: flex; border-bottom: 1px solid var(--border);
+  }
+  .desktop-treino-tabs button {
+    flex: 1; padding: 10px 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--muted);
+    background: transparent; border: none; border-bottom: 2px solid transparent;
+    cursor: pointer; transition: all .2s;
+  }
+  .desktop-treino-tabs button.active {
+    color: var(--red2); border-bottom-color: var(--red);
+  }
+  .desktop-ex-list {
+    max-height: 380px; overflow-y: auto; padding: 8px 0;
+  }
+  .desktop-ex-list::-webkit-scrollbar { width: 3px; }
+  .desktop-ex-list::-webkit-scrollbar-track { background: transparent; }
+  .desktop-ex-list::-webkit-scrollbar-thumb { background: var(--border); }
+  .desktop-treino-btn {
+    display: block; width: 100%; margin: 0;
+    background: var(--red); color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 5px;
+    text-transform: uppercase; padding: 16px;
+    border: none; cursor: pointer; transition: background .2s;
+  }
+  .desktop-treino-btn:hover { background: var(--red2); }
+
+  /* ── Esconder hoje-treino-card mobile na coluna esquerda ── */
+  #pageDashboard .hoje-treino-card { display: none; }
+
+  /* ── Treino page: duas colunas também ── */
+  #pageTreino .wrap {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    column-gap: 20px;
+    align-items: start;
+  }
+  #pageTreino .tabs { flex-direction: column; }
+  #pageTreino #treino-modal-tabs { grid-column: 1; grid-row: 1; margin-bottom: 2px; }
+  #pageTreino #treino-dia-tabs   { grid-column: 1; grid-row: 2; }
+  #pageTreino .treino-hdr        { grid-column: 2; grid-row: 1; }
+  #pageTreino .ex-list           { grid-column: 2; grid-row: 2; }
+  #pageTreino .tabs .tab {
+    text-align: left; justify-content: flex-start;
+    border-bottom: none; border-left: 2px solid transparent;
+  }
+  #pageTreino .tabs .tab.active {
+    border-left-color: var(--red); border-bottom-color: transparent;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2110,7 +2252,7 @@ canvas#pesoChart {
           <p>Consistência é o que separa quem chega de quem desiste.</p>
         </div>
 
-        <!-- TREINO DE HOJE -->
+        <!-- TREINO DE HOJE (mobile) -->
         <div class="hoje-treino-card" id="hojeTreinoCard">
           <div class="hoje-treino-top">
             <div>
@@ -2123,7 +2265,35 @@ canvas#pesoChart {
           <button class="hoje-treino-btn" onclick="irParaTreino()">Começar Treino →</button>
         </div>
 
+        <!-- COLUNA DIREITA DESKTOP: painel de treino sticky -->
+        <div class="right-col">
+          <div class="desktop-treino-card">
+            <div class="desktop-treino-header">
+              <div class="desktop-treino-eyebrow">Treino do Dia</div>
+              <div class="desktop-treino-titulo" id="dtTitulo">—</div>
+              <div class="desktop-treino-grupo" id="dtGrupo">—</div>
+            </div>
+            <div class="desktop-treino-meta">
+              <div class="dmeta"><div class="dmeta-v" id="dtEx">—</div><div class="dmeta-l">Exercícios</div></div>
+              <div class="dmeta"><div class="dmeta-v" id="dtMin">—</div><div class="dmeta-l">Min</div></div>
+              <div class="dmeta"><div class="dmeta-v" id="dtSeries">—</div><div class="dmeta-l">Séries</div></div>
+            </div>
+            <div class="desktop-treino-tabs">
+              <button id="dtTabCasa" class="active" onclick="dtSetModal('casa')">🏠 Casa</button>
+              <button id="dtTabAcad" onclick="dtSetModal('academia')">🏋 Academia</button>
+            </div>
+            <div class="desktop-treino-tabs" style="border-top:none;">
+              <button id="dtTabA" class="active" onclick="dtSetDia('A')">Treino A</button>
+              <button id="dtTabB" onclick="dtSetDia('B')">Treino B</button>
+              <button id="dtTabC" onclick="dtSetDia('C')">Treino C</button>
+            </div>
+            <div class="desktop-ex-list" id="dtExList"></div>
+            <button class="desktop-treino-btn" onclick="navigate('treino')">Abrir Treino Completo →</button>
+          </div>
+        </div>
+
         <!-- CALENDÁRIO -->
+        <div class="cal-section">
         <div class="section-hdr" style="margin-bottom:8px;">Registro de Treino</div>
         <div class="cal-wrap">
           <div class="cal-month-tabs" id="calMonthTabs"></div>
@@ -2143,6 +2313,8 @@ canvas#pesoChart {
             <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#29b6f6"></div>Treino C</div>
           </div>
         </div>
+
+        </div><!-- /cal-section -->
 
         <!-- MINI ANANIAS -->
         <div class="mini-ananias" onclick="navigate('ananias')" style="margin-bottom:16px;">
@@ -3502,6 +3674,7 @@ function bootApp(email, rawName) {
   updateHojeTreino();
   calcWater();
   buildExLists();
+  setTimeout(dtRender, 0);
   buildHistorico();
   buildPesoChart();
   renderDesafios();
@@ -4250,8 +4423,60 @@ function renderTreino() {
     btn.classList.toggle('active', i === (['A','B','C'].indexOf(treinoDia)));
   });
 
-  const listId = 'exListAtivo';
-  renderEx(listId, t.ex, treinoModalidade + treinoDia);
+  renderEx('exListAtivo', t.ex, treinoModalidade + treinoDia);
+
+  // Atualizar painel desktop também
+  dtRender();
+}
+
+/* ── PAINEL DE TREINO DESKTOP (right-col) ─────────── */
+function dtRender() {
+  const t = TREINOS[treinoModalidade][treinoDia];
+  if (!t) return;
+  const setEl = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  setEl('dtTitulo',  t.titulo);
+  setEl('dtGrupo',   t.grupo);
+  setEl('dtEx',      t.meta.ex);
+  setEl('dtMin',     t.meta.min);
+  setEl('dtSeries',  t.meta.series);
+
+  // Tabs
+  ['dtTabCasa','dtTabAcad'].forEach((id, i) => {
+    const b = document.getElementById(id);
+    if (b) b.classList.toggle('active', i === (['casa','academia'].indexOf(treinoModalidade)));
+  });
+  ['dtTabA','dtTabB','dtTabC'].forEach((id, i) => {
+    const b = document.getElementById(id);
+    if (b) b.classList.toggle('active', i === (['A','B','C'].indexOf(treinoDia)));
+  });
+
+  // Lista de exercícios compacta
+  const listEl = document.getElementById('dtExList');
+  if (!listEl) return;
+  listEl.innerHTML = '';
+  t.ex.forEach((ex, i) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);';
+    row.innerHTML = `
+      <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:var(--faint);width:20px;flex-shrink:0;">${i+1}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.5px;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ex.n}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);">${ex.d}</div>
+      </div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--faint);white-space:nowrap;">${ex.rest}s</div>
+    `;
+    listEl.appendChild(row);
+  });
+}
+
+function dtSetModal(m) {
+  treinoModalidade = m;
+  renderTreino();
+}
+
+function dtSetDia(d) {
+  treinoDia = d;
+  renderTreino();
 }
 
 function buildExLists() {
