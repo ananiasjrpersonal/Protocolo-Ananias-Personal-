@@ -120,6 +120,8 @@ input, select { font-family: inherit; }
   padding: 0 16px; z-index: 200;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
+#desk-nav { display: none; }
+
 @media (min-width: 900px) {
   #topbar { padding: 0 24px; }
 }
@@ -1925,146 +1927,336 @@ canvas#pesoChart {
 .ciencia-intro strong { color: var(--white); }
 
 
+/* ── CIÊNCIA CARDS ────────────────────────────────── */
+.ciencia-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  margin-bottom: 20px;
+}
+@media (min-width: 600px) { .ciencia-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .ciencia-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+.ciencia-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 22px 18px; position: relative; overflow: hidden;
+  transition: border-color .2s;
+}
+.ciencia-card:hover { border-color: rgba(232,0,42,.35); }
+.ciencia-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.ciencia-card.c-red::before   { background: var(--red); }
+.ciencia-card.c-green::before { background: var(--green); }
+.ciencia-card.c-blue::before  { background: var(--blue); }
+.ciencia-card.c-amber::before { background: var(--amber); }
+.ciencia-card.c-red2::before  { background: var(--red2); }
+.ciencia-card-icon {
+  font-size: 28px; margin-bottom: 12px; display: block;
+}
+.ciencia-card-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 20px; letter-spacing: 2px; color: var(--white);
+  margin-bottom: 8px;
+}
+.ciencia-card-body {
+  font-size: 13px; color: var(--muted); line-height: 1.7;
+}
+.ciencia-card-tag {
+  display: inline-block; margin-top: 12px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 3px 8px;
+  color: var(--red2); background: rgba(232,0,42,.08);
+  border: 1px solid rgba(232,0,42,.2);
+}
+.ciencia-intro {
+  background: var(--card); border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  padding: 20px 18px; margin-bottom: 16px;
+  font-size: 14px; color: var(--text); line-height: 1.7;
+}
+.ciencia-intro strong { color: var(--white); }
+
+
 /* ══════════════════════════════════════════════════
    DESKTOP LAYOUT — min-width: 900px
    Mobile blindado: nenhuma regra abaixo afeta telas < 900px
    ══════════════════════════════════════════════════ */
+
+/* ╔══════════════════════════════════════════════════════╗
+   ║  DESKTOP — min-width: 900px                          ║
+   ║  MOBILE BLINDADO: nada aqui toca telas < 900px       ║
+   ╚══════════════════════════════════════════════════════╝ */
 @media (min-width: 900px) {
 
-  /* ── Bottom nav: esconde no desktop ── */
-  #bottomNav { display: none; }
+  /* ── Variáveis desktop ── */
+  :root {
+    --desk-nav-w: 220px;
+    --desk-content-max: 900px;
+  }
 
-  /* ── Main area com margem da sidebar fixa ── */
-  #mainArea { margin-left: var(--sidebar-w); }
+  /* ── Ocultar elementos mobile ── */
+  #bottomNav  { display: none !important; }
+  #menuBtn    { display: none !important; }
+  #overlay    { display: none !important; }
 
-  /* ── Páginas: scroll livre, sem padding de bottom nav ── */
-  .page.active { padding-bottom: 40px; }
-  .wrap { padding-bottom: 40px; }
+  /* ── Sidebar: sempre visível, vira nav principal ── */
+  #sidebar {
+    transform: translateX(0) !important;
+    width: var(--desk-nav-w);
+    top: var(--nav-h);
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    z-index: 100;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 
-  /* ══ DASHBOARD: duas colunas ══════════════════════ */
+  /* ── Sidebar: nav primária completa no topo ── */
+  #desk-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .desk-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+    border-left: 2px solid transparent;
+    text-decoration: none;
+  }
+  .desk-nav-item:hover { color: var(--white); background: rgba(255,255,255,.03); }
+  .desk-nav-item.active {
+    color: var(--white);
+    border-left-color: var(--red);
+    background: rgba(232,0,42,.06);
+  }
+  .desk-nav-item svg { flex-shrink: 0; opacity: .7; }
+  .desk-nav-item.active svg { opacity: 1; }
+
+  /* ── Sidebar: seções secundárias ── */
+  .sidebar-section { padding: 8px 0 4px; }
+  .sidebar-section-lbl {
+    padding: 6px 16px 4px;
+    font-size: 9px;
+  }
+  .nav-item {
+    padding: 9px 16px;
+    font-size: 12px;
+  }
+
+  /* ── Main area ── */
+  #mainArea {
+    margin-left: var(--desk-nav-w);
+    padding-bottom: 40px;
+  }
+
+  /* ── Topbar ── */
+  #topbar { padding: 0 32px; }
+  .topbar-logo { font-size: 16px; }
+
+  /* ── Conteúdo centralizado ── */
+  .wrap {
+    max-width: var(--desk-content-max);
+    padding: 28px 40px 40px;
+  }
+  .page-hdr {
+    max-width: var(--desk-content-max);
+    padding: 32px 40px 0;
+  }
+
+  /* ── Dashboard: layout duas colunas ── */
   #pageDashboard .wrap {
+    max-width: 1200px;
     display: grid;
-    grid-template-columns: 1fr 380px;
-    grid-template-rows: auto;
-    column-gap: 20px;
+    grid-template-columns: 1fr 360px;
+    grid-template-areas:
+      "greeting  treino"
+      "cal       treino"
+      "stats     treino"
+      "breakdown treino"
+      "ananias   treino";
+    column-gap: 24px;
     align-items: start;
-    padding-top: 24px;
   }
-
-  /* Coluna esquerda: saudação + calendário + mini-ananias + stats */
-  #pageDashboard .dash-greeting   { grid-column: 1; grid-row: 1; }
-  #pageDashboard .cal-section     { grid-column: 1; grid-row: 2; }
-  #pageDashboard .mini-ananias    { grid-column: 1; grid-row: 3; }
-  #pageDashboard .stats-section   { grid-column: 1; grid-row: 4; }
-
-  /* Coluna direita: treino do dia sticky */
-  #pageDashboard .right-col {
-    grid-column: 2;
-    grid-row: 1 / 5;
+  #pageDashboard .dash-greeting        { grid-area: greeting; }
+  #pageDashboard .dash-cal-area        { grid-area: cal; }
+  #pageDashboard .dash-stats-area      { grid-area: stats; }
+  #pageDashboard .dash-breakdown-area  { grid-area: breakdown; }
+  #pageDashboard .dash-ananias-area    { grid-area: ananias; }
+  #pageDashboard .dash-treino-col      {
+    grid-area: treino;
     position: sticky;
-    top: calc(var(--nav-h) + 24px);
+    top: calc(var(--nav-h) + 20px);
+    align-self: start;
   }
 
-  /* Greeting menor no desktop — já tem mais contexto visual */
-  #pageDashboard .dash-greeting { padding: 0 0 20px; }
+  /* Greeting sem bg decorativo no desktop */
+  #pageDashboard .dash-greeting {
+    background: transparent;
+    border: none;
+    padding: 4px 0 20px;
+  }
   #pageDashboard .dash-greeting::before { display: none; }
-  #pageDashboard .dash-greeting h2 { font-size: clamp(28px, 3vw, 38px); }
+  #pageDashboard .dash-greeting h2 { font-size: clamp(28px, 2.5vw, 40px); }
 
-  /* ── Treino card na coluna direita ── */
-  .desktop-treino-card {
+  /* Card de treino mobile: esconder */
+  #pageDashboard .hoje-treino-card { display: none; }
+
+  /* ── Painel treino desktop (coluna direita) ── */
+  .dt-panel {
     background: var(--card);
     border: 1px solid var(--border);
     border-top: 2px solid var(--red);
-    overflow: hidden;
   }
-  .desktop-treino-header {
-    padding: 20px 20px 16px;
+  .dt-panel-header {
+    padding: 18px 20px 14px;
     border-bottom: 1px solid var(--border);
   }
-  .desktop-treino-eyebrow {
+  .dt-eyebrow {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 9px; font-weight: 700; letter-spacing: 4px;
-    text-transform: uppercase; color: var(--red2); margin-bottom: 8px;
+    text-transform: uppercase; color: var(--red2); margin-bottom: 6px;
   }
-  .desktop-treino-titulo {
+  .dt-titulo {
     font-family: 'Bebas Neue', cursive;
-    font-size: 32px; letter-spacing: 2px; line-height: 1; color: var(--white);
-    margin-bottom: 4px;
+    font-size: 30px; letter-spacing: 2px; line-height: 1;
+    color: var(--white); margin-bottom: 3px;
   }
-  .desktop-treino-grupo {
+  .dt-grupo {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px; color: var(--muted); letter-spacing: 1px;
+    font-size: 12px; color: var(--muted);
   }
-  .desktop-treino-meta {
-    display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  .dt-meta {
+    display: flex;
+    border-bottom: 1px solid var(--border);
   }
-  .desktop-treino-meta .dmeta {
-    flex: 1; padding: 12px 16px; text-align: center;
+  .dt-meta-item {
+    flex: 1; padding: 10px 8px; text-align: center;
     border-right: 1px solid var(--border);
   }
-  .desktop-treino-meta .dmeta:last-child { border-right: none; }
-  .desktop-treino-meta .dmeta-v {
-    font-family: 'Bebas Neue', cursive; font-size: 24px;
+  .dt-meta-item:last-child { border-right: none; }
+  .dt-meta-v {
+    font-family: 'Bebas Neue', cursive; font-size: 22px;
     color: var(--white); line-height: 1;
   }
-  .desktop-treino-meta .dmeta-l {
+  .dt-meta-l {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 9px; font-weight: 700; letter-spacing: 3px;
+    font-size: 8px; font-weight: 700; letter-spacing: 2px;
     text-transform: uppercase; color: var(--faint); margin-top: 2px;
   }
-  .desktop-treino-tabs {
-    display: flex; border-bottom: 1px solid var(--border);
+  .dt-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
   }
-  .desktop-treino-tabs button {
-    flex: 1; padding: 10px 6px;
+  .dt-tab {
+    flex: 1; padding: 9px 4px;
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
     text-transform: uppercase; color: var(--muted);
-    background: transparent; border: none; border-bottom: 2px solid transparent;
-    cursor: pointer; transition: all .2s;
+    background: transparent; border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer; transition: all .15s;
   }
-  .desktop-treino-tabs button.active {
-    color: var(--red2); border-bottom-color: var(--red);
+  .dt-tab.active { color: var(--red2); border-bottom-color: var(--red); }
+  .dt-tab:hover  { color: var(--white); }
+  .dt-ex-list {
+    max-height: 340px; overflow-y: auto; padding: 4px 0;
   }
-  .desktop-ex-list {
-    max-height: 380px; overflow-y: auto; padding: 8px 0;
+  .dt-ex-list::-webkit-scrollbar { width: 2px; }
+  .dt-ex-list::-webkit-scrollbar-thumb { background: var(--border2); }
+  .dt-ex-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 16px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
   }
-  .desktop-ex-list::-webkit-scrollbar { width: 3px; }
-  .desktop-ex-list::-webkit-scrollbar-track { background: transparent; }
-  .desktop-ex-list::-webkit-scrollbar-thumb { background: var(--border); }
-  .desktop-treino-btn {
-    display: block; width: 100%; margin: 0;
+  .dt-ex-num {
+    font-family: 'Bebas Neue', cursive; font-size: 16px;
+    color: var(--faint); width: 18px; flex-shrink: 0;
+  }
+  .dt-ex-name {
+    flex: 1; min-width: 0;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: .5px;
+    color: var(--white);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .dt-ex-detail {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; color: var(--muted);
+    white-space: nowrap;
+  }
+  .dt-cta {
+    display: block; width: 100%;
     background: var(--red); color: #fff;
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px; font-weight: 700; letter-spacing: 5px;
-    text-transform: uppercase; padding: 16px;
+    font-size: 11px; font-weight: 700; letter-spacing: 5px;
+    text-transform: uppercase; padding: 14px;
     border: none; cursor: pointer; transition: background .2s;
+    text-align: center;
   }
-  .desktop-treino-btn:hover { background: var(--red2); }
+  .dt-cta:hover { background: var(--red2); }
 
-  /* ── Esconder hoje-treino-card mobile na coluna esquerda ── */
-  #pageDashboard .hoje-treino-card { display: none; }
-
-  /* ── Treino page: duas colunas também ── */
+  /* ── Treino page: duas colunas no desktop ── */
   #pageTreino .wrap {
     display: grid;
-    grid-template-columns: 200px 1fr;
-    column-gap: 20px;
+    grid-template-columns: 180px 1fr;
+    grid-template-rows: auto 1fr;
+    column-gap: 24px;
     align-items: start;
   }
-  #pageTreino .tabs { flex-direction: column; }
-  #pageTreino #treino-modal-tabs { grid-column: 1; grid-row: 1; margin-bottom: 2px; }
-  #pageTreino #treino-dia-tabs   { grid-column: 1; grid-row: 2; }
+  #pageTreino .treino-col-tabs   { grid-column: 1; grid-row: 1 / 3; }
   #pageTreino .treino-hdr        { grid-column: 2; grid-row: 1; }
   #pageTreino .ex-list           { grid-column: 2; grid-row: 2; }
-  #pageTreino .tabs .tab {
-    text-align: left; justify-content: flex-start;
-    border-bottom: none; border-left: 2px solid transparent;
+
+  #pageTreino .treino-col-tabs .tabs { flex-direction: column; }
+  #pageTreino .treino-col-tabs .tab  {
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    border-right: none;
+    border-left: 2px solid transparent;
+    padding: 12px 14px;
+    font-size: 11px;
   }
-  #pageTreino .tabs .tab.active {
-    border-left-color: var(--red); border-bottom-color: transparent;
+  #pageTreino .treino-col-tabs .tab.active {
+    border-left-color: var(--red);
+    border-bottom-color: var(--border);
   }
-}
+
+  /* ── Stats row: 4 colunas ── */
+  .stats-row { grid-template-columns: repeat(4, 1fr); }
+
+  /* ── Vídeos: 3 colunas ── */
+  .video-grid { grid-template-columns: repeat(3, 1fr); }
+
+  /* ── Módulos: 3 colunas ── */
+  .modules-grid { grid-template-columns: repeat(3, 1fr); }
+
+  /* ── Medidas: 4 colunas ── */
+  .medidas-grid { grid-template-columns: repeat(4, 1fr); }
+
+  /* ── Result cards: 4 colunas ── */
+  .result-cards { grid-template-columns: repeat(4, 1fr); }
+
+  /* ── Ciência: 3 colunas ── */
+  .ciencia-grid { grid-template-columns: repeat(3, 1fr); }
+
+} /* fim @media 900px */
 
 </style>
 </head>
@@ -2209,6 +2401,33 @@ canvas#pesoChart {
 
   <!-- SIDEBAR -->
   <nav id="sidebar">
+    <!-- NAV PRINCIPAL DESKTOP (oculta em mobile via CSS) -->
+    <div id="desk-nav">
+      <a class="desk-nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Início
+      </a>
+      <a class="desk-nav-item" data-page="treino" onclick="navigate('treino')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5a4.5 4.5 0 0 0 0 9"/><path d="M17.5 6.5a4.5 4.5 0 0 1 0 9"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.5 11h11"/></svg>
+        Treino
+      </a>
+      <a class="desk-nav-item" data-page="dieta" onclick="navigate('dieta')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3c0 1.5.8 2.8 2 3.4V10H8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-3V8.4c1.2-.6 2-1.9 2-3.4a3 3 0 0 0-3-3z"/></svg>
+        Nutrição
+      </a>
+      <a class="desk-nav-item" data-page="videos" onclick="navigate('videos')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        Vídeos
+      </a>
+      <a class="desk-nav-item" data-page="progresso" onclick="navigate('progresso')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Progresso
+      </a>
+      <a class="desk-nav-item" data-page="perfil" onclick="navigate('perfil')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        Config
+      </a>
+    </div>
     <div class="sidebar-section">
       <div class="sidebar-section-lbl">Configurações</div>
       <div class="nav-item" onclick="dadosOpen()"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span> Meus Dados</div>
@@ -2265,35 +2484,8 @@ canvas#pesoChart {
           <button class="hoje-treino-btn" onclick="irParaTreino()">Começar Treino →</button>
         </div>
 
-        <!-- COLUNA DIREITA DESKTOP: painel de treino sticky -->
-        <div class="right-col">
-          <div class="desktop-treino-card">
-            <div class="desktop-treino-header">
-              <div class="desktop-treino-eyebrow">Treino do Dia</div>
-              <div class="desktop-treino-titulo" id="dtTitulo">—</div>
-              <div class="desktop-treino-grupo" id="dtGrupo">—</div>
-            </div>
-            <div class="desktop-treino-meta">
-              <div class="dmeta"><div class="dmeta-v" id="dtEx">—</div><div class="dmeta-l">Exercícios</div></div>
-              <div class="dmeta"><div class="dmeta-v" id="dtMin">—</div><div class="dmeta-l">Min</div></div>
-              <div class="dmeta"><div class="dmeta-v" id="dtSeries">—</div><div class="dmeta-l">Séries</div></div>
-            </div>
-            <div class="desktop-treino-tabs">
-              <button id="dtTabCasa" class="active" onclick="dtSetModal('casa')">🏠 Casa</button>
-              <button id="dtTabAcad" onclick="dtSetModal('academia')">🏋 Academia</button>
-            </div>
-            <div class="desktop-treino-tabs" style="border-top:none;">
-              <button id="dtTabA" class="active" onclick="dtSetDia('A')">Treino A</button>
-              <button id="dtTabB" onclick="dtSetDia('B')">Treino B</button>
-              <button id="dtTabC" onclick="dtSetDia('C')">Treino C</button>
-            </div>
-            <div class="desktop-ex-list" id="dtExList"></div>
-            <button class="desktop-treino-btn" onclick="navigate('treino')">Abrir Treino Completo →</button>
-          </div>
-        </div>
-
         <!-- CALENDÁRIO -->
-        <div class="cal-section">
+        <div class="dash-cal-area">
         <div class="section-hdr" style="margin-bottom:8px;">Registro de Treino</div>
         <div class="cal-wrap">
           <div class="cal-month-tabs" id="calMonthTabs"></div>
@@ -2314,10 +2506,10 @@ canvas#pesoChart {
           </div>
         </div>
 
-        </div><!-- /cal-section -->
+        </div><!-- /dash-cal-area -->
 
         <!-- MINI ANANIAS -->
-        <div class="mini-ananias" onclick="navigate('ananias')" style="margin-bottom:16px;">
+        <div class="mini-ananias dash-ananias-area" onclick="navigate('ananias')" style="margin-bottom:16px;">
           <div class="mini-ananias-foto" id="miniAnaniasFoto">
             <span>AJ</span>
           </div>
@@ -2328,6 +2520,7 @@ canvas#pesoChart {
           <div class="mini-ananias-arrow">›</div>
         </div>
 
+        <div class="dash-stats-area">
         <div class="stats-row">
           <div class="stat-card">
             <div class="stat-lbl">Dias Treinados</div>
@@ -2351,7 +2544,10 @@ canvas#pesoChart {
           </div>
         </div>
 
+        </div><!-- /dash-stats-area -->
+
         <!-- BREAKDOWN ABC -->
+        <div class="dash-breakdown-area">
         <div class="stats-row" style="margin-top:2px;">
           <div class="stat-card" style="border-top:2px solid #00c853;">
             <div class="stat-lbl">Treino ✓</div>
@@ -2374,6 +2570,34 @@ canvas#pesoChart {
             <div class="stat-unit">dias marcados</div>
           </div>
         </div>
+        </div><!-- /dash-breakdown-area -->
+
+        <!-- COLUNA TREINO DESKTOP -->
+        <div class="dash-treino-col">
+          <div class="dt-panel">
+            <div class="dt-panel-header">
+              <div class="dt-eyebrow">Treino do Dia</div>
+              <div class="dt-titulo" id="dtTitulo">—</div>
+              <div class="dt-grupo" id="dtGrupo">—</div>
+            </div>
+            <div class="dt-meta">
+              <div class="dt-meta-item"><div class="dt-meta-v" id="dtEx">—</div><div class="dt-meta-l">Exerc.</div></div>
+              <div class="dt-meta-item"><div class="dt-meta-v" id="dtMin">—</div><div class="dt-meta-l">Min</div></div>
+              <div class="dt-meta-item"><div class="dt-meta-v" id="dtSeries">—</div><div class="dt-meta-l">Séries</div></div>
+            </div>
+            <div class="dt-tabs">
+              <button type="button" class="dt-tab active" id="dtTabCasa" onclick="dtSwitch('casa')">🏠 Casa</button>
+              <button type="button" class="dt-tab" id="dtTabAcad" onclick="dtSwitch('academia')">🏋 Academia</button>
+            </div>
+            <div class="dt-tabs" style="margin-top:-1px;">
+              <button type="button" class="dt-tab active" id="dtTabA" onclick="dtDay('A')">A</button>
+              <button type="button" class="dt-tab" id="dtTabB" onclick="dtDay('B')">B</button>
+              <button type="button" class="dt-tab" id="dtTabC" onclick="dtDay('C')">C</button>
+            </div>
+            <div class="dt-ex-list" id="dtExList"></div>
+            <button type="button" class="dt-cta" onclick="navigate('treino')">Ver Treino Completo →</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2390,6 +2614,7 @@ canvas#pesoChart {
       <div class="wrap">
 
         <!-- MODALIDADE: Casa / Academia -->
+        <div class="treino-col-tabs">
         <div class="tabs" id="treino-modal-tabs">
           <button class="tab active" onclick="setModalidade(this,'casa')">🏠 Casa</button>
           <button class="tab"        onclick="setModalidade(this,'academia')">🏋️ Academia</button>
@@ -2401,6 +2626,8 @@ canvas#pesoChart {
           <button class="tab"        onclick="setDiaTreino(this,'B')">Treino B</button>
           <button class="tab"        onclick="setDiaTreino(this,'C')">Treino C</button>
         </div>
+
+        </div><!-- /treino-col-tabs -->
 
         <!-- TREINO HEADER + LIST -->
         <div class="treino-hdr" id="treinoHdr">
@@ -3674,7 +3901,7 @@ function bootApp(email, rawName) {
   updateHojeTreino();
   calcWater();
   buildExLists();
-  setTimeout(dtRender, 0);
+  setTimeout(dtRender, 50);
   buildHistorico();
   buildPesoChart();
   renderDesafios();
@@ -3702,16 +3929,28 @@ function navigate(page) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const el=document.getElementById(PAGE_MAP[page]);
   if(el) el.classList.add('active');
+  // Mobile nav-items
   document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.remove('active');
+    if(n.dataset.page===page) n.classList.add('active');
+  });
+  // Desktop nav items
+  document.querySelectorAll('.desk-nav-item').forEach(n=>{
+    n.classList.remove('active');
+    if(n.dataset.page===page) n.classList.add('active');
+  });
+  // Mobile bottom nav
+  document.querySelectorAll('.bn-item').forEach(n=>{
     n.classList.remove('active');
     if(n.dataset.page===page) n.classList.add('active');
   });
   closeSidebar(); window.scrollTo(0,0);
   // Page-specific init
-  if(page === 'videos')  buildVideoPage();
-  if(page === 'dieta')   calcWater();
-  if(page === 'treino')  renderTreino();
-  if(page === 'progresso') { buildPesoChart(); }
+  if(page === 'videos')   buildVideoPage();
+  if(page === 'dieta')    calcWater();
+  if(page === 'treino')   renderTreino();
+  if(page === 'progresso') buildPesoChart();
+  if(page === 'dashboard') dtRender();
 }
 
 /* ── SIDEBAR ──────────────────────────────────────── */
@@ -4426,58 +4665,8 @@ function renderTreino() {
   renderEx('exListAtivo', t.ex, treinoModalidade + treinoDia);
 
   // Atualizar painel desktop também
-  dtRender();
 }
 
-/* ── PAINEL DE TREINO DESKTOP (right-col) ─────────── */
-function dtRender() {
-  const t = TREINOS[treinoModalidade][treinoDia];
-  if (!t) return;
-  const setEl = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
-  setEl('dtTitulo',  t.titulo);
-  setEl('dtGrupo',   t.grupo);
-  setEl('dtEx',      t.meta.ex);
-  setEl('dtMin',     t.meta.min);
-  setEl('dtSeries',  t.meta.series);
-
-  // Tabs
-  ['dtTabCasa','dtTabAcad'].forEach((id, i) => {
-    const b = document.getElementById(id);
-    if (b) b.classList.toggle('active', i === (['casa','academia'].indexOf(treinoModalidade)));
-  });
-  ['dtTabA','dtTabB','dtTabC'].forEach((id, i) => {
-    const b = document.getElementById(id);
-    if (b) b.classList.toggle('active', i === (['A','B','C'].indexOf(treinoDia)));
-  });
-
-  // Lista de exercícios compacta
-  const listEl = document.getElementById('dtExList');
-  if (!listEl) return;
-  listEl.innerHTML = '';
-  t.ex.forEach((ex, i) => {
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);';
-    row.innerHTML = `
-      <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:var(--faint);width:20px;flex-shrink:0;">${i+1}</div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.5px;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ex.n}</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);">${ex.d}</div>
-      </div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--faint);white-space:nowrap;">${ex.rest}s</div>
-    `;
-    listEl.appendChild(row);
-  });
-}
-
-function dtSetModal(m) {
-  treinoModalidade = m;
-  renderTreino();
-}
-
-function dtSetDia(d) {
-  treinoDia = d;
-  renderTreino();
-}
 
 function buildExLists() {
   renderTreino();
@@ -4608,6 +4797,45 @@ function saveMedidas() {
 /* esc moved to DOMContentLoaded */
 
 /* ── BOOT ─────────────────────────────────────────── */
+
+/* ── PAINEL TREINO DESKTOP ────────────────────────── */
+function dtRender() {
+  const t = TREINOS[treinoModalidade][treinoDia];
+  if (!t) return;
+  const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  s('dtTitulo', t.titulo);
+  s('dtGrupo',  t.grupo);
+  s('dtEx',     t.meta.ex);
+  s('dtMin',    t.meta.min);
+  s('dtSeries', t.meta.series);
+  // Tabs modalidade
+  const tabs = { casa: 'dtTabCasa', academia: 'dtTabAcad' };
+  Object.entries(tabs).forEach(([k, id]) => {
+    const b = document.getElementById(id);
+    if (b) b.classList.toggle('active', k === treinoModalidade);
+  });
+  // Tabs dia
+  ['A','B','C'].forEach(d => {
+    const b = document.getElementById('dtTab' + d);
+    if (b) b.classList.toggle('active', d === treinoDia);
+  });
+  // Lista exercícios
+  const listEl = document.getElementById('dtExList');
+  if (!listEl) return;
+  listEl.innerHTML = '';
+  t.ex.forEach((ex, i) => {
+    const row = document.createElement('div');
+    row.className = 'dt-ex-row';
+    row.innerHTML =
+      '<div class="dt-ex-num">' + (i+1) + '</div>' +
+      '<div class="dt-ex-name">' + ex.n + '</div>' +
+      '<div class="dt-ex-detail">' + ex.d + '</div>';
+    listEl.appendChild(row);
+  });
+}
+function dtSwitch(m) { treinoModalidade = m; renderTreino(); dtRender(); }
+function dtDay(d)    { treinoDia = d;        renderTreino(); dtRender(); }
+
 document.addEventListener('DOMContentLoaded', function() {
   const passInp = document.getElementById('passInp');
   if (passInp) passInp.addEventListener('keydown', e => {
