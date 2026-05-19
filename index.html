@@ -6415,49 +6415,68 @@ function progTemAcesso(id) {
 
 /* ── BUILD DA PÁGINA MÉTODO ───────────────────── */
 function buildMetodoPage() {
-  const baseGrid    = document.getElementById('metodoBaseGrid');
-  const premiumGrid = document.getElementById('metodoPremiumGrid');
+  var baseGrid    = document.getElementById('metodoBaseGrid');
+  var premiumGrid = document.getElementById('metodoPremiumGrid');
   if (!baseGrid || !premiumGrid) return;
   baseGrid.innerHTML = '';
   premiumGrid.innerHTML = '';
 
-  PROGRAMAS.forEach(prog => {
-    const ativo    = prog.id === programaAtivo;
-    const temAcess = progTemAcesso(prog.id);
-    const card     = document.createElement('div');
-    card.className = 'prog-card' + (ativo ? ' prog-ativo' : '') + (prog.premium && !temAcess ? ' prog-premium' : '');
+  PROGRAMAS.forEach(function(prog) {
+    var ativo    = prog.id === programaAtivo;
+    var temAcess = progTemAcesso(prog.id);
+    var card = document.createElement('div');
+    card.className = 'prog-card' +
+      (ativo ? ' prog-ativo' : '') +
+      (prog.premium && !temAcess ? ' prog-premium' : '');
 
-    let badgeHtml = '';
     if (ativo) {
-      badgeHtml = '<div class="prog-badge-ativo">Programa Ativo</div>';
+      var bEl = document.createElement('div');
+      bEl.className = 'prog-badge-ativo';
+      bEl.textContent = 'Programa Ativo';
+      card.appendChild(bEl);
     } else if (prog.premium) {
-      badgeHtml = '<div class="prog-badge-premium">⭐ Premium</div>';
+      var bEl = document.createElement('div');
+      bEl.className = 'prog-badge-premium';
+      bEl.textContent = 'Premium';
+      card.appendChild(bEl);
     }
 
-    let btnHtml = '';
+    var top = document.createElement('div'); top.className = 'prog-card-top';
+    var info = document.createElement('div'); info.className = 'prog-card-info';
+    var titulo = document.createElement('div'); titulo.className = 'prog-titulo';
+    titulo.textContent = prog.nome;
+    var desc = document.createElement('div'); desc.className = 'prog-desc';
+    desc.textContent = prog.desc;
+    info.appendChild(titulo); info.appendChild(desc); top.appendChild(info);
+    if (prog.premium && !temAcess) {
+      var lock = document.createElement('div'); lock.className = 'prog-card-lock';
+      lock.innerHTML = '&#128274;';
+      top.appendChild(lock);
+    }
+    card.appendChild(top);
+
+    var meta = document.createElement('div'); meta.className = 'prog-meta';
+    meta.innerHTML =
+      '<div class="prog-meta-item"><strong>' + prog.duracao + '</strong>Duração</div>' +
+      '<div class="prog-meta-item"><strong>' + prog.frequencia + '</strong>Frequência</div>';
+    card.appendChild(meta);
+
+    var btn = document.createElement('button'); btn.type = 'button';
     if (temAcess && !ativo) {
-      btnHtml = `<button type="button" class="prog-btn-iniciar" onclick="progAtivar('${prog.id}')">Ativar Programa</button>`;
+      btn.className = 'prog-btn-iniciar';
+      btn.textContent = 'Ativar Programa';
+      (function(id) { btn.addEventListener('click', function(){ progAtivar(id); }); })(prog.id);
     } else if (ativo) {
-      btnHtml = `<button type="button" class="prog-btn-iniciar" onclick="progAbrir('${prog.id}')">Ver Programa →</button>`;
+      btn.className = 'prog-btn-iniciar';
+      btn.textContent = 'Ver Programa →';
+      (function(id) { btn.addEventListener('click', function(){ progAbrir(id); }); })(prog.id);
     } else {
-      btnHtml = `<button type="button" class="prog-btn-adquirir">🔒 Adquirir Programa</button>`;
+      btn.className = 'prog-btn-adquirir';
+      btn.textContent = 'Adquirir Programa';
+      btn.disabled = true;
     }
+    card.appendChild(btn);
 
-    card.innerHTML = `
-      ${badgeHtml}
-      <div class="prog-card-top">
-        <div class="prog-card-info">
-          <div class="prog-titulo">${prog.nome}</div>
-          <div class="prog-desc">${prog.desc}</div>
-        </div>
-        ${prog.premium && !temAcess ? '<div class="prog-card-lock">🔒</div>' : ''}
-      </div>
-      <div class="prog-meta">
-        <div class="prog-meta-item"><strong>${prog.duracao}</strong>Duração</div>
-        <div class="prog-meta-item"><strong>${prog.frequencia}</strong>Frequência</div>
-      </div>
-      ${btnHtml}
-    `;
     (prog.premium ? premiumGrid : baseGrid).appendChild(card);
   });
 }
