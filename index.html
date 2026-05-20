@@ -4697,6 +4697,10 @@ function dadosSave(){
   } catch(e) {
     console.warn('dadosSave update erro:', e);
   } finally {
+    // Sincronizar dieta e treino com novos dados pessoais
+    try { renderDietaAtiva(); }     catch(e2) {}
+    try { renderTreino(); }         catch(e2) {}
+    try { updateProgAtivoBadge(); } catch(e2) {}
     dadosClose();
   }
 }
@@ -5291,20 +5295,50 @@ function buildMetodoPage() {
 function progAtivar(id) {
   programaAtivo = id;
   localStorage.setItem('maj_programa_ativo', id);
-  // Sincronizar objetivo com o programa (para cálculos de dieta)
-  const prog = PROGRAMAS.find(p => p.id === id);
+
+  // Sincronizar objetivo e recalcular metas com dados físicos salvos
+  const prog = PROGRAMAS.find(function(p){ return p.id === id; });
   if (prog) {
     dObjSelM = prog.objetivo;
-    localStorage.setItem('maj_tmb_form', JSON.stringify({
-      ...JSON.parse(localStorage.getItem('maj_tmb_form') || '{}'),
-      obj: String([0.8,1.0,1.1][prog.objetivo])
-    }));
+    const saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
+    const peso   = +saved.dPeso   || 0;
+    const altura = +saved.dAltura || 0;
+    const idade  = +saved.dIdade  || 0;
+    const sexo   = saved.sex || 'M';
+    const ativVals = [1.2, 1.375, 1.725];
+    const objVals  = [0.8, 1.0, 1.1];
+    const ativ = ativVals[+(saved.ativ ? [1.2,1.375,1.725].indexOf(+saved.ativ) : 1)] || +saved.ativ || 1.375;
+    const objFactor = objVals[prog.objetivo] || 1.0;
+    if (peso && altura && idade) {
+      const tmb = sexo === 'M'
+        ? 88.36 + (13.4*peso) + (4.8*altura) - (5.7*idade)
+        : 447.6 + (9.2*peso)  + (3.1*altura) - (4.3*idade);
+      const get  = Math.round(tmb * ativ);
+      const meta = Math.round(get * objFactor);
+      const prot = Math.round(peso * 2);
+      localStorage.setItem('maj_kcal', String(meta));
+      localStorage.setItem('maj_prot', String(prot));
+      localStorage.setItem('maj_tmb_form', JSON.stringify({
+        ...saved,
+        obj: String(objFactor),
+        tmb: Math.round(tmb),
+        get: get
+      }));
+    } else {
+      // Sem dados físicos ainda — só atualizar obj
+      localStorage.setItem('maj_tmb_form', JSON.stringify({
+        ...saved, obj: String(objFactor)
+      }));
+    }
   }
+
   buildMetodoPage();
+  try { updateDietaSummary(); } catch(e) {}
+  try { calcWater(); }          catch(e) {}
   renderDietaAtiva();
   renderTreino();
   updateProgAtivoBadge();
-  // Feedback visual
+  try { updatePerfilPlan(); }   catch(e) {}
   if (navigator.vibrate) navigator.vibrate(60);
 }
 
@@ -5403,6 +5437,8 @@ function bootApp(email, rawName) {
   updateHojeTreino();
   calcWater();
   buildExLists();
+  renderTreino();
+  updateCalStats();
   updateProgAtivoBadge();
   setTimeout(dtRender, 50);
   setTimeout(renderDietaAtiva, 60);
