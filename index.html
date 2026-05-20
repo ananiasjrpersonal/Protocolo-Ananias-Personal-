@@ -3086,6 +3086,8 @@ canvas#pesoChart {
   margin-bottom: 2px;
   overflow: hidden;
   transition: border-color .15s;
+  display: block;
+  width: 100%;
 }
 .refeicao-header {
   display: flex; align-items: center;
@@ -3093,6 +3095,7 @@ canvas#pesoChart {
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
+  min-height: 56px;
 }
 .refeicao-icon  { font-size: 20px; flex-shrink: 0; }
 .refeicao-info  { flex: 1; min-width: 0; }
@@ -7178,6 +7181,7 @@ function renderDietaAtiva() {
   }
 
   container.innerHTML = '';
+  container.style.display = 'block';
 
   menu.forEach(function(ref) {
     var metaRefKcal = Math.round(metaKcal * ref.pct);
@@ -7185,7 +7189,8 @@ function renderDietaAtiva() {
     var sel = carregarPrefRefeicao(programaAtivo, ref.id);
 
     var card = document.createElement('div');
-    card.className = 'refeicao-card' + (sel.length > 0 ? ' open' : '');
+    var isFirst = menu.indexOf(ref) === 0;
+    card.className = 'refeicao-card' + (sel.length > 0 || isFirst ? ' open' : '');
     card.dataset.refId = ref.id;
 
     // Header
