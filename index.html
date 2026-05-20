@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Método Ananias Jr — Plataforma</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
@@ -4304,6 +4305,120 @@ canvas#pesoChart {
 
 <script>
 /* ── DATA ─────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════
+   SUPABASE — configuração
+   URL e anon key são seguras para o frontend com RLS ativo
+   ══════════════════════════════════════════════════ */
+const SUPABASE_URL = 'https://tawvbdvkabxkixwujcfw.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhd3ZiZHZrYWJ4a2l4d3VqY2Z3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyOTY0ODMsImV4cCI6MjA5NDg3MjQ4M30.KXEE-kKXffkGvaEpq5884RwD2orxQrwnMEb_RnJRMdI';
+const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ID do usuário logado (preenchido após login)
+let _uid = null;
+
+/* ── Helpers de sync ──────────────────────────────
+   Padrão: localStorage como cache imediato,
+   Supabase como fonte de verdade.
+   Sempre tenta sincronizar, nunca bloqueia a UI em caso de erro.
+   ─────────────────────────────────────────────── */
+
+async function sbSyncProfile(data) {
+  if (!_uid) return;
+  try {
+    await _sb.from('profiles').upsert({ id: _uid, ...data, updated_at: new Date().toISOString() });
+  } catch(e) { console.warn('sbSyncProfile:', e); }
+}
+
+async function sbSyncTreino(data, key) {
+  if (!_uid) return;
+  const hoje = new Date().toISOString().slice(0,10);
+  try {
+    await _sb.from('treinos_log').upsert(
+      { user_id: _uid, data: hoje, treino_dia: data },
+      { onConflict: 'user_id,data' }
+    );
+  } catch(e) { console.warn('sbSyncTreino:', e); }
+}
+
+async function sbSyncMedidas(medida) {
+  if (!_uid) return;
+  try {
+    await _sb.from('medidas').insert({ user_id: _uid, ...medida });
+  } catch(e) { console.warn('sbSyncMedidas:', e); }
+}
+
+async function sbSyncWater(copos) {
+  if (!_uid) return;
+  const hoje = new Date().toISOString().slice(0,10);
+  try {
+    await _sb.from('water_log').upsert(
+      { user_id: _uid, data: hoje, copos: copos, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id,data' }
+    );
+  } catch(e) { console.warn('sbSyncWater:', e); }
+}
+
+async function sbCarregarDados() {
+  if (!_uid) return;
+  try {
+    // Perfil
+    const { data: prof } = await _sb.from('profiles').select('*').eq('id', _uid).single();
+    if (prof) {
+      if (prof.nome)            localStorage.setItem('maj_nome', prof.nome);
+      if (prof.meta_kcal)       localStorage.setItem('maj_kcal', String(prof.meta_kcal));
+      if (prof.meta_prot)       localStorage.setItem('maj_prot', String(prof.meta_prot));
+      if (prof.meta_agua)       localStorage.setItem('maj_water_l', String(prof.meta_agua));
+      if (prof.programa_ativo)  localStorage.setItem('maj_programa_ativo', prof.programa_ativo);
+      if (prof.onboarding_done) localStorage.setItem('maj_onboarding_done', '1');
+      if (prof.peso || prof.altura || prof.idade) {
+        const saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
+        localStorage.setItem('maj_tmb_form', JSON.stringify({
+          ...saved,
+          dPeso:   prof.peso   || saved.dPeso,
+          dAltura: prof.altura || saved.dAltura,
+          dIdade:  prof.idade  || saved.dIdade,
+          sex:     prof.sexo   || saved.sex || 'M',
+          ativ:    String(prof.frequencia || saved.ativ || 1.375),
+        }));
+      }
+    }
+
+    // Acesso premium
+    const { data: acessos } = await _sb.from('prog_acesso')
+      .select('programa_id, expira_em')
+      .eq('user_id', _uid)
+      .gt('expira_em', new Date().toISOString());
+    if (acessos && acessos.length > 0) {
+      const ids = acessos.map(a => a.programa_id);
+      localStorage.setItem('maj_prog_acesso', JSON.stringify(ids));
+    }
+
+    // Preferências de refeição
+    const { data: prefs } = await _sb.from('preferencias_refeicao')
+      .select('programa_id, refeicao_id, alimentos')
+      .eq('user_id', _uid);
+    if (prefs && prefs.length > 0) {
+      const prefObj = {};
+      prefs.forEach(p => {
+        if (!prefObj[p.programa_id]) prefObj[p.programa_id] = {};
+        prefObj[p.programa_id][p.refeicao_id] = p.alimentos;
+      });
+      localStorage.setItem('maj_pref_refeicao', JSON.stringify(prefObj));
+    }
+
+    // Treinos (calendário)
+    const { data: treinos } = await _sb.from('treinos_log')
+      .select('data, treino_dia')
+      .eq('user_id', _uid);
+    if (treinos && treinos.length > 0) {
+      const cal = {};
+      treinos.forEach(t => { cal[t.data] = t.treino_dia; });
+      localStorage.setItem('maj_cal', JSON.stringify(cal));
+    }
+
+  } catch(e) { console.warn('sbCarregarDados:', e); }
+}
+
 const PASS_HASH = '4f9113a740f2e6b3b5f0e33ab512c4cfa6242870554adcf5d6b807b6f352a2f2';
 const LS_VERSION = 3;
 (function migrateLS(){
@@ -4697,12 +4812,26 @@ function dadosSave(){
   } catch(e) {
     console.warn('dadosSave update erro:', e);
   } finally {
-    // Sincronizar dieta e treino com novos dados pessoais
     try { renderDietaAtiva(); }     catch(e2) {}
     try { renderTreino(); }         catch(e2) {}
     try { updateProgAtivoBadge(); } catch(e2) {}
     dadosClose();
   }
+  // Sync Supabase (async, não bloqueia UI)
+  const _saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
+  sbSyncProfile({
+    nome:           localStorage.getItem('maj_nome'),
+    peso:           _saved.dPeso   || null,
+    altura:         _saved.dAltura || null,
+    idade:          _saved.dIdade  || null,
+    sexo:           _saved.sex     || 'M',
+    frequencia:     +_saved.ativ   || 1.375,
+    meta_kcal:      parseInt(localStorage.getItem('maj_kcal')) || null,
+    meta_prot:      parseInt(localStorage.getItem('maj_prot')) || null,
+    meta_agua:      parseFloat(localStorage.getItem('maj_water_l')) || null,
+    programa_ativo: localStorage.getItem('maj_programa_ativo') || 'secar',
+    onboarding_done: true,
+  });
 }
 /* ── ONBOARDING ───────────────────────────────────── */
 let obObjetivoSel = 0; // 0=secar 1=manter 2=ganhar
@@ -4789,7 +4918,6 @@ function obNext(step) {
 
 function obFinish() {
   localStorage.setItem('maj_onboarding_done', '1');
-  // Definir programa ativo baseado no objetivo do onboarding
   const progMap = ['secar','manter','crescer'];
   const progInicial = progMap[typeof obObjetivoSel !== 'undefined' ? obObjetivoSel : 0] || 'secar';
   localStorage.setItem('maj_programa_ativo', progInicial);
@@ -4801,6 +4929,24 @@ function obFinish() {
   const nome  = localStorage.getItem('maj_nome') || 'Atleta';
   if (email) localStorage.setItem('maj_email', email);
   document.getElementById('appShell').style.display = 'block';
+
+  // Sync perfil completo no Supabase
+  const _ob = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
+  sbSyncProfile({
+    nome:            nome,
+    email:           email,
+    peso:            _ob.dPeso   || null,
+    altura:          _ob.dAltura || null,
+    idade:           _ob.dIdade  || null,
+    sexo:            _ob.sex     || 'M',
+    frequencia:      +_ob.ativ   || 1.375,
+    meta_kcal:       parseInt(localStorage.getItem('maj_kcal'))    || null,
+    meta_prot:       parseInt(localStorage.getItem('maj_prot'))    || null,
+    meta_agua:       parseFloat(localStorage.getItem('maj_water_l')) || null,
+    programa_ativo:  progInicial,
+    onboarding_done: true,
+  });
+
   bootApp(email, nome);
 }
 
@@ -4808,10 +4954,12 @@ function maybeShowOnboarding() { /* handled inside bootApp */ }
 
 /* ── AUTH ─────────────────────────────────────────── */
 async function tryLogin() {
-  const email = document.getElementById('emailInp').value.trim();
-  const pass  = document.getElementById('passInp').value.trim().toUpperCase();
+  const email = document.getElementById('emailInp').value.trim().toLowerCase();
+  const pass  = document.getElementById('passInp').value.trim();
   const inp   = document.getElementById('passInp');
   const err   = document.getElementById('lockErr');
+  const btn   = document.querySelector('.lock-btn');
+
   if (!email || !email.includes('@')) {
     err.textContent = 'Email inválido';
     inp.classList.add('error');
@@ -4819,39 +4967,48 @@ async function tryLogin() {
     return;
   }
   if (!pass) {
-    err.textContent = 'Digite a senha de acesso';
+    err.textContent = 'Digite sua senha';
     inp.classList.add('error');
     setTimeout(() => inp.classList.remove('error'), 600);
     inp.focus();
     return;
   }
-  // Try SHA-256 (HTTPS), fallback to direct compare (file:// / HTTP)
-  let authorized = false;
-  try {
-    const enc  = new TextEncoder().encode(pass);
-    const buf  = await crypto.subtle.digest('SHA-256', enc);
-    const hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-    authorized = (hash === PASS_HASH);
-  } catch(e) {
-    authorized = (pass === 'ESPORTESEMPRE');
-  }
-  if (!authorized) {
-    err.textContent = 'Senha incorreta';
-    inp.classList.add('error');
-    inp.value = '';
-    setTimeout(() => inp.classList.remove('error'), 600);
-    inp.focus();
-    return;
-  }
+
+  // Feedback visual de carregamento
   err.textContent = '';
-  const name = email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1);
-  if (document.getElementById('rememberMe').checked) {
+  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
+
+  try {
+    const { data, error } = await _sb.auth.signInWithPassword({ email, password: pass });
+
+    if (error) {
+      const msg = error.message.includes('Invalid') ? 'Email ou senha incorretos' : error.message;
+      err.textContent = msg;
+      inp.classList.add('error');
+      inp.value = '';
+      setTimeout(() => inp.classList.remove('error'), 600);
+      inp.focus();
+      if (btn) { btn.textContent = 'Entrar'; btn.disabled = false; }
+      return;
+    }
+
+    // Login ok
+    _uid = data.user.id;
+    const nome = data.user.user_metadata?.nome || email.split('@')[0];
     localStorage.setItem('maj_email', email);
-    localStorage.setItem('maj_name', name);
     localStorage.setItem('maj_auth', '1');
-    if (!localStorage.getItem('maj_nome')) localStorage.setItem('maj_nome', name);
+    if (!localStorage.getItem('maj_nome')) localStorage.setItem('maj_nome', nome);
+
+    // Carregar dados do banco antes de bootar
+    await sbCarregarDados();
+    if (btn) { btn.textContent = 'Entrar'; btn.disabled = false; }
+    bootApp(email, nome);
+
+  } catch(e) {
+    err.textContent = 'Erro de conexão. Tente novamente.';
+    if (btn) { btn.textContent = 'Entrar'; btn.disabled = false; }
+    console.error('tryLogin:', e);
   }
-  bootApp(email, name);
 }
 
 /* ══════════════════════════════════════════════════
@@ -5340,6 +5497,8 @@ function progAtivar(id) {
   updateProgAtivoBadge();
   try { updatePerfilPlan(); }   catch(e) {}
   if (navigator.vibrate) navigator.vibrate(60);
+  // Sync programa ativo no Supabase
+  sbSyncProfile({ programa_ativo: id });
 }
 
 /* ── ABRIR TELA DO PROGRAMA ──────────────────── */
@@ -5448,7 +5607,14 @@ function bootApp(email, rawName) {
   renderDesafios();
 }
 
-function logout() { if(!confirm('Sair da conta?')) return; localStorage.removeItem('maj_auth'); location.reload(); }
+async function logout() {
+  if (!confirm('Sair da conta?')) return;
+  await _sb.auth.signOut();
+  localStorage.removeItem('maj_auth');
+  localStorage.removeItem('maj_email');
+  _uid = null;
+  location.reload();
+}
 
 function toggleEye() {
   const inp = document.getElementById('passInp');
@@ -5964,6 +6130,9 @@ function calLoad() {
 
 function calSave() {
   localStorage.setItem('maj_cal', JSON.stringify(calData));
+  // Sync treino do dia atual no Supabase
+  const hoje = new Date().toISOString().slice(0,10);
+  if (calData[hoje]) sbSyncTreino(calData[hoje], hoje);
 }
 
 function calKey(y, m, d) {
@@ -6345,6 +6514,10 @@ function saveMedidas() {
   const saved = JSON.parse(localStorage.getItem('maj_medidas') || '[]');
   saved.unshift({data, peso, cintura, abdomen, quadril, delta: null});
   localStorage.setItem('maj_medidas', JSON.stringify(saved));
+  if (saved.length > 0) {
+    var ult = saved[saved.length-1];
+    sbSyncMedidas({ data: ult.data, peso: ult.peso||null, cintura: ult.cintura||null, abdomen: ult.abdomen||null, quadril: ult.quadril||null, delta: ult.delta||null });
+  }
   buildHistorico();
 
   [document.getElementById('mPeso'),
@@ -6846,14 +7019,20 @@ function carregarPrefRefeicao(progId, refId) {
 }
 
 function salvarPrefRefeicao(progId, refId, alimIds) {
-  /* Supabase: await supabase.from('preferencias_refeicao')
-       .upsert({ user_id, programa_id: progId, refeicao_id: refId, alimentos: alimIds }) */
+  // localStorage (imediato)
   try {
     var all = JSON.parse(localStorage.getItem('maj_pref_refeicao') || '{}');
     if (!all[progId]) all[progId] = {};
     all[progId][refId] = alimIds;
     localStorage.setItem('maj_pref_refeicao', JSON.stringify(all));
   } catch(e) {}
+  // Supabase (async)
+  if (_uid) {
+    _sb.from('preferencias_refeicao').upsert(
+      { user_id: _uid, programa_id: progId, refeicao_id: refId, alimentos: alimIds, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id,programa_id,refeicao_id' }
+    ).catch(e => console.warn('pref sync:', e));
+  }
 }
 
 /* ── CÁLCULO DE QUANTIDADES ─────────────────────── */
@@ -7066,11 +7245,23 @@ document.addEventListener('DOMContentLoaded', function() {
       closePremiumModal();
     }
   });
-  if (localStorage.getItem('maj_auth') === '1') {
-    const email = localStorage.getItem('maj_email') || 'atleta@metodo.com';
-    const name  = localStorage.getItem('maj_nome') || localStorage.getItem('maj_name') || 'Atleta';
-    bootApp(email, name);
-  }
+  // Verificar sessão ativa no Supabase
+  _sb.auth.getSession().then(async ({ data: { session } }) => {
+    if (session) {
+      _uid = session.user.id;
+      const email = session.user.email;
+      localStorage.setItem('maj_auth', '1');
+      localStorage.setItem('maj_email', email);
+      await sbCarregarDados();
+      const nome = localStorage.getItem('maj_nome') || email.split('@')[0];
+      bootApp(email, nome);
+    } else if (localStorage.getItem('maj_auth') === '1') {
+      // Fallback: localStorage (offline ou sessão expirada)
+      const email = localStorage.getItem('maj_email') || '';
+      const nome  = localStorage.getItem('maj_nome') || 'Atleta';
+      bootApp(email, nome);
+    }
+  });
 });
 </script>
 
