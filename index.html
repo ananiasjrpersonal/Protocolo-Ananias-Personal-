@@ -3767,7 +3767,7 @@ canvas#pesoChart {
           <div id="dietaMacroSummary" style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;"></div>
         </div>
 
-        <div id="dietaRefeicoes"></div>
+        <div id="dietaRefeicoes" style="margin-top:4px;"></div>
       </div>
     </div>
 
@@ -5689,7 +5689,7 @@ function bootApp(email, rawName) {
   setTimeout(dtRender, 50);
   // Garantir programaAtivo antes de renderizar dieta
   if (!programaAtivo) programaAtivo = localStorage.getItem('maj_programa_ativo') || 'secar';
-  setTimeout(renderDietaAtiva, 150);
+  setTimeout(renderDietaAtiva, 500);
   buildHistorico();
   buildPesoChart();
   setTimeout(deskUpdateKpis, 100);
@@ -5746,7 +5746,15 @@ function navigate(page) {
   // Page-specific init
   if(page === 'videos')   buildVideoPage();
   if(page === 'metodo')   { buildMetodoPage(); updateProgAtivoBadge(); }
-  if(page === 'dieta')    { calcWater(); renderDietaAtiva(); }
+  if(page === 'dieta') {
+    calcWater();
+    // requestAnimationFrame garante que o DOM está visível antes de renderizar
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        renderDietaAtiva();
+      });
+    });
+  }
   if(page === 'treino')   renderTreino();
   if(page === 'progresso') { buildPesoChart(); deskUpdateKpis(); }
   if(page === 'dashboard') dtRender();
@@ -7157,7 +7165,8 @@ function renderDietaAtiva() {
   var label = document.getElementById('dietaPlanLabel');
   var container = document.getElementById('dietaRefeicoes');
   var summaryEl = document.getElementById('dietaMacroSummary');
-  if (!container) return;
+  if (!container) { console.warn('dietaRefeicoes container not found'); return; }
+  console.log('renderDietaAtiva called, programaAtivo:', programaAtivo, 'menu:', menu ? menu.length + ' refs' : 'NULL');
 
   var metaKcal = parseInt(localStorage.getItem('maj_kcal')) || 2000;
   var metaProt = parseInt(localStorage.getItem('maj_prot')) || 120;
