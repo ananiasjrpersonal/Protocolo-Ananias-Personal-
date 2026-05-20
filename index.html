@@ -3077,6 +3077,125 @@ canvas#pesoChart {
 }
 .dash-prog-arrow { color: var(--faint); font-size: 12px; }
 
+
+/* ── PLANO ALIMENTAR INTERATIVO ──────────────────── */
+.refeicao-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  margin-bottom: 2px;
+  overflow: hidden;
+  transition: border-color .15s;
+}
+.refeicao-header {
+  display: flex; align-items: center;
+  padding: 14px 16px; gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.refeicao-icon  { font-size: 20px; flex-shrink: 0; }
+.refeicao-info  { flex: 1; min-width: 0; }
+.refeicao-nome  {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--white);
+}
+.refeicao-meta  {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; color: var(--muted); letter-spacing: 1px;
+  margin-top: 2px;
+}
+.refeicao-meta.has-sel { color: var(--green); }
+.refeicao-chevron {
+  font-size: 18px; color: var(--faint);
+  transition: transform .2s; flex-shrink: 0;
+}
+.refeicao-card.open .refeicao-chevron { transform: rotate(90deg); }
+
+.refeicao-body  { display: none; padding: 0 16px 16px; }
+.refeicao-card.open .refeicao-body { display: block; }
+
+/* Grid de opções de alimentos */
+.alim-grid {
+  display: flex; flex-direction: column; gap: 2px;
+  margin-bottom: 14px;
+}
+.alim-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: border-color .12s, background .12s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none; -webkit-user-select: none;
+}
+.alim-item:hover  { border-color: var(--border2); }
+.alim-item.sel    {
+  background: rgba(232,0,42,.06);
+  border-color: rgba(232,0,42,.35);
+}
+.alim-check {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border: 1.5px solid var(--border2);
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .12s;
+}
+.alim-item.sel .alim-check {
+  background: var(--red);
+  border-color: var(--red);
+}
+.alim-check-tick {
+  display: none;
+  width: 10px; height: 7px;
+}
+.alim-item.sel .alim-check-tick { display: block; }
+.alim-nome {
+  flex: 1;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: .5px;
+  color: var(--text);
+}
+.alim-item.sel .alim-nome { color: var(--white); }
+.alim-macros {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; color: var(--faint); letter-spacing: 1px;
+  text-align: right; flex-shrink: 0;
+}
+.alim-qty-calc {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 16px; color: var(--red2); letter-spacing: 1px;
+  min-width: 42px; text-align: right; flex-shrink: 0;
+}
+.alim-item.sel .alim-macros { color: var(--muted); }
+
+/* Resultado calculado */
+.refeicao-resultado {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  padding: 12px 14px;
+}
+.refeicao-resultado.ok  { border-left-color: var(--green); }
+.refeicao-resultado-row {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.refeicao-resultado-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--faint);
+}
+.refeicao-resultado-vals {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 22px; letter-spacing: 1px; color: var(--white);
+}
+.refeicao-resultado-vals span { color: var(--muted); font-size: 14px; margin: 0 4px; }
+.refeicao-hint {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; color: var(--faint); margin-top: 4px; letter-spacing: 1px;
+}
+
 </style>
 </head>
 <body>
@@ -3583,99 +3702,13 @@ canvas#pesoChart {
           <div class="water-tip" id="waterTip"></div>
         </div>
 
-        <!-- PLANO ALIMENTAR COM ABAS -->
-        <div class="section-hdr" style="margin-top:20px;" id="dietaPlanLabel">Plano Alimentar</div>
-
-        <div class="accordion" id="mealAccordion">
-
-          <div class="acc-item">
-            <button class="acc-header" onclick="toggleAcc(this)">
-              <span class="acc-icon">☀️</span>
-              <span class="acc-title">Café da Manhã</span>
-              <span class="acc-meta">491 kcal · 25g prot</span>
-              <span class="acc-chevron">›</span>
-            </button>
-            <div class="acc-body">
-              <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
-              <div class="food-row"><div class="food-name">Ovos mexidos</div><div class="food-qty">3 un</div><div class="food-kcal">210</div><div class="food-prot">18g</div></div>
-              <div class="food-row"><div class="food-name">Aveia em flocos</div><div class="food-qty">50g</div><div class="food-kcal">187</div><div class="food-prot">6g</div></div>
-              <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
-              <div class="food-row"><div class="food-name">Café preto sem açúcar</div><div class="food-qty">200ml</div><div class="food-kcal">5</div><div class="food-prot">0g</div></div>
-              <div class="meal-total-row"><span class="meal-total-item kcal">Total: 491 kcal</span><span class="meal-total-item prot">25g prot</span></div>
-            </div>
-          </div>
-
-          <div class="acc-item">
-            <button class="acc-header" onclick="toggleAcc(this)">
-              <span class="acc-icon">🌞</span>
-              <span class="acc-title">Almoço</span>
-              <span class="acc-meta">660 kcal · 73g prot</span>
-              <span class="acc-chevron">›</span>
-            </button>
-            <div class="acc-body">
-              <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
-              <div class="food-row"><div class="food-name">Frango grelhado (peito)</div><div class="food-qty">200g</div><div class="food-kcal">330</div><div class="food-prot">62g</div></div>
-              <div class="food-row"><div class="food-name">Arroz integral</div><div class="food-qty">100g</div><div class="food-kcal">124</div><div class="food-prot">3g</div></div>
-              <div class="food-row"><div class="food-name">Feijão carioca</div><div class="food-qty">80g</div><div class="food-kcal">91</div><div class="food-prot">6g</div></div>
-              <div class="food-row"><div class="food-name">Salada verde (à vontade)</div><div class="food-qty">livre</div><div class="food-kcal">25</div><div class="food-prot">2g</div></div>
-              <div class="food-row"><div class="food-name">Azeite extra virgem</div><div class="food-qty">1 col.sopa</div><div class="food-kcal">90</div><div class="food-prot">0g</div></div>
-              <div class="meal-total-row"><span class="meal-total-item kcal">Total: 660 kcal</span><span class="meal-total-item prot">73g prot</span></div>
-            </div>
-          </div>
-
-          <div class="acc-item">
-            <button class="acc-header" onclick="toggleAcc(this)">
-              <span class="acc-icon">🍎</span>
-              <span class="acc-title">Lanche da Tarde</span>
-              <span class="acc-meta">368 kcal · 39g prot</span>
-              <span class="acc-chevron">›</span>
-            </button>
-            <div class="acc-body">
-              <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
-              <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">170g</div><div class="food-kcal">100</div><div class="food-prot">17g</div></div>
-              <div class="food-row"><div class="food-name">Castanha do Pará</div><div class="food-qty">3 un</div><div class="food-kcal">90</div><div class="food-prot">2g</div></div>
-              <div class="food-row"><div class="food-name">Maçã</div><div class="food-qty">1 un</div><div class="food-kcal">81</div><div class="food-prot">0g</div></div>
-              <div class="food-row"><div class="food-name">Whey Protein</div><div class="food-qty">25g</div><div class="food-kcal">97</div><div class="food-prot">20g</div></div>
-              <div class="meal-total-row"><span class="meal-total-item kcal">Total: 368 kcal</span><span class="meal-total-item prot">39g prot</span></div>
-            </div>
-          </div>
-
-          <div class="acc-item">
-            <button class="acc-header" onclick="toggleAcc(this)">
-              <span class="acc-icon">🌙</span>
-              <span class="acc-title">Jantar</span>
-              <span class="acc-meta">448 kcal · 59g prot</span>
-              <span class="acc-chevron">›</span>
-            </button>
-            <div class="acc-body">
-              <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
-              <div class="food-row"><div class="food-name">Atum em água</div><div class="food-qty">2 latas</div><div class="food-kcal">160</div><div class="food-prot">36g</div></div>
-              <div class="food-row"><div class="food-name">Batata doce assada</div><div class="food-qty">150g</div><div class="food-kcal">129</div><div class="food-prot">3g</div></div>
-              <div class="food-row"><div class="food-name">Brócolis cozido</div><div class="food-qty">120g</div><div class="food-kcal">41</div><div class="food-prot">3g</div></div>
-              <div class="food-row"><div class="food-name">Iogurte grego natural</div><div class="food-qty">200g</div><div class="food-kcal">118</div><div class="food-prot">17g</div></div>
-              <div class="meal-total-row"><span class="meal-total-item kcal">Total: 448 kcal</span><span class="meal-total-item prot">59g prot</span></div>
-            </div>
-          </div>
-
-          <div class="acc-item">
-            <button class="acc-header" onclick="toggleAcc(this)">
-              <span class="acc-icon">⚡</span>
-              <span class="acc-title">Pós-Treino</span>
-              <span class="acc-meta">268 kcal · 25g prot</span>
-              <span class="acc-chevron">›</span>
-            </button>
-            <div class="acc-body">
-              <div class="meal-cols"><div class="meal-col-lbl">Alimento</div><div class="meal-col-lbl c">Qtd</div><div class="meal-col-lbl r">kcal</div><div class="meal-col-lbl g">Prot</div></div>
-              <div class="food-row"><div class="food-name">Whey Protein</div><div class="food-qty">30g</div><div class="food-kcal">120</div><div class="food-prot">24g</div></div>
-              <div class="food-row"><div class="food-name">Banana prata</div><div class="food-qty">1 un</div><div class="food-kcal">89</div><div class="food-prot">1g</div></div>
-              <div class="food-row"><div class="food-name">Mel</div><div class="food-qty">1 col.chá</div><div class="food-kcal">21</div><div class="food-prot">0g</div></div>
-              <div class="food-row"><div class="food-name">Água de coco</div><div class="food-qty">200ml</div><div class="food-kcal">38</div><div class="food-prot">0g</div></div>
-              <div class="meal-total-row"><span class="meal-total-item kcal">Total: 268 kcal</span><span class="meal-total-item prot">25g prot</span></div>
-            </div>
-          </div>
-
+        <!-- PLANO ALIMENTAR INTERATIVO -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;margin-bottom:10px;">
+          <div class="section-hdr" id="dietaPlanLabel" style="margin:0;">Plano Alimentar</div>
+          <div id="dietaMacroSummary" style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;"></div>
         </div>
 
+        <div id="dietaRefeicoes"></div>
       </div>
     </div>
 
@@ -6579,61 +6612,399 @@ function conclusaoFechar() {
   
 
 
-/* ── DIETA DINÂMICA ──────────────────────────────── */
+
+/* ══════════════════════════════════════════════════
+   PLANO ALIMENTAR INTERATIVO
+   Arquitetura pronta para Supabase:
+   - salvarPrefRefeicao() / carregarPrefRefeicao()
+   - substituir localStorage por supabase.from('preferencias_refeicao')
+   ══════════════════════════════════════════════════ */
+
+/* ── BANCO DE ALIMENTOS (por programa e refeição) ── */
+const MENU_REFEICOES = {
+  secar: [
+    { id:'cafe',      nome:'Café da Manhã', icon:'☀️', pct:.25,
+      opcoes:[
+        { id:'ovo_cozido',    nome:'Ovo cozido',          kcal100:155, prot100:13, unidade:'un',  gPorUn:55 },
+        { id:'omelete',       nome:'Omelete',              kcal100:154, prot100:11, unidade:'un',  gPorUn:70 },
+        { id:'aveia',         nome:'Aveia em flocos',      kcal100:374, prot100:13, unidade:'g',   gPorUn:1  },
+        { id:'iogurte_grego', nome:'Iogurte grego',        kcal100:59,  prot100:10, unidade:'g',   gPorUn:1  },
+        { id:'pao_integral',  nome:'Pão integral',         kcal100:247, prot100:9,  unidade:'fat', gPorUn:30 },
+        { id:'fruta',         nome:'Fruta (banana/maçã)',  kcal100:89,  prot100:1,  unidade:'un',  gPorUn:120},
+        { id:'queijo_branco', nome:'Queijo minas frescal', kcal100:114, prot100:7,  unidade:'g',   gPorUn:1  },
+        { id:'whey',          nome:'Whey Protein',         kcal100:375, prot100:80, unidade:'g',   gPorUn:1  },
+        { id:'cafe_preto',    nome:'Café preto s/ açúcar', kcal100:2,   prot100:0,  unidade:'ml',  gPorUn:1  },
+        { id:'crepioca',      nome:'Crepioca',             kcal100:130, prot100:6,  unidade:'un',  gPorUn:80 },
+      ]},
+    { id:'almoco',    nome:'Almoço',         icon:'🌞', pct:.35,
+      opcoes:[
+        { id:'frango',        nome:'Frango grelhado',      kcal100:165, prot100:31, unidade:'g',   gPorUn:1  },
+        { id:'peixe',         nome:'Tilápia/peixe',        kcal100:128, prot100:26, unidade:'g',   gPorUn:1  },
+        { id:'atum',          nome:'Atum em água',         kcal100:116, prot100:26, unidade:'g',   gPorUn:1  },
+        { id:'arroz_int',     nome:'Arroz integral',       kcal100:124, prot100:3,  unidade:'g',   gPorUn:1  },
+        { id:'feijao',        nome:'Feijão carioca',       kcal100:114, prot100:8,  unidade:'g',   gPorUn:1  },
+        { id:'salada',        nome:'Salada verde',         kcal100:17,  prot100:1,  unidade:'g',   gPorUn:1  },
+        { id:'batata_doce',   nome:'Batata doce',          kcal100:86,  prot100:2,  unidade:'g',   gPorUn:1  },
+        { id:'brocolis',      nome:'Brócolis',             kcal100:34,  prot100:3,  unidade:'g',   gPorUn:1  },
+        { id:'azeite',        nome:'Azeite (1 col.sopa)',  kcal100:884, prot100:0,  unidade:'ml',  gPorUn:10 },
+        { id:'lentilha',      nome:'Lentilha',             kcal100:116, prot100:9,  unidade:'g',   gPorUn:1  },
+      ]},
+    { id:'lanche',    nome:'Lanche da Tarde', icon:'🍎', pct:.15,
+      opcoes:[
+        { id:'iogurte_grego', nome:'Iogurte grego',        kcal100:59,  prot100:10, unidade:'g',   gPorUn:1  },
+        { id:'fruta',         nome:'Fruta',                kcal100:89,  prot100:1,  unidade:'un',  gPorUn:120},
+        { id:'castanha',      nome:'Castanha do Pará',     kcal100:656, prot100:14, unidade:'un',  gPorUn:5  },
+        { id:'whey',          nome:'Whey Protein',         kcal100:375, prot100:80, unidade:'g',   gPorUn:1  },
+        { id:'cottage',       nome:'Cottage',              kcal100:98,  prot100:11, unidade:'g',   gPorUn:1  },
+        { id:'amendoim',      nome:'Pasta de amendoim',    kcal100:590, prot100:25, unidade:'g',   gPorUn:1  },
+        { id:'aveia',         nome:'Aveia',                kcal100:374, prot100:13, unidade:'g',   gPorUn:1  },
+        { id:'barra_prot',    nome:'Barra proteica',       kcal100:380, prot100:30, unidade:'un',  gPorUn:45 },
+        { id:'amendo',        nome:'Amêndoas',             kcal100:579, prot100:21, unidade:'g',   gPorUn:1  },
+        { id:'ovo_cozido',    nome:'Ovo cozido',           kcal100:155, prot100:13, unidade:'un',  gPorUn:55 },
+      ]},
+    { id:'jantar',    nome:'Jantar',          icon:'🌙', pct:.25,
+      opcoes:[
+        { id:'frango',        nome:'Frango grelhado',      kcal100:165, prot100:31, unidade:'g',   gPorUn:1  },
+        { id:'atum',          nome:'Atum em água',         kcal100:116, prot100:26, unidade:'g',   gPorUn:1  },
+        { id:'peixe',         nome:'Tilápia',              kcal100:128, prot100:26, unidade:'g',   gPorUn:1  },
+        { id:'batata_doce',   nome:'Batata doce',          kcal100:86,  prot100:2,  unidade:'g',   gPorUn:1  },
+        { id:'brocolis',      nome:'Brócolis',             kcal100:34,  prot100:3,  unidade:'g',   gPorUn:1  },
+        { id:'ovo_cozido',    nome:'Ovo cozido',           kcal100:155, prot100:13, unidade:'un',  gPorUn:55 },
+        { id:'salada',        nome:'Salada verde',         kcal100:17,  prot100:1,  unidade:'g',   gPorUn:1  },
+        { id:'cottage',       nome:'Cottage',              kcal100:98,  prot100:11, unidade:'g',   gPorUn:1  },
+        { id:'azeite',        nome:'Azeite',               kcal100:884, prot100:0,  unidade:'ml',  gPorUn:10 },
+        { id:'whey',          nome:'Whey Protein',         kcal100:375, prot100:80, unidade:'g',   gPorUn:1  },
+      ]},
+  ],
+
+  manter: [
+    { id:'cafe',      nome:'Café da Manhã', icon:'☀️', pct:.25,
+      opcoes:[
+        { id:'pao_integral',  nome:'Pão integral',         kcal100:247, prot100:9,  unidade:'fat', gPorUn:30 },
+        { id:'ovo_mexido',    nome:'Ovo mexido',           kcal100:149, prot100:10, unidade:'un',  gPorUn:55 },
+        { id:'queijo_branco', nome:'Queijo minas frescal', kcal100:114, prot100:7,  unidade:'g',   gPorUn:1  },
+        { id:'tapioca',       nome:'Tapioca',              kcal100:346, prot100:0,  unidade:'un',  gPorUn:40 },
+        { id:'iogurte',       nome:'Iogurte natural',      kcal100:61,  prot100:3,  unidade:'g',   gPorUn:1  },
+        { id:'fruta',         nome:'Fruta',                kcal100:89,  prot100:1,  unidade:'un',  gPorUn:120},
+        { id:'suco_laranja',  nome:'Suco de laranja',      kcal100:44,  prot100:1,  unidade:'ml',  gPorUn:1  },
+        { id:'aveia',         nome:'Aveia',                kcal100:374, prot100:13, unidade:'g',   gPorUn:1  },
+        { id:'omelete',       nome:'Omelete',              kcal100:154, prot100:11, unidade:'un',  gPorUn:70 },
+        { id:'cafe_preto',    nome:'Café preto',           kcal100:2,   prot100:0,  unidade:'ml',  gPorUn:1  },
+      ]},
+    { id:'almoco',    nome:'Almoço',         icon:'🌞', pct:.35,
+      opcoes:[
+        { id:'frango',        nome:'Frango grelhado',      kcal100:165, prot100:31, unidade:'g',   gPorUn:1  },
+        { id:'carne_magra',   nome:'Carne magra',          kcal100:190, prot100:26, unidade:'g',   gPorUn:1  },
+        { id:'peixe',         nome:'Peixe',                kcal100:128, prot100:26, unidade:'g',   gPorUn:1  },
+        { id:'arroz',         nome:'Arroz branco',         kcal100:130, prot100:3,  unidade:'g',   gPorUn:1  },
+        { id:'feijao',        nome:'Feijão',               kcal100:114, prot100:8,  unidade:'g',   gPorUn:1  },
+        { id:'salada',        nome:'Salada variada',       kcal100:17,  prot100:1,  unidade:'g',   gPorUn:1  },
+        { id:'legumes',       nome:'Legumes refogados',    kcal100:50,  prot100:2,  unidade:'g',   gPorUn:1  },
+        { id:'arroz_int',     nome:'Arroz integral',       kcal100:124, prot100:3,  unidade:'g',   gPorUn:1  },
+        { id:'batata_doce',   nome:'Batata doce',          kcal100:86,  prot100:2,  unidade:'g',   gPorUn:1  },
+        { id:'azeite',        nome:'Azeite',               kcal100:884, prot100:0,  unidade:'ml',  gPorUn:10 },
+      ]},
+    { id:'lanche',    nome:'Lanche',          icon:'🍎', pct:.15,
+      opcoes:[
+        { id:'iogurte_grego', nome:'Iogurte grego',        kcal100:59,  prot100:10, unidade:'g',   gPorUn:1  },
+        { id:'granola',       nome:'Granola',              kcal100:430, prot100:10, unidade:'g',   gPorUn:1  },
+        { id:'fruta',         nome:'Fruta',                kcal100:89,  prot100:1,  unidade:'un',  gPorUn:120},
+        { id:'castanha',      nome:'Castanha',             kcal100:656, prot100:14, unidade:'g',   gPorUn:1  },
+        { id:'whey',          nome:'Whey Protein',         kcal100:375, prot100:80, unidade:'g',   gPorUn:1  },
+        { id:'barra_prot',    nome:'Barra proteica',       kcal100:380, prot100:30, unidade:'un',  gPorUn:45 },
+        { id:'cottage',       nome:'Cottage',              kcal100:98,  prot100:11, unidade:'g',   gPorUn:1  },
+        { id:'amendoim',      nome:'Pasta de amendoim',    kcal100:590, prot100:25, unidade:'g',   gPorUn:1  },
+        { id:'ovo_cozido',    nome:'Ovo cozido',           kcal100:155, prot100:13, unidade:'un',  gPorUn:55 },
+        { id:'aveia',         nome:'Aveia',                kcal100:374, prot100:13, unidade:'g',   gPorUn:1  },
+      ]},
+    { id:'jantar',    nome:'Jantar',          icon:'🌙', pct:.25,
+      opcoes:[
+        { id:'frango',        nome:'Frango',               kcal100:165, prot100:31, unidade:'g',   gPorUn:1  },
+        { id:'peixe',         nome:'Peixe',                kcal100:128, prot100:26, unidade:'g',   gPorUn:1  },
+        { id:'ovo_mexido',    nome:'Ovo mexido',           kcal100:149, prot100:10, unidade:'un',  gPorUn:55 },
+        { id:'batata_doce',   nome:'Batata doce',          kcal100:86,  prot100:2,  unidade:'g',   gPorUn:1  },
+        { id:'massa_int',     nome:'Macarrão integral',    kcal100:140, prot100:5,  unidade:'g',   gPorUn:1  },
+        { id:'legumes',       nome:'Legumes',              kcal100:50,  prot100:2,  unidade:'g',   gPorUn:1  },
+        { id:'salada',        nome:'Salada',               kcal100:17,  prot100:1,  unidade:'g',   gPorUn:1  },
+        { id:'azeite',        nome:'Azeite',               kcal100:884, prot100:0,  unidade:'ml',  gPorUn:10 },
+        { id:'cottage',       nome:'Cottage',              kcal100:98,  prot100:11, unidade:'g',   gPorUn:1  },
+        { id:'carne_magra',   nome:'Carne magra',          kcal100:190, prot100:26, unidade:'g',   gPorUn:1  },
+      ]},
+  ],
+
+  crescer: [
+    { id:'cafe',      nome:'Café da Manhã', icon:'☀️', pct:.22,
+      opcoes:[
+        { id:'omelete',       nome:'Omelete (4 ovos)',     kcal100:154, prot100:11, unidade:'un',  gPorUn:70 },
+        { id:'aveia',         nome:'Aveia',                kcal100:374, prot100:13, unidade:'g',   gPorUn:1  },
+        { id:'whey',          nome:'Whey Protein',         kcal100:375, prot100:80, unidade:'g',   gPorUn:1  },
+        { id:'fruta',         nome:'Banana',               kcal100:89,  prot100:1,  unidade:'un',  gPorUn:120},
+        { id:'tapioca',       nome:'Tapioca',              kcal100:346, prot100:0,  unidade:'un',  gPorUn:60 },
+        { id:'amendoim',      nome:'Pasta de amendoim',    kcal100:590, prot100:25, unidade:'g',   gPorUn:1  },
+        { id:'pao_integral',  nome:'Pão integral',         kcal100:247, prot100:9,  unidade:'fat', gPorUn:30 },
+        { id:'iogurte_grego', nome:'Iogurte grego',        kcal100:59,  prot100:10, unidade:'g',   gPorUn:1  },
+        { id:'granola',       nome:'Granola',              kcal100:430, prot100:10, unidade:'g',   gPorUn:1  },
+        { id:'crepioca',      nome:'Crepioca',             kcal100:130, prot100:6,  unidade:'un',  gPorUn:80 },
+      ]},
+    { id:'lanche_manha', nome:'Lanche da Manhã', icon:'🍎', pct:.13,
+      opcoes:[
+        { id:'iogurte_grego', nome:'Iogurte grego',        kcal100:59,  prot100:10, unidade:'g',   gPorUn:1  },
+        { id:'granola',       nome:'Granola',              kcal100:430, prot100:10, unidade:'g',   gPorUn:1  },
+        { id:'fruta',         nome:'Fruta',                kcal100:89,  prot100:1,  unidade:'un',  gPorUn:120},
+        { id:'whey',          nome:'Whey Protein',         kcal100:375, prot100:80, unidade:'g',   gPorUn:1  },
+        { id:'amendoim',      nome:'Pasta de amendoim',    kcal100:590, prot100:25, unidade:'g',   gPorUn:1  },
+        { id:'castanha',      nome:'Castanha',             kcal100:656, prot100:14, unidade:'g',   gPorUn:1  },
+        { id:'barra_prot',    nome:'Barra proteica',       kcal100:380, prot100:30, unidade:'un',  gPorUn:45 },
+        { id:'aveia',         nome:'Aveia',                kcal100:374, prot100:13, unidade:'g',   gPorUn:1  },
+        { id:'ovo_cozido',    nome:'Ovo cozido',           kcal100:155, prot100:13, unidade:'un',  gPorUn:55 },
+        { id:'cottage',       nome:'Cottage',              kcal100:98,  prot100:11, unidade:'g',   gPorUn:1  },
+      ]},
+    { id:'almoco',    nome:'Almoço',         icon:'🌞', pct:.30,
+      opcoes:[
+        { id:'frango',        nome:'Frango grelhado',      kcal100:165, prot100:31, unidade:'g',   gPorUn:1  },
+        { id:'carne_magra',   nome:'Carne magra',          kcal100:190, prot100:26, unidade:'g',   gPorUn:1  },
+        { id:'arroz_int',     nome:'Arroz integral',       kcal100:124, prot100:3,  unidade:'g',   gPorUn:1  },
+        { id:'feijao',        nome:'Feijão',               kcal100:114, prot100:8,  unidade:'g',   gPorUn:1  },
+        { id:'batata_doce',   nome:'Batata doce',          kcal100:86,  prot100:2,  unidade:'g',   gPorUn:1  },
+        { id:'salada',        nome:'Salada',               kcal100:17,  prot100:1,  unidade:'g',   gPorUn:1  },
+        { id:'azeite',        nome:'Azeite',               kcal100:884, prot100:0,  unidade:'ml',  gPorUn:10 },
+        { id:'peixe',         nome:'Salmão',               kcal100:208, prot100:20, unidade:'g',   gPorUn:1  },
+        { id:'lentilha',      nome:'Lentilha',             kcal100:116, prot100:9,  unidade:'g',   gPorUn:1  },
+        { id:'massa_int',     nome:'Macarrão integral',    kcal100:140, prot100:5,  unidade:'g',   gPorUn:1  },
+      ]},
+    { id:'pre_treino', nome:'Pré-Treino',     icon:'⚡', pct:.13,
+      opcoes:[
+        { id:'batata_doce',   nome:'Batata doce',          kcal100:86,  prot100:2,  unidade:'g',   gPorUn:1  },
+        { id:'frango',        nome:'Frango',               kcal100:165, prot100:31, unidade:'g',   gPorUn:1  },
+        { id:'fruta',         nome:'Banana',               kcal100:89,  prot100:1,  unidade:'un',  gPorUn:120},
+        { id:'whey',          nome:'Whey Protein',         kcal100:375, prot100:80, unidade:'g',   gPorUn:1  },
+        { id:'arroz',         nome:'Arroz branco',         kcal100:130, prot100:3,  unidade:'g',   gPorUn:1  },
+        { id:'amendoim',      nome:'Pasta de amendoim',    kcal100:590, prot100:25, unidade:'g',   gPorUn:1  },
+        { id:'aveia',         nome:'Aveia',                kcal100:374, prot100:13, unidade:'g',   gPorUn:1  },
+        { id:'tapioca',       nome:'Tapioca',              kcal100:346, prot100:0,  unidade:'un',  gPorUn:60 },
+        { id:'barra_prot',    nome:'Barra proteica',       kcal100:380, prot100:30, unidade:'un',  gPorUn:45 },
+        { id:'ovo_cozido',    nome:'Ovo cozido',           kcal100:155, prot100:13, unidade:'un',  gPorUn:55 },
+      ]},
+    { id:'jantar',    nome:'Jantar',          icon:'🌙', pct:.22,
+      opcoes:[
+        { id:'carne_magra',   nome:'Carne magra',          kcal100:190, prot100:26, unidade:'g',   gPorUn:1  },
+        { id:'frango',        nome:'Frango',               kcal100:165, prot100:31, unidade:'g',   gPorUn:1  },
+        { id:'peixe',         nome:'Salmão',               kcal100:208, prot100:20, unidade:'g',   gPorUn:1  },
+        { id:'massa_int',     nome:'Macarrão integral',    kcal100:140, prot100:5,  unidade:'g',   gPorUn:1  },
+        { id:'batata_doce',   nome:'Batata doce',          kcal100:86,  prot100:2,  unidade:'g',   gPorUn:1  },
+        { id:'legumes',       nome:'Legumes',              kcal100:50,  prot100:2,  unidade:'g',   gPorUn:1  },
+        { id:'arroz_int',     nome:'Arroz integral',       kcal100:124, prot100:3,  unidade:'g',   gPorUn:1  },
+        { id:'ovo_mexido',    nome:'Ovo mexido',           kcal100:149, prot100:10, unidade:'un',  gPorUn:55 },
+        { id:'azeite',        nome:'Azeite',               kcal100:884, prot100:0,  unidade:'ml',  gPorUn:10 },
+        { id:'salada',        nome:'Salada',               kcal100:17,  prot100:1,  unidade:'g',   gPorUn:1  },
+      ]},
+  ],
+};
+
+/* ── PREFERÊNCIAS (localStorage → Supabase ready) ── */
+function carregarPrefRefeicao(progId, refId) {
+  try {
+    var all = JSON.parse(localStorage.getItem('maj_pref_refeicao') || '{}');
+    return (all[progId] && all[progId][refId]) ? all[progId][refId] : [];
+  } catch(e) { return []; }
+}
+
+function salvarPrefRefeicao(progId, refId, alimIds) {
+  /* Supabase: await supabase.from('preferencias_refeicao')
+       .upsert({ user_id, programa_id: progId, refeicao_id: refId, alimentos: alimIds }) */
+  try {
+    var all = JSON.parse(localStorage.getItem('maj_pref_refeicao') || '{}');
+    if (!all[progId]) all[progId] = {};
+    all[progId][refId] = alimIds;
+    localStorage.setItem('maj_pref_refeicao', JSON.stringify(all));
+  } catch(e) {}
+}
+
+/* ── CÁLCULO DE QUANTIDADES ─────────────────────── */
+function calcQtdAlimento(alim, kcalTarget) {
+  /* Distribui kcalTarget entre os alimentos selecionados
+     e retorna quantidade legível */
+  var g = Math.round((kcalTarget / alim.kcal100) * 100);
+  if (alim.unidade === 'g' || alim.unidade === 'ml') {
+    return g + alim.unidade;
+  }
+  // Converter para unidades
+  var un = Math.round(g / alim.gPorUn);
+  if (un < 1) un = 1;
+  var label = alim.unidade === 'un' ? (un === 1 ? 'un' : 'un') :
+              alim.unidade === 'fat' ? (un === 1 ? 'fatia' : 'fatias') : alim.unidade;
+  return un + ' ' + label;
+}
+
+function calcMacrosAlimento(alim, kcalPorcao) {
+  var g = (kcalPorcao / alim.kcal100) * 100;
+  return {
+    kcal: Math.round(kcalPorcao),
+    prot: Math.round((alim.prot100 / 100) * g),
+  };
+}
+
+/* ── RENDERIZAR PLANO INTERATIVO ─────────────────── */
 function renderDietaAtiva() {
-  var prog = PROGRAMAS.find(function(p){ return p.id === programaAtivo; });
-
-  // Título do plano
+  var menu = MENU_REFEICOES[programaAtivo];
   var label = document.getElementById('dietaPlanLabel');
-  if (label) label.textContent = prog ? 'Plano · ' + prog.nome : 'Plano Alimentar';
+  var container = document.getElementById('dietaRefeicoes');
+  var summaryEl = document.getElementById('dietaMacroSummary');
+  if (!container) return;
 
-  var acc = document.getElementById('mealAccordion');
-  if (!acc) return;
+  var metaKcal = parseInt(localStorage.getItem('maj_kcal') || '2000');
+  var metaProt = parseInt(localStorage.getItem('maj_prot') || '120');
 
-  // Se programa não tem dietaDetalhada, manter o accordion atual
-  if (!prog || !prog.dietaDetalhada) return;
+  if (label) {
+    var prog = PROGRAMAS.find(function(p){ return p.id === programaAtivo; });
+    label.textContent = prog ? 'Plano \u00b7 ' + prog.nome : 'Plano Alimentar';
+  }
+  if (summaryEl) {
+    summaryEl.textContent = metaKcal + ' kcal \u00b7 ' + metaProt + 'g prot';
+  }
 
-  acc.innerHTML = '';
-  prog.dietaDetalhada.forEach(function(ref) {
-    var totalKcal = ref.totalKcal || ref.alimentos.reduce(function(s,a){return s+a.k;},0);
-    var totalProt = ref.totalProt || ref.alimentos.reduce(function(s,a){return s+parseInt(a.p);},0);
-
-    var item = document.createElement('div');
-    item.className = 'acc-item';
-
-    var foodRows = ref.alimentos.map(function(a){
-      return '<div class="food-row">' +
-        '<div class="food-name">' + a.n + '</div>' +
-        '<div class="food-qty">' + a.q + '</div>' +
-        '<div class="food-kcal">' + a.k + '</div>' +
-        '<div class="food-prot">' + a.p + '</div>' +
-        '</div>';
-    }).join('');
-
-    item.innerHTML =
-      '<button class="acc-header" onclick="toggleAcc(this)">' +
-        '<span class="acc-icon">' + (ref.icon || '🍽') + '</span>' +
-        '<span class="acc-title">' + ref.refeicao + '</span>' +
-        '<span class="acc-meta">' + totalKcal + ' kcal · ' + totalProt + 'g prot</span>' +
-        '<span class="acc-chevron">›</span>' +
-      '</button>' +
-      '<div class="acc-body">' +
-        '<div class="meal-cols">' +
-          '<div class="meal-col-lbl">Alimento</div>' +
-          '<div class="meal-col-lbl c">Qtd</div>' +
-          '<div class="meal-col-lbl r">kcal</div>' +
-          '<div class="meal-col-lbl g">Prot</div>' +
-        '</div>' +
-        foodRows +
-        '<div class="meal-total-row">' +
-          '<span class="meal-total-item kcal">Total: ' + totalKcal + ' kcal</span>' +
-          '<span class="meal-total-item prot">' + totalProt + 'g prot</span>' +
-        '</div>' +
+  if (!menu) {
+    // Programa sem menu ainda (premium) — mensagem
+    container.innerHTML =
+      '<div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);padding:20px 16px;">' +
+      '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--red2);margin-bottom:6px;">PROGRAMA PREMIUM</div>' +
+      '<div style="font-size:13px;color:var(--muted);">O plano alimentar detalhado deste programa ser\u00e1 disponibilizado em breve.</div>' +
       '</div>';
+    return;
+  }
 
-    acc.appendChild(item);
+  container.innerHTML = '';
+
+  menu.forEach(function(ref) {
+    var metaRefKcal = Math.round(metaKcal * ref.pct);
+    var metaRefProt = Math.round(metaProt * ref.pct);
+    var sel = carregarPrefRefeicao(programaAtivo, ref.id);
+
+    var card = document.createElement('div');
+    card.className = 'refeicao-card' + (sel.length > 0 ? ' open' : '');
+    card.dataset.refId = ref.id;
+
+    // Header
+    var hdr = document.createElement('div');
+    hdr.className = 'refeicao-header';
+    hdr.innerHTML =
+      '<span class="refeicao-icon">' + ref.icon + '</span>' +
+      '<div class="refeicao-info">' +
+        '<div class="refeicao-nome">' + ref.nome + '</div>' +
+        '<div class="refeicao-meta" id="refMeta_' + ref.id + '">' +
+          'Meta: ' + metaRefKcal + ' kcal \u00b7 ' + metaRefProt + 'g prot' +
+        '</div>' +
+      '</div>' +
+      '<span class="refeicao-chevron">\u203a</span>';
+    hdr.addEventListener('click', function(){ card.classList.toggle('open'); });
+    card.appendChild(hdr);
+
+    // Body
+    var body = document.createElement('div');
+    body.className = 'refeicao-body';
+
+    // Grid de opções
+    var grid = document.createElement('div');
+    grid.className = 'alim-grid';
+
+    ref.opcoes.forEach(function(alim) {
+      var isSel = sel.indexOf(alim.id) >= 0;
+      var kcalPorcao = sel.length > 0 ? metaRefKcal / sel.length : metaRefKcal / 2;
+      var qty = isSel ? calcQtdAlimento(alim, kcalPorcao) : '';
+      var macros = isSel ? calcMacrosAlimento(alim, kcalPorcao) : null;
+
+      var item = document.createElement('div');
+      item.className = 'alim-item' + (isSel ? ' sel' : '');
+      item.innerHTML =
+        '<div class="alim-check">' +
+          '<svg class="alim-check-tick" viewBox="0 0 10 7" fill="none">' +
+            '<polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="alim-nome">' + alim.nome + '</div>' +
+        '<div class="alim-macros">' + alim.kcal100 + ' kcal/100g</div>' +
+        '<div class="alim-qty-calc" id="qty_' + ref.id + '_' + alim.id + '">' +
+          (isSel ? qty : '') +
+        '</div>';
+
+      item.addEventListener('click', (function(a, r, c_ref){
+        return function(){
+          var curSel = carregarPrefRefeicao(programaAtivo, r.id);
+          var idx = curSel.indexOf(a.id);
+          if (idx >= 0) curSel.splice(idx, 1);
+          else curSel.push(a.id);
+          salvarPrefRefeicao(programaAtivo, r.id, curSel);
+          // Re-renderizar só esta refeição
+          atualizarRefeicao(c_ref, r, curSel, metaRefKcal, metaRefProt);
+        };
+      })(alim, ref, card));
+
+      grid.appendChild(item);
+    });
+
+    body.appendChild(grid);
+
+    // Resultado calculado
+    var resultado = document.createElement('div');
+    resultado.className = 'refeicao-resultado';
+    resultado.id = 'resultado_' + ref.id;
+    body.appendChild(resultado);
+
+    card.appendChild(body);
+    container.appendChild(card);
+
+    // Atualizar resultado inicial
+    atualizarRefeicaoResultado(resultado, ref, sel, metaRefKcal, metaRefProt);
   });
 }
+
+function atualizarRefeicao(card, ref, sel, metaKcal, metaProt) {
+  // Atualizar visual de cada item
+  card.querySelectorAll('.alim-item').forEach(function(item, i) {
+    var alim = ref.opcoes[i];
+    if (!alim) return;
+    var isSel = sel.indexOf(alim.id) >= 0;
+    item.classList.toggle('sel', isSel);
+    var kcalPorcao = sel.length > 0 ? metaKcal / sel.length : 0;
+    var qtyEl = card.querySelector('#qty_' + ref.id + '_' + alim.id);
+    if (qtyEl) qtyEl.textContent = isSel && sel.length > 0 ? calcQtdAlimento(alim, kcalPorcao) : '';
+  });
+  // Atualizar resultado
+  var resultado = card.querySelector('.refeicao-resultado');
+  if (resultado) atualizarRefeicaoResultado(resultado, ref, sel, metaKcal, metaProt);
+}
+
+function atualizarRefeicaoResultado(el, ref, sel, metaKcal, metaProt) {
+  if (!el) return;
+  if (sel.length === 0) {
+    el.innerHTML = '<div class="refeicao-hint">Selecione os alimentos que vai comer nesta refei\u00e7\u00e3o.</div>';
+    el.className = 'refeicao-resultado';
+    return;
+  }
+  var kcalPorcao = metaKcal / sel.length;
+  var totalKcal = 0, totalProt = 0;
+  sel.forEach(function(aid){
+    var alim = ref.opcoes.find(function(a){ return a.id === aid; });
+    if (!alim) return;
+    var m = calcMacrosAlimento(alim, kcalPorcao);
+    totalKcal += m.kcal;
+    totalProt += m.prot;
+  });
+  var ok = Math.abs(totalKcal - metaKcal) < metaKcal * 0.15;
+  el.className = 'refeicao-resultado' + (ok ? ' ok' : '');
+  el.innerHTML =
+    '<div class="refeicao-resultado-row">' +
+      '<div class="refeicao-resultado-lbl">Total Selecionado</div>' +
+      '<div class="refeicao-resultado-vals">' +
+        totalKcal + '<span>kcal</span>' + totalProt + '<span>g prot</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="refeicao-hint">' +
+      (ok ? '\u2713 Dentro da meta de ' + metaKcal + ' kcal' :
+            'Meta: ' + metaKcal + ' kcal \u00b7 ' + metaProt + 'g prot') +
+    '</div>';
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const page = document.getElementById('pageTreino');
