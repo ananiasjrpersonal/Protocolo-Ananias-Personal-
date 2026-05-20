@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Professor — Método Ananias Jr</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0a0a0a;
+  --card:    #111;
+  --card2:   #161616;
+  --border:  rgba(255,255,255,.08);
+  --border2: rgba(255,255,255,.14);
+  --red:     #e8002a;
+  --red2:    #ff1a40;
+  --green:   #00e676;
+  --muted:   rgba(255,255,255,.45);
+  --faint:   rgba(255,255,255,.22);
+  --white:   #f0f0f0;
+  --text:    rgba(255,255,255,.82);
+  --amber:   #ffb300;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; font-size: 14px; min-height: 100vh; }
+
+/* ── Login ── */
+#loginScreen {
+  position: fixed; inset: 0; z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+}
+.login-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-top: 2px solid var(--red); padding: 36px 32px; width: 360px;
+}
+.login-title { font-family: 'Bebas Neue', cursive; font-size: 28px; letter-spacing: 3px; margin-bottom: 4px; }
+.login-sub { font-size: 11px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 24px; }
+.login-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; display: block; }
+.login-inp {
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  color: var(--white); padding: 12px 14px; font-size: 15px; outline: none;
+  margin-bottom: 14px; transition: border-color .2s;
+}
+.login-inp:focus { border-color: var(--red); }
+.login-btn {
+  width: 100%; background: var(--red); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: 5px; text-transform: uppercase; padding: 14px; border: none; cursor: pointer;
+  margin-top: 8px; transition: background .2s;
+}
+.login-btn:hover { background: var(--red2); }
+.login-err { font-size: 12px; color: var(--red2); margin-top: 10px; text-align: center; min-height: 18px; }
+
+/* ── Shell ── */
+#adminShell { display: none; }
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 52px;
+  background: rgba(10,10,10,.96); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.topbar-logo { font-family: 'Bebas Neue', cursive; font-size: 18px; letter-spacing: 3px; }
+.topbar-logo span { color: var(--red); }
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.topbar-badge { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; background: rgba(232,0,42,.12); border: 1px solid rgba(232,0,42,.3); color: var(--red2); padding: 3px 10px; }
+.logout-btn { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--faint); background: none; border: 1px solid var(--border); padding: 5px 12px; cursor: pointer; transition: all .15s; }
+.logout-btn:hover { color: var(--white); border-color: var(--border2); }
+
+.main { padding: 72px 28px 40px; max-width: 1200px; margin: 0 auto; }
+
+/* ── KPIs ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-bottom: 28px; }
+.kpi-card { background: var(--card); border: 1px solid var(--border); padding: 20px; position: relative; overflow: hidden; }
+.kpi-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+.kpi-card.red::after   { background: var(--red); }
+.kpi-card.green::after { background: var(--green); }
+.kpi-card.amber::after { background: var(--amber); }
+.kpi-card.blue::after  { background: #29b6f6; }
+.kpi-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--faint); margin-bottom: 8px; }
+.kpi-val { font-family: 'Bebas Neue', cursive; font-size: 44px; line-height: 1; color: var(--white); }
+.kpi-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ── Seção ── */
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700;
+  letter-spacing: 5px; text-transform: uppercase; color: var(--faint);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── Tabela de alunos ── */
+.alunos-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+.alunos-table th {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700;
+  letter-spacing: 4px; text-transform: uppercase; color: var(--faint);
+  padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border);
+}
+.alunos-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
+.alunos-table tr:hover td { background: rgba(255,255,255,.02); cursor: pointer; }
+.aluno-nome { font-weight: 600; color: var(--white); font-size: 13px; }
+.aluno-email { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.badge-prog {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; padding: 3px 8px;
+  background: rgba(232,0,42,.08); border: 1px solid rgba(232,0,42,.2); color: var(--red2);
+  display: inline-block;
+}
+.badge-ativo { background: rgba(0,230,118,.08); border-color: rgba(0,230,118,.25); color: var(--green); }
+.badge-exp   { background: rgba(255,179,0,.08); border-color: rgba(255,179,0,.25); color: var(--amber); }
+.badge-inat  { background: rgba(255,255,255,.04); border-color: var(--border); color: var(--faint); }
+.no-data { text-align: center; padding: 40px; color: var(--faint); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 2px; }
+
+/* ── Modal detalhe aluno ── */
+#modalAluno {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,.85); align-items: flex-start; justify-content: center;
+  padding: 60px 20px; overflow-y: auto;
+}
+#modalAluno.open { display: flex; }
+.modal-box {
+  background: var(--card); border: 1px solid var(--border); border-top: 2px solid var(--red);
+  width: 100%; max-width: 680px; padding: 28px;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.modal-nome { font-family: 'Bebas Neue', cursive; font-size: 30px; letter-spacing: 2px; }
+.modal-close { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; }
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.modal-item-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--faint); margin-bottom: 4px; }
+.modal-item-val { font-family: 'Bebas Neue', cursive; font-size: 24px; color: var(--white); }
+.modal-item-val.sm { font-size: 14px; font-family: 'Barlow', sans-serif; }
+.modal-section { margin-bottom: 16px; }
+.liberar-form { display: flex; gap: 8px; margin-top: 16px; }
+.liberar-select {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  color: var(--white); padding: 10px 12px; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; outline: none;
+}
+.liberar-btn {
+  background: var(--red); color: #fff; border: none; padding: 10px 20px;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background .2s;
+}
+.liberar-btn:hover { background: var(--red2); }
+.liberar-success { color: var(--green); font-size: 12px; margin-top: 8px; display: none; }
+
+/* ── Responsivo ── */
+@media (max-width: 768px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .main { padding: 68px 16px 32px; }
+  .modal-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-title">Painel <span style="color:var(--red)">Professor</span></div>
+    <div class="login-sub">Método Ananias Jr · Acesso Restrito</div>
+    <label class="login-lbl">Email</label>
+    <input type="email" class="login-inp" id="adminEmail" placeholder="seu@email.com">
+    <label class="login-lbl">Senha</label>
+    <input type="password" class="login-inp" id="adminPass" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter') adminLogin()">
+    <button class="login-btn" onclick="adminLogin()">Entrar no Painel</button>
+    <div class="login-err" id="adminErr"></div>
+  </div>
+</div>
+
+<!-- SHELL -->
+<div id="adminShell">
+  <div class="topbar">
+    <div class="topbar-logo">Método <span>Ananias Jr</span> <small style="font-family:'Barlow Condensed';font-size:10px;letter-spacing:3px;color:var(--faint);margin-left:8px;">PROFESSOR</small></div>
+    <div class="topbar-right">
+      <span class="topbar-badge">Painel Admin</span>
+      <button class="logout-btn" onclick="adminLogout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- KPIs -->
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi-card red"><div class="kpi-lbl">Total de Alunos</div><div class="kpi-val" id="kpiTotal">—</div><div class="kpi-sub">cadastrados</div></div>
+      <div class="kpi-card green"><div class="kpi-lbl">Treinaram Hoje</div><div class="kpi-val" id="kpiHoje">—</div><div class="kpi-sub">registros hoje</div></div>
+      <div class="kpi-card amber"><div class="kpi-lbl">Expiram em 7 dias</div><div class="kpi-val" id="kpiExp">—</div><div class="kpi-sub">renovar acesso</div></div>
+      <div class="kpi-card blue"><div class="kpi-lbl">Com Acesso Premium</div><div class="kpi-val" id="kpiPrem">—</div><div class="kpi-sub">programas ativos</div></div>
+    </div>
+
+    <!-- Alunos -->
+    <div class="section-title">Alunos</div>
+    <table class="alunos-table" id="alunosTable">
+      <thead>
+        <tr>
+          <th>Aluno</th>
+          <th>Programa Ativo</th>
+          <th>Último Treino</th>
+          <th>Acesso</th>
+          <th>Peso</th>
+        </tr>
+      </thead>
+      <tbody id="alunosBody">
+        <tr><td colspan="5" class="no-data">Carregando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL DETALHE ALUNO -->
+<div id="modalAluno">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-nome" id="mNome">—</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="mEmail">—</div>
+      </div>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+
+    <div class="modal-grid">
+      <div><div class="modal-item-lbl">Peso</div><div class="modal-item-val" id="mPeso">—</div></div>
+      <div><div class="modal-item-lbl">Altura</div><div class="modal-item-val" id="mAltura">—</div></div>
+      <div><div class="modal-item-lbl">Idade</div><div class="modal-item-val" id="mIdade">—</div></div>
+      <div><div class="modal-item-lbl">Programa</div><div class="modal-item-val" id="mProg">—</div></div>
+      <div><div class="modal-item-lbl">Meta Kcal</div><div class="modal-item-val" id="mKcal">—</div></div>
+      <div><div class="modal-item-lbl">Meta Proteína</div><div class="modal-item-val" id="mProt">—</div></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="section-title" style="margin-bottom:8px;">Últimos Treinos</div>
+      <div id="mTreinos" style="font-family:'Barlow Condensed';font-size:13px;color:var(--muted);letter-spacing:1px;">—</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="section-title" style="margin-bottom:8px;">Últimas Medidas</div>
+      <div id="mMedidas" style="font-family:'Barlow Condensed';font-size:13px;color:var(--muted);letter-spacing:1px;">—</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="section-title" style="margin-bottom:8px;">Liberar Programa Premium</div>
+      <div class="liberar-form">
+        <select class="liberar-select" id="liberarSelect">
+          <option value="">Selecione o programa</option>
+          <option value="seca-barriga">Seca Barriga</option>
+          <option value="projeto-verao">Projeto Verão</option>
+          <option value="trimestre-ouro">Trimestre de Ouro</option>
+          <option value="desafio-30">Desafio 30 Dias</option>
+        </select>
+        <button class="liberar-btn" onclick="liberarPrograma()">Liberar 35 dias</button>
+      </div>
+      <div class="liberar-success" id="liberarSuccess">✓ Programa liberado com sucesso!</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://tawvbdvkabxkixwujcfw.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhd3ZiZHZrYWJ4a2l4d3VqY2Z3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyOTY0ODMsImV4cCI6MjA5NDg3MjQ4M30.KXEE-kKXffkGvaEpq5884RwD2orxQrwnMEb_RnJRMdI';
+const ADMIN_EMAIL = 'ananiasjr16@gmail.com'; // único email com acesso ao painel
+
+const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let _alunoSelecionado = null;
+
+/* ── Auth ── */
+async function adminLogin() {
+  const email = document.getElementById('adminEmail').value.trim().toLowerCase();
+  const pass  = document.getElementById('adminPass').value.trim();
+  const err   = document.getElementById('adminErr');
+  const btn   = document.querySelector('.login-btn');
+
+  if (!email || !pass) { err.textContent = 'Preencha email e senha.'; return; }
+
+  btn.textContent = 'Entrando...'; btn.disabled = true;
+
+  const { data, error } = await _sb.auth.signInWithPassword({ email, password: pass });
+
+  if (error || !data.user) {
+    err.textContent = 'Email ou senha incorretos.';
+    btn.textContent = 'Entrar no Painel'; btn.disabled = false;
+    return;
+  }
+
+  // Verificar se é o professor
+  if (data.user.email !== ADMIN_EMAIL) {
+    err.textContent = 'Acesso não autorizado para este email.';
+    await _sb.auth.signOut();
+    btn.textContent = 'Entrar no Painel'; btn.disabled = false;
+    return;
+  }
+
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminShell').style.display = 'block';
+  carregarDados();
+}
+
+async function adminLogout() {
+  await _sb.auth.signOut();
+  location.reload();
+}
+
+/* ── Carregar dados ── */
+async function carregarDados() {
+  const hoje = new Date().toISOString().slice(0,10);
+  const em7  = new Date(Date.now() + 7*86400000).toISOString();
+
+  // Todos os perfis
+  const { data: profiles } = await _sb.from('profiles').select('*').neq('email', ADMIN_EMAIL);
+
+  // Treinos de hoje
+  const { data: treinosHoje } = await _sb.from('treinos_log').select('user_id').eq('data', hoje);
+
+  // Acessos premium ativos
+  const { data: acessos } = await _sb.from('prog_acesso')
+    .select('user_id, programa_id, expira_em')
+    .gt('expira_em', new Date().toISOString());
+
+  // Expirando em 7 dias
+  const { data: expirando } = await _sb.from('prog_acesso')
+    .select('user_id')
+    .gt('expira_em', new Date().toISOString())
+    .lt('expira_em', em7);
+
+  // Último treino por aluno
+  const { data: ultimosTreinos } = await _sb.from('treinos_log')
+    .select('user_id, data, treino_dia')
+    .order('data', { ascending: false });
+
+  // KPIs
+  const total   = profiles ? profiles.length : 0;
+  const hoje_ct = treinosHoje ? new Set(treinosHoje.map(t => t.user_id)).size : 0;
+  const exp_ct  = expirando   ? new Set(expirando.map(e => e.user_id)).size : 0;
+  const prem_ct = acessos     ? new Set(acessos.map(a => a.user_id)).size : 0;
+
+  document.getElementById('kpiTotal').textContent = total;
+  document.getElementById('kpiHoje').textContent  = hoje_ct;
+  document.getElementById('kpiExp').textContent   = exp_ct;
+  document.getElementById('kpiPrem').textContent  = prem_ct;
+
+  // Mapear último treino por user
+  const ultimoMap = {};
+  if (ultimosTreinos) {
+    ultimosTreinos.forEach(t => {
+      if (!ultimoMap[t.user_id]) ultimoMap[t.user_id] = t;
+    });
+  }
+
+  // Mapear acesso por user
+  const acessoMap = {};
+  if (acessos) {
+    acessos.forEach(a => {
+      if (!acessoMap[a.user_id]) acessoMap[a.user_id] = [];
+      acessoMap[a.user_id].push(a);
+    });
+  }
+
+  // Renderizar tabela
+  const tbody = document.getElementById('alunosBody');
+  if (!profiles || profiles.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="no-data">Nenhum aluno cadastrado ainda.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = '';
+  profiles.forEach(p => {
+    const ult    = ultimoMap[p.id];
+    const acesso = acessoMap[p.id];
+    const exp    = acesso ? new Date(acesso[0].expira_em) : null;
+    const agora  = new Date();
+    const dias   = exp ? Math.ceil((exp - agora) / 86400000) : null;
+
+    let badgeAcesso = '<span class="badge-inat">Sem premium</span>';
+    if (dias !== null) {
+      if (dias <= 7)  badgeAcesso = `<span class="badge-exp">Expira em ${dias}d</span>`;
+      else            badgeAcesso = `<span class="badge-ativo">Ativo · ${dias}d</span>`;
+    }
+
+    const nomes = { secar:'Secar', manter:'Manter', crescer:'Crescer', 'seca-barriga':'Seca Barriga', 'projeto-verao':'Proj. Verão', 'trimestre-ouro':'Trim. Ouro' };
+    const tr = document.createElement('tr');
+    tr.onclick = () => abrirAluno(p, ult, acesso);
+    tr.innerHTML = `
+      <td><div class="aluno-nome">${p.nome || '—'}</div><div class="aluno-email">${p.email || ''}</div></td>
+      <td><span class="badge-prog">${nomes[p.programa_ativo] || p.programa_ativo || '—'}</span></td>
+      <td style="font-family:'Barlow Condensed';font-size:13px;color:var(--muted);">${ult ? ult.data + ' · Treino ' + ult.treino_dia : '—'}</td>
+      <td>${badgeAcesso}</td>
+      <td style="font-family:'Bebas Neue';font-size:18px;">${p.peso ? p.peso + 'kg' : '—'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ── Modal ── */
+async function abrirAluno(profile, ultimoTreino, acessos) {
+  _alunoSelecionado = profile;
+
+  const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v || '—'; };
+  s('mNome',   profile.nome);
+  s('mEmail',  profile.email);
+  s('mPeso',   profile.peso   ? profile.peso   + ' kg' : null);
+  s('mAltura', profile.altura ? profile.altura + ' cm' : null);
+  s('mIdade',  profile.idade  ? profile.idade  + ' anos' : null);
+  s('mKcal',   profile.meta_kcal ? profile.meta_kcal + ' kcal' : null);
+  s('mProt',   profile.meta_prot ? profile.meta_prot + 'g' : null);
+  const nomes = { secar:'Secar', manter:'Manter', crescer:'Crescer', 'seca-barriga':'Seca Barriga', 'projeto-verao':'Projeto Verão', 'trimestre-ouro':'Trimestre de Ouro' };
+  s('mProg', nomes[profile.programa_ativo] || profile.programa_ativo);
+
+  // Últimos treinos
+  const { data: treinos } = await _sb.from('treinos_log')
+    .select('data, treino_dia').eq('user_id', profile.id)
+    .order('data', { ascending: false }).limit(7);
+  document.getElementById('mTreinos').textContent = treinos && treinos.length
+    ? treinos.map(t => t.data + ' · ' + t.treino_dia).join('  ·  ')
+    : 'Nenhum treino registrado';
+
+  // Últimas medidas
+  const { data: medidas } = await _sb.from('medidas')
+    .select('data, peso, cintura').eq('user_id', profile.id)
+    .order('data', { ascending: false }).limit(3);
+  document.getElementById('mMedidas').textContent = medidas && medidas.length
+    ? medidas.map(m => m.data + ' · ' + (m.peso || '—') + 'kg cintura ' + (m.cintura || '—') + 'cm').join('  ·  ')
+    : 'Nenhuma medida registrada';
+
+  document.getElementById('liberarSelect').value = '';
+  document.getElementById('liberarSuccess').style.display = 'none';
+  document.getElementById('modalAluno').classList.add('open');
+}
+
+function fecharModal() {
+  document.getElementById('modalAluno').classList.remove('open');
+  _alunoSelecionado = null;
+}
+
+/* ── Liberar programa ── */
+async function liberarPrograma() {
+  if (!_alunoSelecionado) return;
+  const progId = document.getElementById('liberarSelect').value;
+  if (!progId) { alert('Selecione um programa.'); return; }
+
+  const expira = new Date(Date.now() + 35 * 86400000).toISOString();
+  const { error } = await _sb.from('prog_acesso').upsert({
+    user_id: _alunoSelecionado.id,
+    programa_id: progId,
+    data_pagamento: new Date().toISOString(),
+    expira_em: expira,
+  }, { onConflict: 'user_id,programa_id' });
+
+  if (!error) {
+    document.getElementById('liberarSuccess').style.display = 'block';
+    setTimeout(() => { document.getElementById('liberarSuccess').style.display = 'none'; }, 3000);
+    carregarDados();
+  } else {
+    alert('Erro ao liberar: ' + error.message);
+  }
+}
+
+/* ── Fechar modal ao clicar fora ── */
+document.getElementById('modalAluno').addEventListener('click', function(e) {
+  if (e.target === this) fecharModal();
+});
+
+/* ── Verificar sessão existente ── */
+_sb.auth.getSession().then(({ data: { session } }) => {
+  if (session && session.user.email === ADMIN_EMAIL) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminShell').style.display = 'block';
+    carregarDados();
+  }
+});
+</script>
+</body>
+</html>
