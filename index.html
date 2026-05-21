@@ -3307,6 +3307,40 @@ canvas#pesoChart {
 .ref-progress-hint.ok   { color: var(--green); }
 .ref-progress-hint.over { color: var(--amber); }
 
+
+/* ── Cards resumo nutrição ────────────────────────── */
+.diet-summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+.diet-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 16px 14px;
+  position: relative;
+}
+.diet-card.red   { border-top: 2px solid var(--red); }
+.diet-card.green { border-top: 2px solid var(--green); }
+.diet-card-v {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 36px; line-height: 1;
+  color: var(--white);
+}
+.diet-card.red   .diet-card-v { color: var(--red2); }
+.diet-card.green .diet-card-v { color: var(--green); }
+.diet-card-l {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--faint);
+  margin-top: 4px;
+}
+.diet-card-u {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; color: var(--muted); letter-spacing: 1px;
+}
+
 </style>
 </head>
 <body>
@@ -3783,8 +3817,8 @@ canvas#pesoChart {
         <div class="diet-summary-row">
           <div class="diet-card red"><div class="diet-card-v" id="rMeta">—</div><div class="diet-card-l">META KCAL</div><div class="diet-card-u">kcal/dia</div></div>
           <div class="diet-card green"><div class="diet-card-v" id="rProt">—</div><div class="diet-card-l">PROTEÍNA</div><div class="diet-card-u">g/dia</div></div>
-          <div class="diet-card"><div class="diet-card-v" id="rGet">—</div><div class="diet-card-l">GASTO TOTAL</div><div class="diet-card-u">kcal total</div></div>
-          <div class="diet-card"><div class="diet-card-v" id="rTmb">—</div><div class="diet-card-l">TMB</div><div class="diet-card-u">kcal base</div></div>
+          <div class="diet-card"><div class="diet-card-v" id="rGET">—</div><div class="diet-card-l">GASTO TOTAL</div><div class="diet-card-u">kcal total</div></div>
+          <div class="diet-card"><div class="diet-card-v" id="rTMB">—</div><div class="diet-card-l">TMB</div><div class="diet-card-u">kcal base</div></div>
         </div>
         <!-- Hidratação -->
         <div class="water-card" id="waterCard">
@@ -7329,13 +7363,20 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
       totP += Math.round(a.prot * g / 100);
     });
 
-    var pct  = metaK > 0 ? Math.min(120, Math.round(totK / metaK * 100)) : 0;
-    var ok   = pct >= 85 && pct <= 110;
-    var over = pct > 110;
-    var hint = sel.length === 0 ? 'Selecione alimentos'
-             : ok   ? '✓ Meta atingida!'
-             : over ? '+' + (totK - metaK) + ' kcal acima'
-             : 'Faltam ' + (metaK - totK) + ' kcal';
+    var pct   = metaK > 0 ? Math.min(120, Math.round(totK / metaK * 100)) : 0;
+    var pctP  = metaP > 0 ? Math.min(120, Math.round(totP / metaP * 100)) : 0;
+    var ok    = pct  >= 85 && pct  <= 110;
+    var over  = pct  >  110;
+    var okP   = pctP >= 85 && pctP <= 110;
+    var overP = pctP >  110;
+    var hintK = sel.length === 0 ? 'Kcal: selecione alimentos'
+              : ok   ? '✓ Kcal atingida!'
+              : over ? '+' + (totK - metaK) + ' kcal acima'
+              : 'Faltam ' + (metaK - totK) + ' kcal';
+    var hintP = sel.length === 0 ? ''
+              : okP   ? '✓ Proteína atingida!'
+              : overP ? '+' + (totP - metaP) + 'g prot acima'
+              : 'Faltam ' + (metaP - totP) + 'g prot';
 
     var card = document.createElement('div');
     card.className = 'refeicao-card' + (ri === 0 ? ' open' : '');
@@ -7358,7 +7399,7 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
         '<span class="refeicao-icon">' + ref.icon + '</span>' +
         '<div class="refeicao-info">' +
           '<div class="refeicao-nome">' + ref.nome + '</div>' +
-          '<div class="refeicao-meta">Meta: ' + metaK + ' kcal · ' + metaP + 'g prot</div>' +
+          '<div class="refeicao-meta">Meta: <b style=\"color:var(--red2)\">' + metaK + ' kcal</b> · <b style=\"color:var(--green)\">' + metaP + 'g prot</b></div>' +
         '</div>' +
         '<span class="refeicao-chevron">›</span>' +
       '</div>' +
@@ -7369,7 +7410,10 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
             '<span class="ref-progress-val">' + totK + ' kcal · ' + totP + 'g prot</span>' +
           '</div>' +
           '<div class="ref-progress-track"><div class="ref-progress-fill' + (ok?' ok':over?' over':'') + '" style="width:' + pct + '%"></div></div>' +
-          '<div class="ref-progress-hint' + (ok?' ok':over?' over':'') + '">' + hint + '</div>' +
+          '<div style="display:flex;justify-content:space-between;margin-top:4px;">' +
+            '<div class="ref-progress-hint' + (ok?' ok':over?' over':'') + '">' + hintK + '</div>' +
+            '<div class="ref-progress-hint' + (okP?' ok':overP?' over':'') + '">' + hintP + '</div>' +
+          '</div>' +
         '</div>' +
         '<div class="alim-grid">' + alimHTML + '</div>' +
       '</div>';
