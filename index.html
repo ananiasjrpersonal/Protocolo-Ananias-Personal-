@@ -3822,10 +3822,13 @@ canvas#pesoChart {
         </div>
         <!-- Hidratação -->
         <div class="water-card" id="waterCard">
-          <div class="water-top"><div><div class="water-lbl">HIDRATAÇÃO DIÁRIA</div><div class="water-sub">Baseada no peso e atividade</div></div><div class="water-meta" id="waterMeta">—</div></div>
+          <div class="water-top">
+            <div><div class="water-lbl">HIDRATAÇÃO DIÁRIA</div><div class="water-sub">Baseada no peso e atividade</div></div>
+            <div class="water-meta"><span id="waterLitros">—</span><span style="font-size:12px;color:var(--muted);"> L / DIA</span></div>
+          </div>
           <div class="water-bar-track"><div class="water-bar-fill" id="waterBarFill"></div></div>
           <div class="water-cups" id="waterCups"></div>
-          <div class="water-status" id="waterStatus"></div>
+          <div class="water-status" id="waterTip" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:1px;"></div>
         </div>
         <!-- Plano alimentar dinâmico -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;margin-bottom:10px;">
@@ -7369,14 +7372,22 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
     var over  = pct  >  110;
     var okP   = pctP >= 85 && pctP <= 110;
     var overP = pctP >  110;
-    var hintK = sel.length === 0 ? 'Kcal: selecione alimentos'
-              : ok   ? '✓ Kcal atingida!'
-              : over ? '+' + (totK - metaK) + ' kcal acima'
-              : 'Faltam ' + (metaK - totK) + ' kcal';
-    var hintP = sel.length === 0 ? ''
-              : okP   ? '✓ Proteína atingida!'
-              : overP ? '+' + (totP - metaP) + 'g prot acima'
-              : 'Faltam ' + (metaP - totP) + 'g prot';
+    var deltaK = totK - metaK;
+    var deltaP = totP - metaP;
+    var hintK = sel.length === 0
+              ? 'Selecione alimentos'
+              : deltaK > 0
+                ? '+' + deltaK + ' kcal acima da meta'
+                : deltaK === 0
+                  ? '✓ Exatamente na meta!'
+                  : Math.abs(deltaK) + ' kcal abaixo da meta';
+    var hintP = sel.length === 0
+              ? ''
+              : deltaP > 0
+                ? '+' + deltaP + 'g prot acima'
+                : deltaP === 0
+                  ? '✓ Proteína exata!'
+                  : Math.abs(deltaP) + 'g prot abaixo';
 
     var card = document.createElement('div');
     card.className = 'refeicao-card' + (ri === 0 ? ' open' : '');
@@ -7407,7 +7418,12 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
         '<div class="ref-progress-wrap">' +
           '<div class="ref-progress-top">' +
             '<span class="ref-progress-lbl">Selecionado</span>' +
-            '<span class="ref-progress-val">' + totK + ' kcal · ' + totP + 'g prot</span>' +
+            '<span class="ref-progress-val">' +
+              totK + ' <small style=\"color:var(--faint)\">kcal</small>' +
+              ' <span style=\"color:var(--border2)\">·</span> ' +
+              totP + '<small style=\"color:var(--faint)\">g prot</small>' +
+              ' <span style=\"font-size:11px;color:' + (deltaK>0?'var(--amber)':deltaK<0?'var(--red2)':'var(--green)') + '\">(' + (deltaK>=0?'+':'') + deltaK + ' kcal)</span>' +
+            '</span>' +
           '</div>' +
           '<div class="ref-progress-track"><div class="ref-progress-fill' + (ok?' ok':over?' over':'') + '" style="width:' + pct + '%"></div></div>' +
           '<div style="display:flex;justify-content:space-between;margin-top:4px;">' +
