@@ -3131,8 +3131,10 @@ canvas#pesoChart {
   border: 1px solid var(--border);
   cursor: pointer;
   transition: border-color .12s, background .12s;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(232,0,42,.1);
   user-select: none; -webkit-user-select: none;
+  position: relative;
+  touch-action: manipulation;
 }
 .alim-item:hover  { border-color: var(--border2); }
 .alim-item.sel    {
@@ -3254,6 +3256,45 @@ canvas#pesoChart {
 @media (min-width: 900px) {
   #progAtivoToast { bottom: 32px; }
 }
+
+
+/* ── Barra progresso kcal por refeição ─────────── */
+.ref-progress-wrap {
+  padding: 0 14px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.ref-progress-top {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px;
+}
+.ref-progress-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--faint);
+}
+.ref-progress-val {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 18px; color: var(--white); letter-spacing: 1px;
+}
+.ref-progress-val .slash { color: var(--faint); font-size: 14px; }
+.ref-progress-track {
+  height: 4px; background: var(--border);
+  position: relative; overflow: hidden;
+}
+.ref-progress-fill {
+  height: 100%; background: var(--red);
+  transition: width .3s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+.ref-progress-fill.ok     { background: var(--green); }
+.ref-progress-fill.over   { background: var(--amber); }
+.ref-progress-hint {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; color: var(--faint); letter-spacing: 1px;
+  margin-top: 4px; text-align: right;
+}
+.ref-progress-hint.ok   { color: var(--green); }
+.ref-progress-hint.over { color: var(--amber); }
 
 </style>
 </head>
@@ -3779,45 +3820,59 @@ canvas#pesoChart {
               </div>
               <span class="refeicao-chevron">›</span>
             </div>
+            <div class="ref-progress-wrap">
+              <div class="ref-progress-top">
+                <span class="ref-progress-lbl">Kcal selecionadas</span>
+                <span class="ref-progress-val">
+                  <span id="prog-cur-cafe">0</span>
+                  <span class="slash">/</span>
+                  <span id="prog-meta-cafe">—</span>
+                </span>
+              </div>
+              <div class="ref-progress-track">
+                <div class="ref-progress-fill" id="prog-fill-cafe"></div>
+              </div>
+              <div class="ref-progress-hint" id="prog-hint-cafe">Selecione alimentos</div>
+            </div>
             <div class="refeicao-body">
               <div class="alim-grid">
-                <div class="alim-item" data-ref="cafe" data-id="ovo_cozido" data-kcal="155" data-prot="13" data-un="un" data-gpu="55" onclick="toggleAlim(this)">
+                <div class="alim-item" data-ref="cafe" data-id="ovo_cozido" data-kcal="155" data-prot="13" data-un="un" data-gpu="55">
                   <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="alim-nome">Ovo cozido</div><div class="alim-macros">155 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-ovo_cozido"></div>
                 </div>
-                <div class="alim-item" data-ref="cafe" data-id="omelete" data-kcal="154" data-prot="11" data-un="un" data-gpu="70" onclick="toggleAlim(this)">
+                <div class="alim-item" data-ref="cafe" data-id="omelete" data-kcal="154" data-prot="11" data-un="un" data-gpu="70">
                   <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="alim-nome">Omelete</div><div class="alim-macros">154 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-omelete"></div>
                 </div>
-                <div class="alim-item" data-ref="cafe" data-id="aveia" data-kcal="374" data-prot="13" data-un="g" data-gpu="1" onclick="toggleAlim(this)">
+                <div class="alim-item" data-ref="cafe" data-id="aveia" data-kcal="374" data-prot="13" data-un="g" data-gpu="1">
                   <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="alim-nome">Aveia em flocos</div><div class="alim-macros">374 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-aveia"></div>
                 </div>
-                <div class="alim-item" data-ref="cafe" data-id="iogurte_grego" data-kcal="59" data-prot="10" data-un="g" data-gpu="1" onclick="toggleAlim(this)">
+                <div class="alim-item" data-ref="cafe" data-id="iogurte_grego" data-kcal="59" data-prot="10" data-un="g" data-gpu="1">
                   <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="alim-nome">Iogurte grego</div><div class="alim-macros">59 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-iogurte_grego"></div>
                 </div>
-                <div class="alim-item" data-ref="cafe" data-id="pao_integral" data-kcal="247" data-prot="9" data-un="fat" data-gpu="30" onclick="toggleAlim(this)">
+                <div class="alim-item" data-ref="cafe" data-id="pao_integral" data-kcal="247" data-prot="9" data-un="fat" data-gpu="30">
                   <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="alim-nome">Pão integral</div><div class="alim-macros">247 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-pao_integral"></div>
                 </div>
-                <div class="alim-item" data-ref="cafe" data-id="fruta" data-kcal="89" data-prot="1" data-un="un" data-gpu="120" onclick="toggleAlim(this)">
+                <div class="alim-item" data-ref="cafe" data-id="fruta" data-kcal="89" data-prot="1" data-un="un" data-gpu="120">
                   <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="alim-nome">Fruta (banana/maçã)</div><div class="alim-macros">89 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-fruta"></div>
                 </div>
-                <div class="alim-item" data-ref="cafe" data-id="whey" data-kcal="375" data-prot="80" data-un="g" data-gpu="1" onclick="toggleAlim(this)">
+                <div class="alim-item" data-ref="cafe" data-id="whey" data-kcal="375" data-prot="80" data-un="g" data-gpu="1">
                   <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="alim-nome">Whey Protein</div><div class="alim-macros">375 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-whey"></div>
                 </div>
-                <div class="alim-item" data-ref="cafe" data-id="queijo_branco" data-kcal="114" data-prot="7" data-un="g" data-gpu="1" onclick="toggleAlim(this)">
+                <div class="alim-item" data-ref="cafe" data-id="queijo_branco" data-kcal="114" data-prot="7" data-un="g" data-gpu="1">
                   <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="alim-nome">Queijo minas frescal</div><div class="alim-macros">114 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-queijo_branco"></div>
                 </div>
-                <div class="alim-item" data-ref="cafe" data-id="crepioca" data-kcal="130" data-prot="6" data-un="un" data-gpu="80" onclick="toggleAlim(this)">
+                <div class="alim-item" data-ref="cafe" data-id="crepioca" data-kcal="130" data-prot="6" data-un="un" data-gpu="80">
                   <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="alim-nome">Crepioca</div><div class="alim-macros">130 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-crepioca"></div>
                 </div>
-                <div class="alim-item" data-ref="cafe" data-id="cafe_preto" data-kcal="2" data-prot="0" data-un="ml" data-gpu="1" onclick="toggleAlim(this)">
+                <div class="alim-item" data-ref="cafe" data-id="cafe_preto" data-kcal="2" data-prot="0" data-un="ml" data-gpu="1">
                   <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                   <div class="alim-nome">Café preto s/ açúcar</div><div class="alim-macros">2 kcal/100ml</div><div class="alim-qty-calc" id="q-cafe-cafe_preto"></div>
                 </div>
@@ -3836,18 +3891,32 @@ canvas#pesoChart {
               </div>
               <span class="refeicao-chevron">›</span>
             </div>
+            <div class="ref-progress-wrap">
+              <div class="ref-progress-top">
+                <span class="ref-progress-lbl">Kcal selecionadas</span>
+                <span class="ref-progress-val">
+                  <span id="prog-cur-almoco">0</span>
+                  <span class="slash">/</span>
+                  <span id="prog-meta-almoco">—</span>
+                </span>
+              </div>
+              <div class="ref-progress-track">
+                <div class="ref-progress-fill" id="prog-fill-almoco"></div>
+              </div>
+              <div class="ref-progress-hint" id="prog-hint-almoco">Selecione alimentos</div>
+            </div>
             <div class="refeicao-body">
               <div class="alim-grid">
-                <div class="alim-item" data-ref="almoco" data-id="frango" data-kcal="165" data-prot="31" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Frango grelhado</div><div class="alim-macros">165 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-frango"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="peixe" data-kcal="128" data-prot="26" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Tilápia/peixe</div><div class="alim-macros">128 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-peixe"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="atum" data-kcal="116" data-prot="26" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Atum em água</div><div class="alim-macros">116 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-atum"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="arroz_int" data-kcal="124" data-prot="3" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Arroz integral</div><div class="alim-macros">124 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-arroz_int"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="feijao" data-kcal="114" data-prot="8" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Feijão carioca</div><div class="alim-macros">114 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-feijao"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="salada" data-kcal="17" data-prot="1" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Salada verde</div><div class="alim-macros">17 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-salada"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="batata_doce" data-kcal="86" data-prot="2" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Batata doce</div><div class="alim-macros">86 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-batata_doce"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="brocolis" data-kcal="34" data-prot="3" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Brócolis</div><div class="alim-macros">34 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-brocolis"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="azeite" data-kcal="884" data-prot="0" data-un="ml" data-gpu="10" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Azeite (1 col.sopa)</div><div class="alim-macros">884 kcal/100ml</div><div class="alim-qty-calc" id="q-almoco-azeite"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="lentilha" data-kcal="116" data-prot="9" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Lentilha</div><div class="alim-macros">116 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-lentilha"></div></div>
+                <div class="alim-item" data-ref="almoco" data-id="frango" data-kcal="165" data-prot="31" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Frango grelhado</div><div class="alim-macros">165 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-frango"></div></div>
+                <div class="alim-item" data-ref="almoco" data-id="peixe" data-kcal="128" data-prot="26" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Tilápia/peixe</div><div class="alim-macros">128 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-peixe"></div></div>
+                <div class="alim-item" data-ref="almoco" data-id="atum" data-kcal="116" data-prot="26" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Atum em água</div><div class="alim-macros">116 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-atum"></div></div>
+                <div class="alim-item" data-ref="almoco" data-id="arroz_int" data-kcal="124" data-prot="3" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Arroz integral</div><div class="alim-macros">124 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-arroz_int"></div></div>
+                <div class="alim-item" data-ref="almoco" data-id="feijao" data-kcal="114" data-prot="8" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Feijão carioca</div><div class="alim-macros">114 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-feijao"></div></div>
+                <div class="alim-item" data-ref="almoco" data-id="salada" data-kcal="17" data-prot="1" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Salada verde</div><div class="alim-macros">17 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-salada"></div></div>
+                <div class="alim-item" data-ref="almoco" data-id="batata_doce" data-kcal="86" data-prot="2" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Batata doce</div><div class="alim-macros">86 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-batata_doce"></div></div>
+                <div class="alim-item" data-ref="almoco" data-id="brocolis" data-kcal="34" data-prot="3" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Brócolis</div><div class="alim-macros">34 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-brocolis"></div></div>
+                <div class="alim-item" data-ref="almoco" data-id="azeite" data-kcal="884" data-prot="0" data-un="ml" data-gpu="10"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Azeite (1 col.sopa)</div><div class="alim-macros">884 kcal/100ml</div><div class="alim-qty-calc" id="q-almoco-azeite"></div></div>
+                <div class="alim-item" data-ref="almoco" data-id="lentilha" data-kcal="116" data-prot="9" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Lentilha</div><div class="alim-macros">116 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-lentilha"></div></div>
               </div>
               <div class="refeicao-resultado" id="res-almoco"><div class="refeicao-hint">Selecione os alimentos desta refeição.</div></div>
             </div>
@@ -3863,18 +3932,32 @@ canvas#pesoChart {
               </div>
               <span class="refeicao-chevron">›</span>
             </div>
+            <div class="ref-progress-wrap">
+              <div class="ref-progress-top">
+                <span class="ref-progress-lbl">Kcal selecionadas</span>
+                <span class="ref-progress-val">
+                  <span id="prog-cur-lanche">0</span>
+                  <span class="slash">/</span>
+                  <span id="prog-meta-lanche">—</span>
+                </span>
+              </div>
+              <div class="ref-progress-track">
+                <div class="ref-progress-fill" id="prog-fill-lanche"></div>
+              </div>
+              <div class="ref-progress-hint" id="prog-hint-lanche">Selecione alimentos</div>
+            </div>
             <div class="refeicao-body">
               <div class="alim-grid">
-                <div class="alim-item" data-ref="lanche" data-id="iogurte_grego" data-kcal="59" data-prot="10" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Iogurte grego</div><div class="alim-macros">59 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-iogurte_grego"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="fruta" data-kcal="89" data-prot="1" data-un="un" data-gpu="120" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Fruta</div><div class="alim-macros">89 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-fruta"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="castanha" data-kcal="656" data-prot="14" data-un="un" data-gpu="5" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Castanha do Pará</div><div class="alim-macros">656 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-castanha"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="whey" data-kcal="375" data-prot="80" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Whey Protein</div><div class="alim-macros">375 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-whey"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="cottage" data-kcal="98" data-prot="11" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Cottage</div><div class="alim-macros">98 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-cottage"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="amendoim" data-kcal="590" data-prot="25" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Pasta de amendoim</div><div class="alim-macros">590 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-amendoim"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="ovo_cozido" data-kcal="155" data-prot="13" data-un="un" data-gpu="55" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Ovo cozido</div><div class="alim-macros">155 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-ovo_cozido"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="barra_prot" data-kcal="380" data-prot="30" data-un="un" data-gpu="45" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Barra proteica</div><div class="alim-macros">380 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-barra_prot"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="amendo" data-kcal="579" data-prot="21" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Amêndoas</div><div class="alim-macros">579 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-amendo"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="aveia" data-kcal="374" data-prot="13" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Aveia</div><div class="alim-macros">374 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-aveia"></div></div>
+                <div class="alim-item" data-ref="lanche" data-id="iogurte_grego" data-kcal="59" data-prot="10" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Iogurte grego</div><div class="alim-macros">59 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-iogurte_grego"></div></div>
+                <div class="alim-item" data-ref="lanche" data-id="fruta" data-kcal="89" data-prot="1" data-un="un" data-gpu="120"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Fruta</div><div class="alim-macros">89 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-fruta"></div></div>
+                <div class="alim-item" data-ref="lanche" data-id="castanha" data-kcal="656" data-prot="14" data-un="un" data-gpu="5"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Castanha do Pará</div><div class="alim-macros">656 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-castanha"></div></div>
+                <div class="alim-item" data-ref="lanche" data-id="whey" data-kcal="375" data-prot="80" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Whey Protein</div><div class="alim-macros">375 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-whey"></div></div>
+                <div class="alim-item" data-ref="lanche" data-id="cottage" data-kcal="98" data-prot="11" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Cottage</div><div class="alim-macros">98 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-cottage"></div></div>
+                <div class="alim-item" data-ref="lanche" data-id="amendoim" data-kcal="590" data-prot="25" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Pasta de amendoim</div><div class="alim-macros">590 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-amendoim"></div></div>
+                <div class="alim-item" data-ref="lanche" data-id="ovo_cozido" data-kcal="155" data-prot="13" data-un="un" data-gpu="55"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Ovo cozido</div><div class="alim-macros">155 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-ovo_cozido"></div></div>
+                <div class="alim-item" data-ref="lanche" data-id="barra_prot" data-kcal="380" data-prot="30" data-un="un" data-gpu="45"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Barra proteica</div><div class="alim-macros">380 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-barra_prot"></div></div>
+                <div class="alim-item" data-ref="lanche" data-id="amendo" data-kcal="579" data-prot="21" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Amêndoas</div><div class="alim-macros">579 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-amendo"></div></div>
+                <div class="alim-item" data-ref="lanche" data-id="aveia" data-kcal="374" data-prot="13" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Aveia</div><div class="alim-macros">374 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-aveia"></div></div>
               </div>
               <div class="refeicao-resultado" id="res-lanche"><div class="refeicao-hint">Selecione os alimentos desta refeição.</div></div>
             </div>
@@ -3890,18 +3973,32 @@ canvas#pesoChart {
               </div>
               <span class="refeicao-chevron">›</span>
             </div>
+            <div class="ref-progress-wrap">
+              <div class="ref-progress-top">
+                <span class="ref-progress-lbl">Kcal selecionadas</span>
+                <span class="ref-progress-val">
+                  <span id="prog-cur-jantar">0</span>
+                  <span class="slash">/</span>
+                  <span id="prog-meta-jantar">—</span>
+                </span>
+              </div>
+              <div class="ref-progress-track">
+                <div class="ref-progress-fill" id="prog-fill-jantar"></div>
+              </div>
+              <div class="ref-progress-hint" id="prog-hint-jantar">Selecione alimentos</div>
+            </div>
             <div class="refeicao-body">
               <div class="alim-grid">
-                <div class="alim-item" data-ref="jantar" data-id="frango" data-kcal="165" data-prot="31" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Frango grelhado</div><div class="alim-macros">165 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-frango"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="atum" data-kcal="116" data-prot="26" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Atum em água</div><div class="alim-macros">116 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-atum"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="peixe" data-kcal="128" data-prot="26" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Tilápia</div><div class="alim-macros">128 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-peixe"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="batata_doce" data-kcal="86" data-prot="2" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Batata doce</div><div class="alim-macros">86 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-batata_doce"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="brocolis" data-kcal="34" data-prot="3" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Brócolis</div><div class="alim-macros">34 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-brocolis"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="ovo_cozido" data-kcal="155" data-prot="13" data-un="un" data-gpu="55" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Ovo cozido</div><div class="alim-macros">155 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-ovo_cozido"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="salada" data-kcal="17" data-prot="1" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Salada</div><div class="alim-macros">17 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-salada"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="cottage" data-kcal="98" data-prot="11" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Cottage</div><div class="alim-macros">98 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-cottage"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="azeite" data-kcal="884" data-prot="0" data-un="ml" data-gpu="10" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Azeite</div><div class="alim-macros">884 kcal/100ml</div><div class="alim-qty-calc" id="q-jantar-azeite"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="whey" data-kcal="375" data-prot="80" data-un="g" data-gpu="1" onclick="toggleAlim(this)"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Whey Protein</div><div class="alim-macros">375 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-whey"></div></div>
+                <div class="alim-item" data-ref="jantar" data-id="frango" data-kcal="165" data-prot="31" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Frango grelhado</div><div class="alim-macros">165 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-frango"></div></div>
+                <div class="alim-item" data-ref="jantar" data-id="atum" data-kcal="116" data-prot="26" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Atum em água</div><div class="alim-macros">116 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-atum"></div></div>
+                <div class="alim-item" data-ref="jantar" data-id="peixe" data-kcal="128" data-prot="26" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Tilápia</div><div class="alim-macros">128 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-peixe"></div></div>
+                <div class="alim-item" data-ref="jantar" data-id="batata_doce" data-kcal="86" data-prot="2" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Batata doce</div><div class="alim-macros">86 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-batata_doce"></div></div>
+                <div class="alim-item" data-ref="jantar" data-id="brocolis" data-kcal="34" data-prot="3" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Brócolis</div><div class="alim-macros">34 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-brocolis"></div></div>
+                <div class="alim-item" data-ref="jantar" data-id="ovo_cozido" data-kcal="155" data-prot="13" data-un="un" data-gpu="55"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Ovo cozido</div><div class="alim-macros">155 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-ovo_cozido"></div></div>
+                <div class="alim-item" data-ref="jantar" data-id="salada" data-kcal="17" data-prot="1" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Salada</div><div class="alim-macros">17 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-salada"></div></div>
+                <div class="alim-item" data-ref="jantar" data-id="cottage" data-kcal="98" data-prot="11" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Cottage</div><div class="alim-macros">98 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-cottage"></div></div>
+                <div class="alim-item" data-ref="jantar" data-id="azeite" data-kcal="884" data-prot="0" data-un="ml" data-gpu="10"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Azeite</div><div class="alim-macros">884 kcal/100ml</div><div class="alim-qty-calc" id="q-jantar-azeite"></div></div>
+                <div class="alim-item" data-ref="jantar" data-id="whey" data-kcal="375" data-prot="80" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Whey Protein</div><div class="alim-macros">375 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-whey"></div></div>
               </div>
               <div class="refeicao-resultado" id="res-jantar"><div class="refeicao-hint">Selecione os alimentos desta refeição.</div></div>
             </div>
@@ -7363,81 +7460,164 @@ function toggleAlim(item) {
 }
 
 function atualizarQtdsRefeicao(refId, progId) {
-  progId = progId || programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
+  progId   = progId || programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
   var metaKcal = parseInt(localStorage.getItem('maj_kcal')) || 2000;
-  var pcts = { cafe:.25, almoco:.35, lanche:.15, jantar:.25 };
-  var pct  = pcts[refId] || .25;
-  var metaRef = Math.round(metaKcal * pct);
+  var pcts     = { cafe:.25, almoco:.35, lanche:.15, jantar:.25 };
+  var metaRef  = Math.round(metaKcal * (pcts[refId] || .25));
 
-  var sel = carregarPrefRefeicao(progId, refId);
   var container = document.getElementById('dietaRefeicoes');
   if (!container) return;
 
-  var items = container.querySelectorAll('.alim-item[data-ref="' + refId + '"]');
+  var items    = container.querySelectorAll('.alim-item[data-ref="' + refId + '"]');
   var selItems = Array.from(items).filter(function(i){ return i.classList.contains('sel'); });
-  var kcalPorcao = selItems.length > 0 ? metaRef / selItems.length : 0;
+  var nSel     = selItems.length;
+  var kcalEach = nSel > 0 ? metaRef / nSel : 0;
 
+  // Porções típicas por unidade (não divide meta — usa porção real)
+  // gpu = gramas por unidade. Porção padrão: 1 unidade ou 100g/ml
+  var totalKcal = 0, totalProt = 0;
+
+  function porcaoG(item) {
+    // Porção de consumo típica
+    var un  = item.dataset.un;
+    var gpu = parseInt(item.dataset.gpu);
+    if (un === 'g')   return 100;   // 100g
+    if (un === 'ml')  return 200;   // 200ml
+    if (un === 'un')  return gpu;   // 1 unidade
+    if (un === 'fat') return gpu;   // 1 fatia
+    return 100;
+  }
+
+  selItems.forEach(function(item) {
+    var kcal100 = parseInt(item.dataset.kcal);
+    var prot100 = parseInt(item.dataset.prot);
+    var g = porcaoG(item);
+    totalKcal += Math.round(kcal100 * g / 100);
+    totalProt += Math.round(prot100 * g / 100);
+  });
+
+  // Quantidade exibida = porção típica legível
   items.forEach(function(item) {
     var qtyEl = document.getElementById('q-' + refId + '-' + item.dataset.id);
     if (!qtyEl) return;
-    if (!item.classList.contains('sel') || selItems.length === 0) { qtyEl.textContent = ''; return; }
-    var kcal100 = parseInt(item.dataset.kcal);
-    var un    = item.dataset.un;
-    var gpu   = parseInt(item.dataset.gpu);
-    var g = Math.round((kcalPorcao / kcal100) * 100);
-    if (un === 'g' || un === 'ml') { qtyEl.textContent = g + un; }
-    else {
-      var n = Math.max(1, Math.round(g / gpu));
-      qtyEl.textContent = n + ' ' + (un === 'fat' ? (n===1?'fatia':'fatias') : un);
-    }
+    if (!item.classList.contains('sel') || nSel === 0) { qtyEl.textContent = ''; return; }
+    var un  = item.dataset.un;
+    var gpu = parseInt(item.dataset.gpu);
+    if (un === 'g')   qtyEl.textContent = '100g';
+    else if (un === 'ml') qtyEl.textContent = '200ml';
+    else if (un === 'fat') qtyEl.textContent = '1 fatia';
+    else qtyEl.textContent = '1 un';
   });
 
-  // Resultado
+  // ── Barra de progresso ─────────────────────────
+  var fillEl  = document.getElementById('prog-fill-' + refId);
+  var curEl   = document.getElementById('prog-cur-'  + refId);
+  var hintEl  = document.getElementById('prog-hint-' + refId);
+  var pct     = nSel > 0 ? Math.min(100, Math.round((totalKcal / metaRef) * 100)) : 0;
+  var faltam  = metaRef - totalKcal;
+  var over    = totalKcal > metaRef * 1.1;
+  var ok      = pct >= 85 && pct <= 115;
+
+  if (fillEl) {
+    fillEl.style.width = pct + '%';
+    fillEl.className   = 'ref-progress-fill' + (ok ? ' ok' : over ? ' over' : '');
+  }
+  if (curEl)  curEl.textContent = nSel > 0 ? totalKcal : '0';
+  if (hintEl) {
+    hintEl.className = 'ref-progress-hint' + (ok ? ' ok' : over ? ' over' : '');
+    if (nSel === 0)  hintEl.textContent = 'Selecione alimentos';
+    else if (ok)     hintEl.textContent = '✓ Meta atingida!';
+    else if (over)   hintEl.textContent = '+' + Math.abs(faltam) + ' kcal acima · remova um item';
+    else             hintEl.textContent = 'Faltam ' + faltam + ' kcal · adicione mais itens';
+  }
+
+  // ── Resultado compacto ──────────────────────────
   var resEl = document.getElementById('res-' + refId);
   if (!resEl) return;
-  var total = selItems.reduce(function(acc, item) {
-    var kcal100 = parseInt(item.dataset.kcal);
-    var prot100 = parseInt(item.dataset.prot);
-    var g = (kcalPorcao / kcal100) * 100;
-    return { k: acc.k + Math.round(kcalPorcao), p: acc.p + Math.round(g * prot100 / 100) };
-  }, {k:0, p:0});
-
-  if (selItems.length === 0) {
+  if (nSel === 0) {
     resEl.innerHTML = '<div class="refeicao-hint">Selecione os alimentos desta refeição.</div>';
     resEl.className = 'refeicao-resultado';
   } else {
-    var ok = Math.abs(total.k - metaRef) < metaRef * 0.15;
     resEl.className = 'refeicao-resultado' + (ok ? ' ok' : '');
-    resEl.innerHTML = '<div class="refeicao-resultado-row"><div class="refeicao-resultado-lbl">Total</div><div class="refeicao-resultado-vals">' + total.k + '<span>kcal</span>' + total.p + '<span>g prot</span></div></div><div class="refeicao-hint">' + (ok ? '✓ Dentro da meta de ' + metaRef + ' kcal' : 'Meta: ' + metaRef + ' kcal') + '</div>';
+    resEl.innerHTML =
+      '<div class="refeicao-resultado-row">' +
+        '<div class="refeicao-resultado-lbl">Total selecionado</div>' +
+        '<div class="refeicao-resultado-vals">' + totalKcal + '<span>kcal</span>' + totalProt + '<span>g prot</span></div>' +
+      '</div>' +
+      '<div class="refeicao-hint ' + (ok?'ok':over?'over':'') + '">' +
+        (ok ? '✓ Meta atingida — ' + metaRef + ' kcal' :
+         over ? '+' + Math.abs(faltam) + ' kcal acima da meta' :
+               'Faltam ' + faltam + ' kcal para a meta') +
+      '</div>';
   }
 }
 
 function initDietaEstatica() {
-  var progId = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
+  var progId   = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
   var metaKcal = parseInt(localStorage.getItem('maj_kcal')) || 2000;
-  var pcts = { cafe:.25, almoco:.35, lanche:.15, jantar:.25 };
-  var nomes = { cafe:'Café da Manhã', almoco:'Almoço', lanche:'Lanche da Tarde', jantar:'Jantar' };
+  var pcts     = { cafe:.25, almoco:.35, lanche:.15, jantar:.25 };
+  var container = document.getElementById('dietaRefeicoes');
+  if (!container) return;
 
-  ['cafe','almoco','lanche','jantar'].forEach(function(refId) {
-    var metaEl = document.getElementById('meta-' + refId);
-    if (metaEl) metaEl.textContent = 'Meta: ' + Math.round(metaKcal * pcts[refId]) + ' kcal';
-    var sel = carregarPrefRefeicao(progId, refId);
-    var container = document.getElementById('dietaRefeicoes');
-    if (!container) return;
-    container.querySelectorAll('.alim-item[data-ref="' + refId + '"]').forEach(function(item) {
-      if (sel.indexOf(item.dataset.id) >= 0) item.classList.add('sel');
-    });
-    if (sel.length > 0) atualizarQtdsRefeicao(refId, progId);
-  });
-
-  // Atualizar label
-  var lbl = document.getElementById('dietaPlanLabel');
+  // Atualizar label e summary
+  var lbl   = document.getElementById('dietaPlanLabel');
   var sumEl = document.getElementById('dietaMacroSummary');
   if (lbl) {
     var prog = typeof PROGRAMAS !== 'undefined' ? PROGRAMAS.find(function(p){return p.id===progId;}) : null;
     lbl.textContent = prog ? 'Plano · ' + prog.nome : 'Plano Alimentar';
   }
   if (sumEl) sumEl.textContent = metaKcal + ' kcal · ' + (localStorage.getItem('maj_prot')||'120') + 'g prot';
+
+  // Atualizar metas e barras
+  ['cafe','almoco','lanche','jantar'].forEach(function(refId) {
+    var metaRef = Math.round(metaKcal * (pcts[refId] || .25));
+    var metaEl  = document.getElementById('meta-' + refId);
+    if (metaEl) metaEl.textContent = 'Meta: ' + metaRef + ' kcal';
+    var progMetaEl = document.getElementById('prog-meta-' + refId);
+    if (progMetaEl) progMetaEl.textContent = metaRef;
+  });
+
+  // Vincular eventos via addEventListener — mais confiável que onclick inline no iOS
+  // Remover listeners anteriores recriando os nós (clone)
+  container.querySelectorAll('.alim-item').forEach(function(item) {
+    var novo = item.cloneNode(true);
+    item.parentNode.replaceChild(novo, item);
+  });
+
+  // Marcar selecionados e adicionar listeners
+  ['cafe','almoco','lanche','jantar'].forEach(function(refId) {
+    var sel = carregarPrefRefeicao(progId, refId);
+    container.querySelectorAll('.alim-item[data-ref="' + refId + '"]').forEach(function(item) {
+      // Marcar se já selecionado
+      if (sel.indexOf(item.dataset.id) >= 0) item.classList.add('sel');
+
+      // Listener de clique
+      item.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var rId   = this.dataset.ref;
+        var aId   = this.dataset.id;
+        var pId   = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
+        this.classList.toggle('sel');
+        var cur = carregarPrefRefeicao(pId, rId);
+        var idx = cur.indexOf(aId);
+        if (idx >= 0) cur.splice(idx, 1); else cur.push(aId);
+        salvarPrefRefeicao(pId, rId, cur);
+        atualizarQtdsRefeicao(rId, pId);
+      });
+
+      // Touch listener explícito para iOS
+      item.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        this.click();
+      }, { passive: false });
+    });
+  });
+
+  // Atualizar quantidades dos já selecionados
+  ['cafe','almoco','lanche','jantar'].forEach(function(refId) {
+    var sel = carregarPrefRefeicao(progId, refId);
+    if (sel.length > 0) atualizarQtdsRefeicao(refId, progId);
+  });
 }
 
 function renderDietaAtiva() {
