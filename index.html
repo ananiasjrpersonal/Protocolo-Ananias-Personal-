@@ -3344,6 +3344,18 @@ canvas#pesoChart {
 
 .ref-progress-fill.under { background: rgba(232,0,42,.5); }
 
+
+/* ── Quantidade no check ──────────────────────────── */
+.alim-qtd-num {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 16px; line-height: 1;
+  color: #fff; display: block;
+}
+.alim-macros.highlight {
+  color: var(--white);
+  font-weight: 700;
+}
+
 </style>
 </head>
 <body>
@@ -7180,8 +7192,19 @@ function conclusaoFechar() {
 function carregarPrefRefeicao(progId, refId) {
   try {
     var all = JSON.parse(localStorage.getItem('maj_pref_refeicao') || '{}');
-    return (all[progId] && all[progId][refId]) ? all[progId][refId] : [];
-  } catch(e) { return []; }
+    var val = all[progId] && all[progId][refId] ? all[progId][refId] : {};
+    // Migrar formato antigo (array) para novo (objeto)
+    if (Array.isArray(val)) {
+      var migrated = {};
+      val.forEach(function(id) { migrated[id] = 1; });
+      return migrated;
+    }
+    return val;
+  } catch(e) { return {}; }
+}
+
+function getQtd(prefs, id) {
+  return (prefs && prefs[id]) ? prefs[id] : 0;
 }
 
 function salvarPrefRefeicao(progId, refId, alimIds) {
@@ -7340,9 +7363,21 @@ function initDietaEstatica() {
   var app      = document.getElementById('dietaApp');
   if (!app) return;
 
-  // Carregar prefs salvas
-  try { _dietaPrefs = JSON.parse(localStorage.getItem('maj_pref_refeicao') || '{}')[progId] || {}; }
-  catch(e) { _dietaPrefs = {}; }
+  // Carregar prefs salvas (formato: { refId: { alimId: qtd } })
+  try {
+    var _allPrefs = JSON.parse(localStorage.getItem('maj_pref_refeicao') || '{}');
+    var _progPrefs = _allPrefs[progId] || {};
+    _dietaPrefs = {};
+    Object.keys(_progPrefs).forEach(function(r) {
+      var val = _progPrefs[r];
+      if (Array.isArray(val)) {
+        _dietaPrefs[r] = {};
+        val.forEach(function(id) { _dietaPrefs[r][id] = 1; });
+      } else {
+        _dietaPrefs[r] = val || {};
+      }
+    });
+  } catch(e) { _dietaPrefs = {}; }
 
   // Label
   var lbl = document.getElementById('dietaPlanLabel');
@@ -7361,14 +7396,16 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
     var metaK    = Math.round(metaKcal * ref.pct);
     var metaP    = Math.round(metaProt * ref.pct);
 
-    // Calcular totais
+    // Calcular totais com quantidades
     var totK = 0, totP = 0;
     ref.alimentos.forEach(function(a) {
-      if (sel.indexOf(a.id) < 0) return;
-      var g = _dporcaoG(a);
+      var qtd = sel[a.id] || 0;
+      if (qtd === 0) return;
+      var g = _dporcaoG(a) * qtd;
       totK += Math.round(a.kcal * g / 100);
       totP += Math.round(a.prot * g / 100);
     });
+    var nSel = Object.keys(sel).filter(function(k){ return sel[k] > 0; }).length;
 
     var pct   = metaK > 0 ? Math.min(120, Math.round(totK / metaK * 100)) : 0;
     var pctP  = metaP > 0 ? Math.min(120, Math.round(totP / metaP * 100)) : 0;
@@ -7379,10 +7416,10 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
     var deltaK = totK - metaK;
     var deltaP = totP - metaP;
     // Hints compactos: só número com sinal + unidade
-    var hintK = sel.length === 0
+    var hintK = nSel === 0
               ? 'Selecione'
               : (deltaK >= 0 ? '+' : '') + deltaK + ' kcal';
-    var hintP = sel.length === 0
+    var hintP = nSel === 0
               ? ''
               : (deltaP >= 0 ? '+' : '') + deltaP + 'g prot';
 
@@ -7393,15 +7430,23 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
     card.className = 'refeicao-card' + (isOpen ? ' open' : '');
 
     var alimHTML = ref.alimentos.map(function(a) {
-      var isSel = sel.indexOf(a.id) >= 0;
+      var qtd  = sel[a.id] || 0;
+      var isSel = qtd > 0;
       var g    = _dporcaoG(a);
       var aK   = Math.round(a.kcal * g / 100);
       var aP   = Math.round(a.prot * g / 100);
-      return '<div class="alim-item' + (isSel ? ' sel' : '') + '" data-ref="' + ref.id + '" data-id="' + a.id + '">' +
-        '<div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+      // Mostrar total acumulado quando qtd > 1
+      var totalK = aK * qtd;
+      var totalP = aP * qtd;
+      var qtyLabel = qtd === 0 ? '' : (qtd === 1 ? _dfmtQty(a) : qtd + 'x ' + _dfmtQty(a));
+      var macroLabel = qtd > 1
+        ? (totalK + ' kcal · ' + totalP + 'g')
+        : (aK + ' kcal · ' + aP + 'g');
+      return '<div class="alim-item' + (isSel ? ' sel' : '') + '" data-ref="' + ref.id + '" data-id="' + a.id + '" data-qtd="' + qtd + '">' +
+        '<div class="alim-check">' + (isSel ? '<span class="alim-qtd-num">' + qtd + '</span>' : '<svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>') + '</div>' +
         '<div class="alim-nome">' + a.nome + '</div>' +
-        '<div class="alim-macros">' + aK + ' kcal · ' + aP + 'g</div>' +
-        '<div class="alim-qty-calc">' + (isSel ? _dfmtQty(a) : '') + '</div>' +
+        '<div class="alim-macros' + (qtd > 1 ? ' highlight' : '') + '">' + macroLabel + '</div>' +
+        '<div class="alim-qty-calc">' + qtyLabel + '</div>' +
         '</div>';
     }).join('');
 
@@ -7439,36 +7484,51 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
       card.classList.toggle('open');
     });
 
-    // Seleção via event delegation no grid
-    card.querySelector('.alim-grid').addEventListener('click', function(e) {
-      var item = e.target.closest('.alim-item');
-      if (!item) return;
+    // Seleção: clique soma, clique longo zera, chegou em 10 → zera
+    var MAX_QTD = 10;
+
+    function _handleAlimClick(item, forceZero) {
       var rId = item.getAttribute('data-ref');
       var aId = item.getAttribute('data-id');
-      if (!_dietaPrefs[rId]) _dietaPrefs[rId] = [];
-      var idx = _dietaPrefs[rId].indexOf(aId);
-      if (idx >= 0) _dietaPrefs[rId].splice(idx, 1);
-      else _dietaPrefs[rId].push(aId);
-      // Salvar
+      var pId = (typeof programaAtivo !== 'undefined' ? programaAtivo : null) || localStorage.getItem('maj_programa_ativo') || 'secar';
+      if (!_dietaPrefs[rId]) _dietaPrefs[rId] = {};
+      var cur = _dietaPrefs[rId][aId] || 0;
+      _dietaPrefs[rId][aId] = (forceZero || cur >= MAX_QTD) ? 0 : cur + 1;
       try {
         var all = JSON.parse(localStorage.getItem('maj_pref_refeicao') || '{}');
-        var pId = (typeof programaAtivo !== 'undefined' ? programaAtivo : null) || localStorage.getItem('maj_programa_ativo') || 'secar';
         all[pId] = _dietaPrefs;
         localStorage.setItem('maj_pref_refeicao', JSON.stringify(all));
       } catch(e2) {}
-      // Rebuild preservando quais cards estavam abertos
       var openCards = [];
       app.querySelectorAll('.refeicao-card.open').forEach(function(c) {
-        var grid = c.querySelector('.alim-grid');
-        if (grid) {
-          var first = grid.querySelector('.alim-item');
-          if (first) openCards.push(first.getAttribute('data-ref'));
-        }
+        var g = c.querySelector('.alim-grid');
+        if (g) { var f = g.querySelector('.alim-item'); if (f) openCards.push(f.getAttribute('data-ref')); }
       });
       _dietaOpenCards = openCards;
       initDietaEstatica();
+    }
+
+    card.querySelector('.alim-grid').addEventListener('click', function(e) {
+      var item = e.target.closest('.alim-item');
+      if (!item || item._longpressed) { if (item) item._longpressed = false; return; }
+      _handleAlimClick(item, false);
     });
 
+    card.querySelector('.alim-grid').addEventListener('touchstart', function(e) {
+      var item = e.target.closest('.alim-item');
+      if (!item) return;
+      item._longpressed = false;
+      item._lptimer = setTimeout(function() {
+        item._longpressed = true;
+        _handleAlimClick(item, true);
+        if (navigator.vibrate) navigator.vibrate(60);
+      }, 500);
+    }, { passive: true });
+
+    card.querySelector('.alim-grid').addEventListener('touchend', function(e) {
+      var item = e.target.closest('.alim-item');
+      if (item && item._lptimer) { clearTimeout(item._lptimer); item._lptimer = null; }
+    }, { passive: true });
     app.appendChild(card);
   });
 }
