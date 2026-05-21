@@ -3944,7 +3944,7 @@ canvas#pesoChart {
     <div class="page" id="pagePerfil">
       <div class="page-hdr">
         <div class="page-eyebrow">Conta</div>
-        <div class="page-title">Config</div>
+        <div class="page-title">Geral</div>
       </div>
       <div class="wrap">
 
@@ -3974,7 +3974,7 @@ canvas#pesoChart {
         </div>
 
         <div class="divider"></div>
-        <div class="section-hdr">Configurações</div>
+        <div class="section-hdr">Geral</div>
 
         <div class="perfil-actions">
           <div class="perfil-action" onclick="dadosOpen()">
@@ -3996,6 +3996,13 @@ canvas#pesoChart {
             <div>
               <div class="action-lbl">Suporte</div>
               <div class="action-sub">@ananiasjr_personal no Instagram</div>
+            </div>
+            <div class="action-arrow">›</div>
+          </div>
+          <div class="perfil-action" onclick="navigate('progresso')">
+            <div>
+              <div class="action-lbl">Progresso</div>
+              <div class="action-sub">Medidas · Peso · Sequência · Histórico</div>
             </div>
             <div class="action-arrow">›</div>
           </div>
@@ -4303,13 +4310,10 @@ canvas#pesoChart {
     <span class="bn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3c0 1.5.8 2.8 2 3.4V10H8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-3V8.4c1.2-.6 2-1.9 2-3.4a3 3 0 0 0-3-3z"/></svg></span>
     <span class="bn-lbl">Nutrição</span>
   </button>
-  <button class="bn-item" data-page="progresso" onclick="navigate('progresso');setBottomNav(this)">
-    <span class="bn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
-    <span class="bn-lbl">Progresso</span>
-  </button>
+
   <button class="bn-item" data-page="perfil" onclick="navigate('perfil');setBottomNav(this)">
     <span class="bn-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span>
-    <span class="bn-lbl">Config</span>
+    <span class="bn-lbl">Geral</span>
   </button>
 </div>
 
@@ -7541,11 +7545,36 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const page = document.getElementById('pageTreino');
-    if (page) pageObs.observe(page, { attributes: true, attributeFilter: ['class'] });
-    // Caso já esteja ativa
-    if (page && page.classList.contains('active')) attachSwipe();
+document.addEventListener('DOMContentLoaded', function() {
+    var page = document.getElementById('pageTreino');
+    if (!page) return;
+    // Recriar observer aqui no escopo global (sem depender do IIFE)
+    var _swipeObs = new MutationObserver(function() {
+      if (page.classList.contains('active')) {
+        var el = document.getElementById('exListAtivo');
+        if (el && !el._swipeAttached) {
+          el.addEventListener('touchstart', function(e) {
+            window._swipeTX = e.touches[0].clientX;
+            window._swipeTY = e.touches[0].clientY;
+          }, { passive: true });
+          el.addEventListener('touchend', function(e) {
+            var dx = e.changedTouches[0].clientX - (window._swipeTX || 0);
+            var dy = e.changedTouches[0].clientY - (window._swipeTY || 0);
+            if (Math.abs(dx) < 50 || Math.abs(dy) * 1.5 > Math.abs(dx)) return;
+            var dias = ['A','B','C'];
+            var cur = dias.indexOf(treinoDia);
+            if (dx < 0 && cur < dias.length - 1) { treinoDia = dias[cur+1]; renderTreino(); if(typeof dtRender==='function') dtRender(); }
+            else if (dx > 0 && cur > 0) { treinoDia = dias[cur-1]; renderTreino(); if(typeof dtRender==='function') dtRender(); }
+          }, { passive: true });
+          el._swipeAttached = true;
+        }
+      }
+    });
+    _swipeObs.observe(page, { attributes: true, attributeFilter: ['class'] });
+    if (page.classList.contains('active')) {
+      var el = document.getElementById('exListAtivo');
+      if (el) el._swipeAttached = false; // força re-attach
+    }
   });
 
 
