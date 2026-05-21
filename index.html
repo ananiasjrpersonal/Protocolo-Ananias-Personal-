@@ -3341,6 +3341,9 @@ canvas#pesoChart {
   font-size: 10px; color: var(--muted); letter-spacing: 1px;
 }
 
+
+.ref-progress-fill.under { background: rgba(232,0,42,.5); }
+
 </style>
 </head>
 <body>
@@ -7255,6 +7258,7 @@ function calcMacrosAlimento(alim, kcalPorcao) {
    ══════════════════════════════════════════════════ */
 
 var _dietaPrefs = {};
+var _dietaOpenCards = [];
 
 var _dietaRefeicoes = {
   secar: [
@@ -7374,23 +7378,19 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
     var overP = pctP >  110;
     var deltaK = totK - metaK;
     var deltaP = totP - metaP;
+    // Hints compactos: só número com sinal + unidade
     var hintK = sel.length === 0
-              ? 'Selecione alimentos'
-              : deltaK > 0
-                ? '+' + deltaK + ' kcal acima da meta'
-                : deltaK === 0
-                  ? '✓ Exatamente na meta!'
-                  : Math.abs(deltaK) + ' kcal abaixo da meta';
+              ? 'Selecione'
+              : (deltaK >= 0 ? '+' : '') + deltaK + ' kcal';
     var hintP = sel.length === 0
               ? ''
-              : deltaP > 0
-                ? '+' + deltaP + 'g prot acima'
-                : deltaP === 0
-                  ? '✓ Proteína exata!'
-                  : Math.abs(deltaP) + 'g prot abaixo';
+              : (deltaP >= 0 ? '+' : '') + deltaP + 'g prot';
 
     var card = document.createElement('div');
-    card.className = 'refeicao-card' + (ri === 0 ? ' open' : '');
+    var isOpen = _dietaOpenCards.length > 0
+      ? _dietaOpenCards.indexOf(ref.id) >= 0
+      : ri === 0; // primeira vez: só café aberto
+    card.className = 'refeicao-card' + (isOpen ? ' open' : '');
 
     var alimHTML = ref.alimentos.map(function(a) {
       var isSel = sel.indexOf(a.id) >= 0;
@@ -7456,7 +7456,16 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
         all[pId] = _dietaPrefs;
         localStorage.setItem('maj_pref_refeicao', JSON.stringify(all));
       } catch(e2) {}
-      // Rebuild completo — igual ao teste que funcionou
+      // Rebuild preservando quais cards estavam abertos
+      var openCards = [];
+      app.querySelectorAll('.refeicao-card.open').forEach(function(c) {
+        var grid = c.querySelector('.alim-grid');
+        if (grid) {
+          var first = grid.querySelector('.alim-item');
+          if (first) openCards.push(first.getAttribute('data-ref'));
+        }
+      });
+      _dietaOpenCards = openCards;
       initDietaEstatica();
     });
 
