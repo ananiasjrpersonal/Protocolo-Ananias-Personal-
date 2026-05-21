@@ -7567,73 +7567,59 @@ function initDietaEstatica() {
   var container = document.getElementById('dietaRefeicoes');
   if (!container) return;
 
-  // Atualizar label e summary
-  var lbl   = document.getElementById('dietaPlanLabel');
-  var sumEl = document.getElementById('dietaMacroSummary');
+  // Label e summary
+  var lbl = document.getElementById('dietaPlanLabel');
+  var sum = document.getElementById('dietaMacroSummary');
   if (lbl) {
-    var prog = typeof PROGRAMAS !== 'undefined' ? PROGRAMAS.find(function(p){return p.id===progId;}) : null;
+    var prog = typeof PROGRAMAS !== 'undefined'
+      ? PROGRAMAS.find(function(p){ return p.id === progId; }) : null;
     lbl.textContent = prog ? 'Plano · ' + prog.nome : 'Plano Alimentar';
   }
-  if (sumEl) sumEl.textContent = metaKcal + ' kcal · ' + (localStorage.getItem('maj_prot')||'120') + 'g prot';
+  if (sum) sum.textContent = metaKcal + ' kcal · ' + (localStorage.getItem('maj_prot') || '120') + 'g prot';
 
-  // Atualizar metas e barras
-  ['cafe','almoco','lanche','jantar'].forEach(function(refId) {
-    var metaRef = Math.round(metaKcal * (pcts[refId] || .25));
-    var metaEl  = document.getElementById('meta-' + refId);
-    if (metaEl) metaEl.textContent = 'Meta: ' + metaRef + ' kcal';
-    var progMetaEl = document.getElementById('prog-meta-' + refId);
-    if (progMetaEl) progMetaEl.textContent = metaRef;
+  // Metas por refeição
+  ['cafe','almoco','lanche','jantar'].forEach(function(r) {
+    var meta = Math.round(metaKcal * (pcts[r] || .25));
+    var el = document.getElementById('meta-' + r);
+    if (el) el.textContent = 'Meta: ' + meta + ' kcal';
+    var pm = document.getElementById('prog-meta-' + r);
+    if (pm) pm.textContent = meta;
   });
 
-  // Vincular eventos via addEventListener — mais confiável que onclick inline no iOS
-  // Remover listeners anteriores recriando os nós (clone)
+  // Marcar selecionados
   container.querySelectorAll('.alim-item').forEach(function(item) {
-    var novo = item.cloneNode(true);
-    item.parentNode.replaceChild(novo, item);
+    var rId = item.getAttribute('data-ref');
+    var aId = item.getAttribute('data-id');
+    var sel = carregarPrefRefeicao(progId, rId);
+    item.classList.toggle('sel', sel.indexOf(aId) >= 0);
   });
 
-  // Marcar selecionados e adicionar listeners
-  ['cafe','almoco','lanche','jantar'].forEach(function(refId) {
-    var sel = carregarPrefRefeicao(progId, refId);
-    container.querySelectorAll('.alim-item[data-ref="' + refId + '"]').forEach(function(item) {
-      // Marcar se já selecionado
-      if (sel.indexOf(item.dataset.id) >= 0) item.classList.add('sel');
-
-      // Listener — click cobre mouse/desktop
-      // touchstart cobre iOS sem delay
-      function handleAlimTap(e) {
-        e.stopPropagation();
-        var rId = this.dataset.ref;
-        var aId = this.dataset.id;
-        var pId = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
-        this.classList.toggle('sel');
-        var cur = carregarPrefRefeicao(pId, rId);
-        var idx = cur.indexOf(aId);
-        if (idx >= 0) cur.splice(idx, 1); else cur.push(aId);
-        salvarPrefRefeicao(pId, rId, cur);
-        atualizarQtdsRefeicao(rId, pId);
-      }
-      item.addEventListener('click', handleAlimTap);
-      item.addEventListener('touchstart', function(e) {
-        // Feedback visual imediato no toque
-        this.style.opacity = '.7';
-      }, { passive: true });
-      item.addEventListener('touchend', function(e) {
-        this.style.opacity = '';
-        if (e.cancelable) e.preventDefault();
-        handleAlimTap.call(this, e);
-      }, { passive: false });
-
-
-    });
+  // Atualizar barras dos já selecionados
+  ['cafe','almoco','lanche','jantar'].forEach(function(r) {
+    atualizarQtdsRefeicao(r, progId);
   });
 
-  // Atualizar quantidades dos já selecionados
-  ['cafe','almoco','lanche','jantar'].forEach(function(refId) {
-    var sel = carregarPrefRefeicao(progId, refId);
-    if (sel.length > 0) atualizarQtdsRefeicao(refId, progId);
+  // EVENT DELEGATION: um único listener no container
+  // Evita problemas de clone, re-attach e display:none no iOS
+  if (container._delegated) return; // só anexar uma vez
+  container._delegated = true;
+
+  container.addEventListener('click', function(e) {
+    var item = e.target.closest('.alim-item');
+    if (!item) return;
+    var rId = item.getAttribute('data-ref');
+    var aId = item.getAttribute('data-id');
+    var pId = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
+    item.classList.toggle('sel');
+    var cur = carregarPrefRefeicao(pId, rId);
+    var idx = cur.indexOf(aId);
+    if (idx >= 0) cur.splice(idx, 1); else cur.push(aId);
+    salvarPrefRefeicao(pId, rId, cur);
+    atualizarQtdsRefeicao(rId, pId);
   });
 }
+
+
 
 function renderDietaAtiva() {
   // Garantir que programaAtivo é válido
