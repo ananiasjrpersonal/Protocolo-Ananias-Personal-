@@ -7438,7 +7438,15 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
       // Mostrar total acumulado quando qtd > 1
       var totalK = aK * qtd;
       var totalP = aP * qtd;
-      var qtyLabel = qtd === 0 ? '' : (qtd === 1 ? _dfmtQty(a) : qtd + 'x ' + _dfmtQty(a));
+      // Mostrar quantidade acumulada direto: 200g, 3 un, 2 fatias
+      var qtyLabel = (function() {
+        if (qtd === 0) return '';
+        var g = _dporcaoG(a) * qtd;
+        if (a.un === 'g')   return g + 'g';
+        if (a.un === 'ml')  return g + 'ml';
+        if (a.un === 'fat') return qtd + (qtd === 1 ? ' fatia' : ' fatias');
+        return qtd + ' un';
+      })();
       var macroLabel = qtd > 1
         ? (totalK + ' kcal · ' + totalP + 'g')
         : (aK + ' kcal · ' + aP + 'g');
