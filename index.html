@@ -3772,252 +3772,34 @@ canvas#pesoChart {
     <div class="page" id="pageDieta">
       <div class="page-hdr">
         <div class="page-eyebrow">Módulo · Nutrição</div>
-        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <div class="page-title">Plano Alimentar</div>
-          <button class="edit-data-btn" onclick="dadosOpen()">✏ Meus Dados</button>
-        </div>
-        <div class="page-sub">Baseado nos seus dados · <button onclick="dadosOpen()" style="background:none;border:none;color:var(--red2);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;padding:0;">alterar informações</button></div>
+        <div class="page-title">Plano Alimentar</div>
+        <div class="page-sub" id="dietaSubtitle">Baseado nos seus dados</div>
       </div>
-      <div class="wrap">
-
-        <!-- Resumo dos dados calculados no onboarding -->
-        <div class="dieta-resumo" id="dietaResumo">
-          <div class="result-cards">
-            <div class="result-card hl"><div class="rc-lbl">Meta Kcal</div><div class="rc-val red" id="rMeta">—</div><div class="rc-unit">kcal/dia</div></div>
-            <div class="result-card hl-g"><div class="rc-lbl">Proteína</div><div class="rc-val green" id="rProt">—</div><div class="rc-unit">g/dia</div></div>
-            <div class="result-card"><div class="rc-lbl">Gasto Total</div><div class="rc-val" id="rGET">—</div><div class="rc-unit">kcal total</div></div>
-            <div class="result-card"><div class="rc-lbl">TMB</div><div class="rc-val" id="rTMB">—</div><div class="rc-unit">kcal base</div></div>
-          </div>
+      <div class="wrap" style="padding-top:16px;">
+        <!-- Cards de resumo kcal/prot/água -->
+        <div class="diet-summary-row">
+          <div class="diet-card red"><div class="diet-card-v" id="rMeta">—</div><div class="diet-card-l">META KCAL</div><div class="diet-card-u">kcal/dia</div></div>
+          <div class="diet-card green"><div class="diet-card-v" id="rProt">—</div><div class="diet-card-l">PROTEÍNA</div><div class="diet-card-u">g/dia</div></div>
+          <div class="diet-card"><div class="diet-card-v" id="rGet">—</div><div class="diet-card-l">GASTO TOTAL</div><div class="diet-card-u">kcal total</div></div>
+          <div class="diet-card"><div class="diet-card-v" id="rTmb">—</div><div class="diet-card-l">TMB</div><div class="diet-card-u">kcal base</div></div>
         </div>
-
-
-        <!-- CALCULADORA DE ÁGUA -->
+        <!-- Hidratação -->
         <div class="water-card" id="waterCard">
-          <div class="water-top">
-            <div>
-              <div class="section-hdr" style="margin-bottom:2px;">Hidratação Diária</div>
-              <div style="font-size:12px;color:var(--muted);">Baseada no peso e atividade</div>
-            </div>
-            <div class="water-meta">
-              <div class="water-litros" id="waterLitros">—</div>
-              <div class="water-unit">L / dia</div>
-            </div>
-          </div>
-          <div class="water-bar-wrap">
-            <div class="water-bar-track"><div class="water-bar-fill" id="waterBarFill"></div></div>
-          </div>
+          <div class="water-top"><div><div class="water-lbl">HIDRATAÇÃO DIÁRIA</div><div class="water-sub">Baseada no peso e atividade</div></div><div class="water-meta" id="waterMeta">—</div></div>
+          <div class="water-bar-track"><div class="water-bar-fill" id="waterBarFill"></div></div>
           <div class="water-cups" id="waterCups"></div>
-          <div class="water-tip" id="waterTip"></div>
+          <div class="water-status" id="waterStatus"></div>
         </div>
-
-        <!-- PLANO ALIMENTAR ESTÁTICO -->
+        <!-- Plano alimentar dinâmico -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;margin-bottom:10px;">
           <div class="section-hdr" id="dietaPlanLabel" style="margin:0;">Plano Alimentar</div>
           <div id="dietaMacroSummary" style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;"></div>
         </div>
-
-        <div id="dietaRefeicoes">
-
-          <!-- CAFÉ DA MANHÃ -->
-          <div class="refeicao-card open" id="ref-cafe">
-            <div class="refeicao-header" onclick="this.parentElement.classList.toggle('open')">
-              <span class="refeicao-icon">☀️</span>
-              <div class="refeicao-info">
-                <div class="refeicao-nome">Café da Manhã</div>
-                <div class="refeicao-meta" id="meta-cafe">Meta: — kcal</div>
-              </div>
-              <span class="refeicao-chevron">›</span>
-            </div>
-            <div class="ref-progress-wrap">
-              <div class="ref-progress-top">
-                <span class="ref-progress-lbl">Kcal selecionadas</span>
-                <span class="ref-progress-val">
-                  <span id="prog-cur-cafe">0</span>
-                  <span class="slash">/</span>
-                  <span id="prog-meta-cafe">—</span>
-                </span>
-              </div>
-              <div class="ref-progress-track">
-                <div class="ref-progress-fill" id="prog-fill-cafe"></div>
-              </div>
-              <div class="ref-progress-hint" id="prog-hint-cafe">Selecione alimentos</div>
-            </div>
-            <div class="refeicao-body">
-              <div class="alim-grid">
-                <div class="alim-item" data-ref="cafe" data-id="ovo_cozido" data-kcal="155" data-prot="13" data-un="un" data-gpu="55">
-                  <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="alim-nome">Ovo cozido</div><div class="alim-macros">155 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-ovo_cozido"></div>
-                </div>
-                <div class="alim-item" data-ref="cafe" data-id="omelete" data-kcal="154" data-prot="11" data-un="un" data-gpu="70">
-                  <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="alim-nome">Omelete</div><div class="alim-macros">154 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-omelete"></div>
-                </div>
-                <div class="alim-item" data-ref="cafe" data-id="aveia" data-kcal="374" data-prot="13" data-un="g" data-gpu="1">
-                  <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="alim-nome">Aveia em flocos</div><div class="alim-macros">374 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-aveia"></div>
-                </div>
-                <div class="alim-item" data-ref="cafe" data-id="iogurte_grego" data-kcal="59" data-prot="10" data-un="g" data-gpu="1">
-                  <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="alim-nome">Iogurte grego</div><div class="alim-macros">59 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-iogurte_grego"></div>
-                </div>
-                <div class="alim-item" data-ref="cafe" data-id="pao_integral" data-kcal="247" data-prot="9" data-un="fat" data-gpu="30">
-                  <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="alim-nome">Pão integral</div><div class="alim-macros">247 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-pao_integral"></div>
-                </div>
-                <div class="alim-item" data-ref="cafe" data-id="fruta" data-kcal="89" data-prot="1" data-un="un" data-gpu="120">
-                  <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="alim-nome">Fruta (banana/maçã)</div><div class="alim-macros">89 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-fruta"></div>
-                </div>
-                <div class="alim-item" data-ref="cafe" data-id="whey" data-kcal="375" data-prot="80" data-un="g" data-gpu="1">
-                  <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="alim-nome">Whey Protein</div><div class="alim-macros">375 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-whey"></div>
-                </div>
-                <div class="alim-item" data-ref="cafe" data-id="queijo_branco" data-kcal="114" data-prot="7" data-un="g" data-gpu="1">
-                  <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="alim-nome">Queijo minas frescal</div><div class="alim-macros">114 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-queijo_branco"></div>
-                </div>
-                <div class="alim-item" data-ref="cafe" data-id="crepioca" data-kcal="130" data-prot="6" data-un="un" data-gpu="80">
-                  <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="alim-nome">Crepioca</div><div class="alim-macros">130 kcal/100g</div><div class="alim-qty-calc" id="q-cafe-crepioca"></div>
-                </div>
-                <div class="alim-item" data-ref="cafe" data-id="cafe_preto" data-kcal="2" data-prot="0" data-un="ml" data-gpu="1">
-                  <div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                  <div class="alim-nome">Café preto s/ açúcar</div><div class="alim-macros">2 kcal/100ml</div><div class="alim-qty-calc" id="q-cafe-cafe_preto"></div>
-                </div>
-              </div>
-              <div class="refeicao-resultado" id="res-cafe"><div class="refeicao-hint">Selecione os alimentos desta refeição.</div></div>
-            </div>
-          </div>
-
-          <!-- ALMOÇO -->
-          <div class="refeicao-card" id="ref-almoco">
-            <div class="refeicao-header" onclick="this.parentElement.classList.toggle('open')">
-              <span class="refeicao-icon">🌞</span>
-              <div class="refeicao-info">
-                <div class="refeicao-nome">Almoço</div>
-                <div class="refeicao-meta" id="meta-almoco">Meta: — kcal</div>
-              </div>
-              <span class="refeicao-chevron">›</span>
-            </div>
-            <div class="ref-progress-wrap">
-              <div class="ref-progress-top">
-                <span class="ref-progress-lbl">Kcal selecionadas</span>
-                <span class="ref-progress-val">
-                  <span id="prog-cur-almoco">0</span>
-                  <span class="slash">/</span>
-                  <span id="prog-meta-almoco">—</span>
-                </span>
-              </div>
-              <div class="ref-progress-track">
-                <div class="ref-progress-fill" id="prog-fill-almoco"></div>
-              </div>
-              <div class="ref-progress-hint" id="prog-hint-almoco">Selecione alimentos</div>
-            </div>
-            <div class="refeicao-body">
-              <div class="alim-grid">
-                <div class="alim-item" data-ref="almoco" data-id="frango" data-kcal="165" data-prot="31" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Frango grelhado</div><div class="alim-macros">165 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-frango"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="peixe" data-kcal="128" data-prot="26" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Tilápia/peixe</div><div class="alim-macros">128 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-peixe"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="atum" data-kcal="116" data-prot="26" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Atum em água</div><div class="alim-macros">116 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-atum"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="arroz_int" data-kcal="124" data-prot="3" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Arroz integral</div><div class="alim-macros">124 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-arroz_int"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="feijao" data-kcal="114" data-prot="8" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Feijão carioca</div><div class="alim-macros">114 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-feijao"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="salada" data-kcal="17" data-prot="1" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Salada verde</div><div class="alim-macros">17 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-salada"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="batata_doce" data-kcal="86" data-prot="2" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Batata doce</div><div class="alim-macros">86 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-batata_doce"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="brocolis" data-kcal="34" data-prot="3" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Brócolis</div><div class="alim-macros">34 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-brocolis"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="azeite" data-kcal="884" data-prot="0" data-un="ml" data-gpu="10"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Azeite (1 col.sopa)</div><div class="alim-macros">884 kcal/100ml</div><div class="alim-qty-calc" id="q-almoco-azeite"></div></div>
-                <div class="alim-item" data-ref="almoco" data-id="lentilha" data-kcal="116" data-prot="9" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Lentilha</div><div class="alim-macros">116 kcal/100g</div><div class="alim-qty-calc" id="q-almoco-lentilha"></div></div>
-              </div>
-              <div class="refeicao-resultado" id="res-almoco"><div class="refeicao-hint">Selecione os alimentos desta refeição.</div></div>
-            </div>
-          </div>
-
-          <!-- LANCHE -->
-          <div class="refeicao-card" id="ref-lanche">
-            <div class="refeicao-header" onclick="this.parentElement.classList.toggle('open')">
-              <span class="refeicao-icon">🍎</span>
-              <div class="refeicao-info">
-                <div class="refeicao-nome">Lanche da Tarde</div>
-                <div class="refeicao-meta" id="meta-lanche">Meta: — kcal</div>
-              </div>
-              <span class="refeicao-chevron">›</span>
-            </div>
-            <div class="ref-progress-wrap">
-              <div class="ref-progress-top">
-                <span class="ref-progress-lbl">Kcal selecionadas</span>
-                <span class="ref-progress-val">
-                  <span id="prog-cur-lanche">0</span>
-                  <span class="slash">/</span>
-                  <span id="prog-meta-lanche">—</span>
-                </span>
-              </div>
-              <div class="ref-progress-track">
-                <div class="ref-progress-fill" id="prog-fill-lanche"></div>
-              </div>
-              <div class="ref-progress-hint" id="prog-hint-lanche">Selecione alimentos</div>
-            </div>
-            <div class="refeicao-body">
-              <div class="alim-grid">
-                <div class="alim-item" data-ref="lanche" data-id="iogurte_grego" data-kcal="59" data-prot="10" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Iogurte grego</div><div class="alim-macros">59 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-iogurte_grego"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="fruta" data-kcal="89" data-prot="1" data-un="un" data-gpu="120"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Fruta</div><div class="alim-macros">89 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-fruta"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="castanha" data-kcal="656" data-prot="14" data-un="un" data-gpu="5"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Castanha do Pará</div><div class="alim-macros">656 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-castanha"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="whey" data-kcal="375" data-prot="80" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Whey Protein</div><div class="alim-macros">375 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-whey"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="cottage" data-kcal="98" data-prot="11" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Cottage</div><div class="alim-macros">98 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-cottage"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="amendoim" data-kcal="590" data-prot="25" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Pasta de amendoim</div><div class="alim-macros">590 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-amendoim"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="ovo_cozido" data-kcal="155" data-prot="13" data-un="un" data-gpu="55"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Ovo cozido</div><div class="alim-macros">155 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-ovo_cozido"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="barra_prot" data-kcal="380" data-prot="30" data-un="un" data-gpu="45"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Barra proteica</div><div class="alim-macros">380 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-barra_prot"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="amendo" data-kcal="579" data-prot="21" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Amêndoas</div><div class="alim-macros">579 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-amendo"></div></div>
-                <div class="alim-item" data-ref="lanche" data-id="aveia" data-kcal="374" data-prot="13" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Aveia</div><div class="alim-macros">374 kcal/100g</div><div class="alim-qty-calc" id="q-lanche-aveia"></div></div>
-              </div>
-              <div class="refeicao-resultado" id="res-lanche"><div class="refeicao-hint">Selecione os alimentos desta refeição.</div></div>
-            </div>
-          </div>
-
-          <!-- JANTAR -->
-          <div class="refeicao-card" id="ref-jantar">
-            <div class="refeicao-header" onclick="this.parentElement.classList.toggle('open')">
-              <span class="refeicao-icon">🌙</span>
-              <div class="refeicao-info">
-                <div class="refeicao-nome">Jantar</div>
-                <div class="refeicao-meta" id="meta-jantar">Meta: — kcal</div>
-              </div>
-              <span class="refeicao-chevron">›</span>
-            </div>
-            <div class="ref-progress-wrap">
-              <div class="ref-progress-top">
-                <span class="ref-progress-lbl">Kcal selecionadas</span>
-                <span class="ref-progress-val">
-                  <span id="prog-cur-jantar">0</span>
-                  <span class="slash">/</span>
-                  <span id="prog-meta-jantar">—</span>
-                </span>
-              </div>
-              <div class="ref-progress-track">
-                <div class="ref-progress-fill" id="prog-fill-jantar"></div>
-              </div>
-              <div class="ref-progress-hint" id="prog-hint-jantar">Selecione alimentos</div>
-            </div>
-            <div class="refeicao-body">
-              <div class="alim-grid">
-                <div class="alim-item" data-ref="jantar" data-id="frango" data-kcal="165" data-prot="31" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Frango grelhado</div><div class="alim-macros">165 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-frango"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="atum" data-kcal="116" data-prot="26" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Atum em água</div><div class="alim-macros">116 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-atum"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="peixe" data-kcal="128" data-prot="26" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Tilápia</div><div class="alim-macros">128 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-peixe"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="batata_doce" data-kcal="86" data-prot="2" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Batata doce</div><div class="alim-macros">86 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-batata_doce"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="brocolis" data-kcal="34" data-prot="3" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Brócolis</div><div class="alim-macros">34 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-brocolis"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="ovo_cozido" data-kcal="155" data-prot="13" data-un="un" data-gpu="55"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Ovo cozido</div><div class="alim-macros">155 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-ovo_cozido"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="salada" data-kcal="17" data-prot="1" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Salada</div><div class="alim-macros">17 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-salada"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="cottage" data-kcal="98" data-prot="11" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Cottage</div><div class="alim-macros">98 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-cottage"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="azeite" data-kcal="884" data-prot="0" data-un="ml" data-gpu="10"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Azeite</div><div class="alim-macros">884 kcal/100ml</div><div class="alim-qty-calc" id="q-jantar-azeite"></div></div>
-                <div class="alim-item" data-ref="jantar" data-id="whey" data-kcal="375" data-prot="80" data-un="g" data-gpu="1"><div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">Whey Protein</div><div class="alim-macros">375 kcal/100g</div><div class="alim-qty-calc" id="q-jantar-whey"></div></div>
-              </div>
-              <div class="refeicao-resultado" id="res-jantar"><div class="refeicao-hint">Selecione os alimentos desta refeição.</div></div>
-            </div>
-          </div>
-
-        </div><!-- /dietaRefeicoes -->
+        <div id="dietaApp"></div>
       </div>
     </div>
 
-    <!-- ── PROGRESSO ──────────────────────────────── -->
-    <div class="page" id="pageProgresso">
+<div class="page" id="pageProgresso">
       <div class="page-hdr">
         <div class="page-eyebrow">Módulo · Acompanhamento</div>
         <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
@@ -7424,396 +7206,226 @@ function calcMacrosAlimento(alim, kcalPorcao) {
 
 
 
+
+
+})();
+
+/* ══════════════════════════════════════════════════
+   NUTRIÇÃO — lógica igual ao teste que funcionou
+   ══════════════════════════════════════════════════ */
+
+var _dietaPrefs = {};
+
+var _dietaRefeicoes = {
+  secar: [
+    { id:'cafe',   nome:'Café da Manhã',  icon:'☀️', pct:.25, alimentos:[
+      {id:'ovo_cozido',   nome:'Ovo cozido',         kcal:155,prot:13,un:'un', gpu:55 },
+      {id:'omelete',      nome:'Omelete',             kcal:154,prot:11,un:'un', gpu:70 },
+      {id:'aveia',        nome:'Aveia em flocos',     kcal:374,prot:13,un:'g',  gpu:1  },
+      {id:'iogurte_grego',nome:'Iogurte grego',       kcal:59, prot:10,un:'g',  gpu:1  },
+      {id:'pao_integral', nome:'Pão integral',        kcal:247,prot:9, un:'fat',gpu:30 },
+      {id:'fruta',        nome:'Fruta (banana/maçã)', kcal:89, prot:1, un:'un', gpu:120},
+      {id:'whey',         nome:'Whey Protein',        kcal:375,prot:80,un:'g',  gpu:1  },
+      {id:'queijo_branco',nome:'Queijo minas frescal',kcal:114,prot:7, un:'g',  gpu:1  },
+      {id:'crepioca',     nome:'Crepioca',            kcal:130,prot:6, un:'un', gpu:80 },
+      {id:'cafe_preto',   nome:'Café preto s/ açúcar',kcal:2,  prot:0, un:'ml', gpu:1  },
+    ]},
+    { id:'almoco', nome:'Almoço',         icon:'🌞', pct:.35, alimentos:[
+      {id:'frango',    nome:'Frango grelhado',  kcal:165,prot:31,un:'g',gpu:1},
+      {id:'peixe',     nome:'Tilápia/peixe',   kcal:128,prot:26,un:'g',gpu:1},
+      {id:'atum',      nome:'Atum em água',    kcal:116,prot:26,un:'g',gpu:1},
+      {id:'arroz_int', nome:'Arroz integral',  kcal:124,prot:3, un:'g',gpu:1},
+      {id:'feijao',    nome:'Feijão carioca',  kcal:114,prot:8, un:'g',gpu:1},
+      {id:'salada',    nome:'Salada verde',    kcal:17, prot:1, un:'g',gpu:1},
+      {id:'batata_doce',nome:'Batata doce',    kcal:86, prot:2, un:'g',gpu:1},
+      {id:'brocolis',  nome:'Brócolis',        kcal:34, prot:3, un:'g',gpu:1},
+      {id:'azeite',    nome:'Azeite (1 col.)', kcal:884,prot:0, un:'ml',gpu:10},
+      {id:'lentilha',  nome:'Lentilha',        kcal:116,prot:9, un:'g',gpu:1},
+    ]},
+    { id:'lanche', nome:'Lanche da Tarde', icon:'🍎', pct:.15, alimentos:[
+      {id:'iogurte_grego',nome:'Iogurte grego',     kcal:59, prot:10,un:'g',  gpu:1  },
+      {id:'fruta',        nome:'Fruta',             kcal:89, prot:1, un:'un', gpu:120},
+      {id:'castanha',     nome:'Castanha do Pará',  kcal:656,prot:14,un:'un', gpu:5  },
+      {id:'whey',         nome:'Whey Protein',      kcal:375,prot:80,un:'g',  gpu:1  },
+      {id:'cottage',      nome:'Cottage',           kcal:98, prot:11,un:'g',  gpu:1  },
+      {id:'amendoim',     nome:'Pasta de amendoim', kcal:590,prot:25,un:'g',  gpu:1  },
+      {id:'ovo_cozido',   nome:'Ovo cozido',        kcal:155,prot:13,un:'un', gpu:55 },
+      {id:'barra_prot',   nome:'Barra proteica',    kcal:380,prot:30,un:'un', gpu:45 },
+      {id:'amendo',       nome:'Amêndoas',          kcal:579,prot:21,un:'g',  gpu:1  },
+      {id:'aveia',        nome:'Aveia',             kcal:374,prot:13,un:'g',  gpu:1  },
+    ]},
+    { id:'jantar', nome:'Jantar',          icon:'🌙', pct:.25, alimentos:[
+      {id:'frango',    nome:'Frango grelhado',kcal:165,prot:31,un:'g',gpu:1},
+      {id:'atum',      nome:'Atum em água',  kcal:116,prot:26,un:'g',gpu:1},
+      {id:'peixe',     nome:'Tilápia',       kcal:128,prot:26,un:'g',gpu:1},
+      {id:'batata_doce',nome:'Batata doce',  kcal:86, prot:2, un:'g',gpu:1},
+      {id:'brocolis',  nome:'Brócolis',      kcal:34, prot:3, un:'g',gpu:1},
+      {id:'ovo_cozido',nome:'Ovo cozido',    kcal:155,prot:13,un:'un',gpu:55},
+      {id:'salada',    nome:'Salada',        kcal:17, prot:1, un:'g',gpu:1},
+      {id:'cottage',   nome:'Cottage',       kcal:98, prot:11,un:'g',gpu:1},
+      {id:'azeite',    nome:'Azeite',        kcal:884,prot:0, un:'ml',gpu:10},
+      {id:'whey',      nome:'Whey Protein',  kcal:375,prot:80,un:'g',gpu:1},
+    ]},
+  ],
+  manter: null,
+  crescer: null,
+};
+// manter e crescer usam secar como fallback por ora
+_dietaRefeicoes.manter  = _dietaRefeicoes.secar;
+_dietaRefeicoes.crescer = _dietaRefeicoes.secar;
+
+function _dporcaoG(a) {
+  if (a.un==='g')   return 100;
+  if (a.un==='ml')  return 200;
+  return a.gpu;
+}
+function _dfmtQty(a) {
+  var g = _dporcaoG(a);
+  if (a.un==='g')   return g+'g';
+  if (a.un==='ml')  return g+'ml';
+  if (a.un==='fat') return '1 fatia';
+  return '1 un';
+}
+
+function initDietaEstatica() {
+  var progId   = (typeof programaAtivo !== 'undefined' ? programaAtivo : null)
+                 || localStorage.getItem('maj_programa_ativo') || 'secar';
+  var metaKcal = parseInt(localStorage.getItem('maj_kcal'))  || 2000;
+  var metaProt = parseInt(localStorage.getItem('maj_prot'))  || 120;
+  var refs     = _dietaRefeicoes[progId] || _dietaRefeicoes.secar;
+  var app      = document.getElementById('dietaApp');
+  if (!app) return;
+
+  // Carregar prefs salvas
+  try { _dietaPrefs = JSON.parse(localStorage.getItem('maj_pref_refeicao') || '{}')[progId] || {}; }
+  catch(e) { _dietaPrefs = {}; }
+
+  // Label
+  var lbl = document.getElementById('dietaPlanLabel');
+  var sum = document.getElementById('dietaMacroSummary');
+  if (lbl) lbl.textContent = 'Plano · ' + progId.charAt(0).toUpperCase() + progId.slice(1);
+  if (sum) sum.textContent = metaKcal + ' kcal · ' + metaProt + 'g prot';
+
+  _buildDietaHTML(app, refs, progId, metaKcal, metaProt);
+}
+
+function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
+  app.innerHTML = '';
+
+  refs.forEach(function(ref, ri) {
+    var sel      = _dietaPrefs[ref.id] || [];
+    var metaK    = Math.round(metaKcal * ref.pct);
+    var metaP    = Math.round(metaProt * ref.pct);
+
+    // Calcular totais
+    var totK = 0, totP = 0;
+    ref.alimentos.forEach(function(a) {
+      if (sel.indexOf(a.id) < 0) return;
+      var g = _dporcaoG(a);
+      totK += Math.round(a.kcal * g / 100);
+      totP += Math.round(a.prot * g / 100);
+    });
+
+    var pct  = metaK > 0 ? Math.min(120, Math.round(totK / metaK * 100)) : 0;
+    var ok   = pct >= 85 && pct <= 110;
+    var over = pct > 110;
+    var hint = sel.length === 0 ? 'Selecione alimentos'
+             : ok   ? '✓ Meta atingida!'
+             : over ? '+' + (totK - metaK) + ' kcal acima'
+             : 'Faltam ' + (metaK - totK) + ' kcal';
+
+    var card = document.createElement('div');
+    card.className = 'refeicao-card' + (ri === 0 ? ' open' : '');
+
+    var alimHTML = ref.alimentos.map(function(a) {
+      var isSel = sel.indexOf(a.id) >= 0;
+      var g    = _dporcaoG(a);
+      var aK   = Math.round(a.kcal * g / 100);
+      var aP   = Math.round(a.prot * g / 100);
+      return '<div class="alim-item' + (isSel ? ' sel' : '') + '" data-ref="' + ref.id + '" data-id="' + a.id + '">' +
+        '<div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+        '<div class="alim-nome">' + a.nome + '</div>' +
+        '<div class="alim-macros">' + aK + ' kcal · ' + aP + 'g</div>' +
+        '<div class="alim-qty-calc">' + (isSel ? _dfmtQty(a) : '') + '</div>' +
+        '</div>';
+    }).join('');
+
+    card.innerHTML =
+      '<div class="refeicao-header">' +
+        '<span class="refeicao-icon">' + ref.icon + '</span>' +
+        '<div class="refeicao-info">' +
+          '<div class="refeicao-nome">' + ref.nome + '</div>' +
+          '<div class="refeicao-meta">Meta: ' + metaK + ' kcal · ' + metaP + 'g prot</div>' +
+        '</div>' +
+        '<span class="refeicao-chevron">›</span>' +
+      '</div>' +
+      '<div class="refeicao-body">' +
+        '<div class="ref-progress-wrap">' +
+          '<div class="ref-progress-top">' +
+            '<span class="ref-progress-lbl">Selecionado</span>' +
+            '<span class="ref-progress-val">' + totK + ' kcal · ' + totP + 'g prot</span>' +
+          '</div>' +
+          '<div class="ref-progress-track"><div class="ref-progress-fill' + (ok?' ok':over?' over':'') + '" style="width:' + pct + '%"></div></div>' +
+          '<div class="ref-progress-hint' + (ok?' ok':over?' over':'') + '">' + hint + '</div>' +
+        '</div>' +
+        '<div class="alim-grid">' + alimHTML + '</div>' +
+      '</div>';
+
+    // Toggle header
+    card.querySelector('.refeicao-header').addEventListener('click', function() {
+      card.classList.toggle('open');
+    });
+
+    // Seleção via event delegation no grid
+    card.querySelector('.alim-grid').addEventListener('click', function(e) {
+      var item = e.target.closest('.alim-item');
+      if (!item) return;
+      var rId = item.getAttribute('data-ref');
+      var aId = item.getAttribute('data-id');
+      if (!_dietaPrefs[rId]) _dietaPrefs[rId] = [];
+      var idx = _dietaPrefs[rId].indexOf(aId);
+      if (idx >= 0) _dietaPrefs[rId].splice(idx, 1);
+      else _dietaPrefs[rId].push(aId);
+      // Salvar
+      try {
+        var all = JSON.parse(localStorage.getItem('maj_pref_refeicao') || '{}');
+        var pId = (typeof programaAtivo !== 'undefined' ? programaAtivo : null) || localStorage.getItem('maj_programa_ativo') || 'secar';
+        all[pId] = _dietaPrefs;
+        localStorage.setItem('maj_pref_refeicao', JSON.stringify(all));
+      } catch(e2) {}
+      // Rebuild completo — igual ao teste que funcionou
+      initDietaEstatica();
+    });
+
+    app.appendChild(card);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const page = document.getElementById('pageTreino');
     if (page) pageObs.observe(page, { attributes: true, attributeFilter: ['class'] });
     // Caso já esteja ativa
     if (page && page.classList.contains('active')) attachSwipe();
   });
-})();
+
+
 
 /* ── FUNÇÕES DE NUTRIÇÃO (escopo global) ──────── */
-function usarFallback() {
-  var fb = document.getElementById('dietaFallback');
-  var main = document.getElementById('dietaRefeicoes');
-  if (!fb || !main) return;
 
-  // Preencher grids do fallback com opções do menu secar
-  var progId = programaAtivo || 'secar';
-  var menuFb = MENU_REFEICOES[progId] || MENU_REFEICOES['secar'];
-  if (!menuFb) { fb.style.display = 'block'; return; }
 
-  var mapIds = { 0:'fb-cafe', 1:'fb-almoco', 2:'fb-lanche', 3:'fb-jantar' };
-  menuFb.forEach(function(ref, i) {
-    var grid = document.getElementById(mapIds[i]);
-    if (!grid) return;
-    grid.innerHTML = '';
-    ref.opcoes.forEach(function(alim) {
-      var item = document.createElement('div');
-      item.className = 'alim-item';
-      item.innerHTML = '<div class="alim-check"><svg class="alim-check-tick" viewBox="0 0 10 7" fill="none"><polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="alim-nome">' + alim.nome + '</div><div class="alim-macros">' + alim.kcal100 + ' kcal/100g</div><div class="alim-qty-calc" id="fbqty_' + ref.id + '_' + alim.id + '"></div>';
-      var sel = carregarPrefRefeicao(progId, ref.id);
-      if (sel.indexOf(alim.id) >= 0) item.classList.add('sel');
-      item.addEventListener('click', (function(a, r){
-        return function() {
-          item.classList.toggle('sel');
-          var cur = carregarPrefRefeicao(progId, r.id);
-          var idx = cur.indexOf(a.id);
-          if (idx >= 0) cur.splice(idx,1); else cur.push(a.id);
-          salvarPrefRefeicao(progId, r.id, cur);
-        };
-      })(alim, ref));
-      grid.appendChild(item);
-    });
-  });
 
-  main.style.display = 'none';
-  fb.style.display = 'block';
-}
 
-function verificarRenderDieta() {
-  var container = document.getElementById('dietaRefeicoes');
-  if (container && container.children.length === 0) {
-    console.warn('dietaRefeicoes vazio após render — usando fallback');
-    usarFallback();
-  }
-}
 
-function renderDietaAtiva() {
-  // Garantir que programaAtivo é válido
-  if (!programaAtivo) programaAtivo = localStorage.getItem('maj_programa_ativo') || 'secar';
 
-  var menu = MENU_REFEICOES[programaAtivo];
-  var label = document.getElementById('dietaPlanLabel');
-  var container = document.getElementById('dietaRefeicoes');
-  var summaryEl = document.getElementById('dietaMacroSummary');
-  if (!container) { console.warn('dietaRefeicoes container not found'); usarFallback(); return; }
-  console.log('renderDietaAtiva called, programaAtivo:', programaAtivo, 'menu:', menu ? menu.length + ' refs' : 'NULL');
 
-  var metaKcal = parseInt(localStorage.getItem('maj_kcal')) || 2000;
-  var metaProt = parseInt(localStorage.getItem('maj_prot')) || 120;
 
-  if (label) {
-    var prog = PROGRAMAS.find(function(p){ return p.id === programaAtivo; });
-    label.textContent = prog ? 'Plano \u00b7 ' + prog.nome : 'Plano Alimentar';
-  }
-  if (summaryEl) {
-    summaryEl.textContent = metaKcal + ' kcal \u00b7 ' + metaProt + 'g prot';
-  }
 
-  if (!menu) {
-    // Programa sem menu ainda (premium) — mensagem
-    container.innerHTML =
-      '<div style="background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);padding:20px 16px;">' +
-      '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--red2);margin-bottom:6px;">PROGRAMA PREMIUM</div>' +
-      '<div style="font-size:13px;color:var(--muted);">O plano alimentar detalhado deste programa ser\u00e1 disponibilizado em breve.</div>' +
-      '</div>';
-    return;
-  }
 
-  container.innerHTML = '';
-  container.style.display = 'block';
 
-  if (!menu) { usarFallback(); return; }
 
-  menu.forEach(function(ref) {
-    var metaRefKcal = Math.round(metaKcal * ref.pct);
-    var metaRefProt = Math.round(metaProt * ref.pct);
-    var sel = carregarPrefRefeicao(programaAtivo, ref.id);
 
-    var card = document.createElement('div');
-    var isFirst = menu.indexOf(ref) === 0;
-    card.className = 'refeicao-card' + (sel.length > 0 || isFirst ? ' open' : '');
-    card.dataset.refId = ref.id;
 
-    // Header
-    var hdr = document.createElement('div');
-    hdr.className = 'refeicao-header';
-    hdr.innerHTML =
-      '<span class="refeicao-icon">' + ref.icon + '</span>' +
-      '<div class="refeicao-info">' +
-        '<div class="refeicao-nome">' + ref.nome + '</div>' +
-        '<div class="refeicao-meta" id="refMeta_' + ref.id + '">' +
-          'Meta: ' + metaRefKcal + ' kcal \u00b7 ' + metaRefProt + 'g prot' +
-        '</div>' +
-      '</div>' +
-      '<span class="refeicao-chevron">\u203a</span>';
-    hdr.addEventListener('click', function(){ card.classList.toggle('open'); });
-    card.appendChild(hdr);
 
-    // Body
-    var body = document.createElement('div');
-    body.className = 'refeicao-body';
-
-    // Grid de opções
-    var grid = document.createElement('div');
-    grid.className = 'alim-grid';
-
-    ref.opcoes.forEach(function(alim) {
-      var isSel = sel.indexOf(alim.id) >= 0;
-      var kcalPorcao = sel.length > 0 ? metaRefKcal / sel.length : metaRefKcal / 2;
-      var qty = isSel ? calcQtdAlimento(alim, kcalPorcao) : '';
-      var macros = isSel ? calcMacrosAlimento(alim, kcalPorcao) : null;
-
-      var item = document.createElement('div');
-      item.className = 'alim-item' + (isSel ? ' sel' : '');
-      item.innerHTML =
-        '<div class="alim-check">' +
-          '<svg class="alim-check-tick" viewBox="0 0 10 7" fill="none">' +
-            '<polyline points="1,3.5 3.5,6 9,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
-          '</svg>' +
-        '</div>' +
-        '<div class="alim-nome">' + alim.nome + '</div>' +
-        '<div class="alim-macros">' + alim.kcal100 + ' kcal/100g</div>' +
-        '<div class="alim-qty-calc" id="qty_' + ref.id + '_' + alim.id + '">' +
-          (isSel ? qty : '') +
-        '</div>';
-
-      item.addEventListener('click', (function(a, r, c_ref){
-        return function(){
-          var curSel = carregarPrefRefeicao(programaAtivo, r.id);
-          var idx = curSel.indexOf(a.id);
-          if (idx >= 0) curSel.splice(idx, 1);
-          else curSel.push(a.id);
-          salvarPrefRefeicao(programaAtivo, r.id, curSel);
-          // Re-renderizar só esta refeição
-          atualizarRefeicao(c_ref, r, curSel, metaRefKcal, metaRefProt);
-        };
-      })(alim, ref, card));
-
-      grid.appendChild(item);
-    });
-
-    body.appendChild(grid);
-
-    // Resultado calculado
-    var resultado = document.createElement('div');
-    resultado.className = 'refeicao-resultado';
-    resultado.id = 'resultado_' + ref.id;
-    body.appendChild(resultado);
-
-    card.appendChild(body);
-    container.appendChild(card);
-
-    // Atualizar resultado inicial
-    atualizarRefeicaoResultado(resultado, ref, sel, metaRefKcal, metaRefProt);
-  });
-}
-
-function atualizarRefeicao(card, ref, sel, metaKcal, metaProt) {
-  // Atualizar visual de cada item
-  card.querySelectorAll('.alim-item').forEach(function(item, i) {
-    var alim = ref.opcoes[i];
-    if (!alim) return;
-    var isSel = sel.indexOf(alim.id) >= 0;
-    item.classList.toggle('sel', isSel);
-    var kcalPorcao = sel.length > 0 ? metaKcal / sel.length : 0;
-    var qtyEl = card.querySelector('#qty_' + ref.id + '_' + alim.id);
-    if (qtyEl) qtyEl.textContent = isSel && sel.length > 0 ? calcQtdAlimento(alim, kcalPorcao) : '';
-  });
-  // Atualizar resultado
-  var resultado = card.querySelector('.refeicao-resultado');
-  if (resultado) atualizarRefeicaoResultado(resultado, ref, sel, metaKcal, metaProt);
-}
-
-function atualizarRefeicaoResultado(el, ref, sel, metaKcal, metaProt) {
-  if (!el) return;
-  if (sel.length === 0) {
-    el.innerHTML = '<div class="refeicao-hint">Selecione os alimentos que vai comer nesta refei\u00e7\u00e3o.</div>';
-    el.className = 'refeicao-resultado';
-    return;
-  }
-  var kcalPorcao = metaKcal / sel.length;
-  var totalKcal = 0, totalProt = 0;
-  sel.forEach(function(aid){
-    var alim = ref.opcoes.find(function(a){ return a.id === aid; });
-    if (!alim) return;
-    var m = calcMacrosAlimento(alim, kcalPorcao);
-    totalKcal += m.kcal;
-    totalProt += m.prot;
-  });
-  var ok = Math.abs(totalKcal - metaKcal) < metaKcal * 0.15;
-  el.className = 'refeicao-resultado' + (ok ? ' ok' : '');
-  el.innerHTML =
-    '<div class="refeicao-resultado-row">' +
-      '<div class="refeicao-resultado-lbl">Total Selecionado</div>' +
-      '<div class="refeicao-resultado-vals">' +
-        totalKcal + '<span>kcal</span>' + totalProt + '<span>g prot</span>' +
-      '</div>' +
-    '</div>' +
-    '<div class="refeicao-hint">' +
-      (ok ? '\u2713 Dentro da meta de ' + metaKcal + ' kcal' :
-            'Meta: ' + metaKcal + ' kcal \u00b7 ' + metaProt + 'g prot') +
-    '</div>';
-}
-
-function initDietaEstatica() {
-  var progId   = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
-  var metaKcal = parseInt(localStorage.getItem('maj_kcal')) || 2000;
-  var pcts     = { cafe:.25, almoco:.35, lanche:.15, jantar:.25 };
-  var container = document.getElementById('dietaRefeicoes');
-  if (!container) return;
-
-  // Label e summary
-  var lbl = document.getElementById('dietaPlanLabel');
-  var sum = document.getElementById('dietaMacroSummary');
-  if (lbl) {
-    var prog = typeof PROGRAMAS !== 'undefined'
-      ? PROGRAMAS.find(function(p){ return p.id === progId; }) : null;
-    lbl.textContent = prog ? 'Plano · ' + prog.nome : 'Plano Alimentar';
-  }
-  if (sum) sum.textContent = metaKcal + ' kcal · ' + (localStorage.getItem('maj_prot') || '120') + 'g prot';
-
-  // Metas por refeição
-  ['cafe','almoco','lanche','jantar'].forEach(function(r) {
-    var meta = Math.round(metaKcal * (pcts[r] || .25));
-    var el = document.getElementById('meta-' + r);
-    if (el) el.textContent = 'Meta: ' + meta + ' kcal';
-    var pm = document.getElementById('prog-meta-' + r);
-    if (pm) pm.textContent = meta;
-  });
-
-  // Marcar selecionados
-  container.querySelectorAll('.alim-item').forEach(function(item) {
-    var rId = item.getAttribute('data-ref');
-    var aId = item.getAttribute('data-id');
-    var sel = carregarPrefRefeicao(progId, rId);
-    item.classList.toggle('sel', sel.indexOf(aId) >= 0);
-  });
-
-  // Atualizar barras dos já selecionados
-  ['cafe','almoco','lanche','jantar'].forEach(function(r) {
-    atualizarQtdsRefeicao(r, progId);
-  });
-
-  // EVENT DELEGATION: um único listener no container
-  // Evita problemas de clone, re-attach e display:none no iOS
-  if (container._delegated) return; // só anexar uma vez
-  container._delegated = true;
-
-  container.addEventListener('click', function(e) {
-    var item = e.target.closest('.alim-item');
-    if (!item) return;
-    var rId = item.getAttribute('data-ref');
-    var aId = item.getAttribute('data-id');
-    var pId = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
-    item.classList.toggle('sel');
-    var cur = carregarPrefRefeicao(pId, rId);
-    var idx = cur.indexOf(aId);
-    if (idx >= 0) cur.splice(idx, 1); else cur.push(aId);
-    salvarPrefRefeicao(pId, rId, cur);
-    atualizarQtdsRefeicao(rId, pId);
-  });
-}
-
-function atualizarQtdsRefeicao(refId, progId) {
-  progId   = progId || programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
-  var metaKcal = parseInt(localStorage.getItem('maj_kcal')) || 2000;
-  var pcts     = { cafe:.25, almoco:.35, lanche:.15, jantar:.25 };
-  var metaRef  = Math.round(metaKcal * (pcts[refId] || .25));
-
-  var container = document.getElementById('dietaRefeicoes');
-  if (!container) return;
-
-  var items    = container.querySelectorAll('.alim-item[data-ref="' + refId + '"]');
-  var selItems = Array.from(items).filter(function(i){ return i.classList.contains('sel'); });
-  var nSel     = selItems.length;
-  var kcalEach = nSel > 0 ? metaRef / nSel : 0;
-
-  // Porções típicas por unidade (não divide meta — usa porção real)
-  // gpu = gramas por unidade. Porção padrão: 1 unidade ou 100g/ml
-  var totalKcal = 0, totalProt = 0;
-
-  function porcaoG(item) {
-    // Porção de consumo típica
-    var un  = item.dataset.un;
-    var gpu = parseInt(item.dataset.gpu);
-    if (un === 'g')   return 100;   // 100g
-    if (un === 'ml')  return 200;   // 200ml
-    if (un === 'un')  return gpu;   // 1 unidade
-    if (un === 'fat') return gpu;   // 1 fatia
-    return 100;
-  }
-
-  selItems.forEach(function(item) {
-    var kcal100 = parseInt(item.dataset.kcal);
-    var prot100 = parseInt(item.dataset.prot);
-    var g = porcaoG(item);
-    totalKcal += Math.round(kcal100 * g / 100);
-    totalProt += Math.round(prot100 * g / 100);
-  });
-
-  // Quantidade exibida = porção típica legível
-  items.forEach(function(item) {
-    var qtyEl = document.getElementById('q-' + refId + '-' + item.dataset.id);
-    if (!qtyEl) return;
-    if (!item.classList.contains('sel') || nSel === 0) { qtyEl.textContent = ''; return; }
-    var un  = item.dataset.un;
-    var gpu = parseInt(item.dataset.gpu);
-    if (un === 'g')   qtyEl.textContent = '100g';
-    else if (un === 'ml') qtyEl.textContent = '200ml';
-    else if (un === 'fat') qtyEl.textContent = '1 fatia';
-    else qtyEl.textContent = '1 un';
-  });
-
-  // ── Barra de progresso ─────────────────────────
-  var fillEl  = document.getElementById('prog-fill-' + refId);
-  var curEl   = document.getElementById('prog-cur-'  + refId);
-  var hintEl  = document.getElementById('prog-hint-' + refId);
-  var pct     = nSel > 0 ? Math.min(100, Math.round((totalKcal / metaRef) * 100)) : 0;
-  var faltam  = metaRef - totalKcal;
-  var over    = totalKcal > metaRef * 1.1;
-  var ok      = pct >= 85 && pct <= 115;
-
-  if (fillEl) {
-    fillEl.style.width = pct + '%';
-    fillEl.className   = 'ref-progress-fill' + (ok ? ' ok' : over ? ' over' : '');
-  }
-  if (curEl)  curEl.textContent = nSel > 0 ? totalKcal : '0';
-  if (hintEl) {
-    hintEl.className = 'ref-progress-hint' + (ok ? ' ok' : over ? ' over' : '');
-    if (nSel === 0)  hintEl.textContent = 'Selecione alimentos';
-    else if (ok)     hintEl.textContent = '✓ Meta atingida!';
-    else if (over)   hintEl.textContent = '+' + Math.abs(faltam) + ' kcal acima · remova um item';
-    else             hintEl.textContent = 'Faltam ' + faltam + ' kcal · adicione mais itens';
-  }
-
-  // ── Resultado compacto ──────────────────────────
-  var resEl = document.getElementById('res-' + refId);
-  if (!resEl) return;
-  if (nSel === 0) {
-    resEl.innerHTML = '<div class="refeicao-hint">Selecione os alimentos desta refeição.</div>';
-    resEl.className = 'refeicao-resultado';
-  } else {
-    resEl.className = 'refeicao-resultado' + (ok ? ' ok' : '');
-    resEl.innerHTML =
-      '<div class="refeicao-resultado-row">' +
-        '<div class="refeicao-resultado-lbl">Total selecionado</div>' +
-        '<div class="refeicao-resultado-vals">' + totalKcal + '<span>kcal</span>' + totalProt + '<span>g prot</span></div>' +
-      '</div>' +
-      '<div class="refeicao-hint ' + (ok?'ok':over?'over':'') + '">' +
-        (ok ? '✓ Meta atingida — ' + metaRef + ' kcal' :
-         over ? '+' + Math.abs(faltam) + ' kcal acima da meta' :
-               'Faltam ' + faltam + ' kcal para a meta') +
-      '</div>';
-  }
-}
-
-function toggleAlim(item) {
-  var refId  = item.dataset.ref;
-  var alimId = item.dataset.id;
-  item.classList.toggle('sel');
-
-  // Salvar preferência
-  var progId = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
-  var cur = carregarPrefRefeicao(progId, refId);
-  var idx = cur.indexOf(alimId);
-  if (idx >= 0) cur.splice(idx, 1); else cur.push(alimId);
-  salvarPrefRefeicao(progId, refId, cur);
-
-  // Recalcular quantidade
-  atualizarQtdsRefeicao(refId, progId);
-}
 
 
 
