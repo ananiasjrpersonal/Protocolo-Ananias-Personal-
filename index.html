@@ -7403,6 +7403,36 @@ function calcMacrosAlimento(alim, kcalPorcao) {
 /* ── RENDERIZAR PLANO INTERATIVO ─────────────────── */
 
 /* ── Fallback nutrição ─────────────────────────── */
+
+
+
+
+
+/* ── toggleAlim: opera no HTML estático ─────────── */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const page = document.getElementById('pageTreino');
+    if (page) pageObs.observe(page, { attributes: true, attributeFilter: ['class'] });
+    // Caso já esteja ativa
+    if (page && page.classList.contains('active')) attachSwipe();
+  });
+})();
+
+/* ── FUNÇÕES DE NUTRIÇÃO (escopo global) ──────── */
 function usarFallback() {
   var fb = document.getElementById('dietaFallback');
   var main = document.getElementById('dietaRefeicoes');
@@ -7448,178 +7478,6 @@ function verificarRenderDieta() {
     usarFallback();
   }
 }
-
-
-/* ── toggleAlim: opera no HTML estático ─────────── */
-function toggleAlim(item) {
-  var refId  = item.dataset.ref;
-  var alimId = item.dataset.id;
-  item.classList.toggle('sel');
-
-  // Salvar preferência
-  var progId = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
-  var cur = carregarPrefRefeicao(progId, refId);
-  var idx = cur.indexOf(alimId);
-  if (idx >= 0) cur.splice(idx, 1); else cur.push(alimId);
-  salvarPrefRefeicao(progId, refId, cur);
-
-  // Recalcular quantidade
-  atualizarQtdsRefeicao(refId, progId);
-}
-
-function atualizarQtdsRefeicao(refId, progId) {
-  progId   = progId || programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
-  var metaKcal = parseInt(localStorage.getItem('maj_kcal')) || 2000;
-  var pcts     = { cafe:.25, almoco:.35, lanche:.15, jantar:.25 };
-  var metaRef  = Math.round(metaKcal * (pcts[refId] || .25));
-
-  var container = document.getElementById('dietaRefeicoes');
-  if (!container) return;
-
-  var items    = container.querySelectorAll('.alim-item[data-ref="' + refId + '"]');
-  var selItems = Array.from(items).filter(function(i){ return i.classList.contains('sel'); });
-  var nSel     = selItems.length;
-  var kcalEach = nSel > 0 ? metaRef / nSel : 0;
-
-  // Porções típicas por unidade (não divide meta — usa porção real)
-  // gpu = gramas por unidade. Porção padrão: 1 unidade ou 100g/ml
-  var totalKcal = 0, totalProt = 0;
-
-  function porcaoG(item) {
-    // Porção de consumo típica
-    var un  = item.dataset.un;
-    var gpu = parseInt(item.dataset.gpu);
-    if (un === 'g')   return 100;   // 100g
-    if (un === 'ml')  return 200;   // 200ml
-    if (un === 'un')  return gpu;   // 1 unidade
-    if (un === 'fat') return gpu;   // 1 fatia
-    return 100;
-  }
-
-  selItems.forEach(function(item) {
-    var kcal100 = parseInt(item.dataset.kcal);
-    var prot100 = parseInt(item.dataset.prot);
-    var g = porcaoG(item);
-    totalKcal += Math.round(kcal100 * g / 100);
-    totalProt += Math.round(prot100 * g / 100);
-  });
-
-  // Quantidade exibida = porção típica legível
-  items.forEach(function(item) {
-    var qtyEl = document.getElementById('q-' + refId + '-' + item.dataset.id);
-    if (!qtyEl) return;
-    if (!item.classList.contains('sel') || nSel === 0) { qtyEl.textContent = ''; return; }
-    var un  = item.dataset.un;
-    var gpu = parseInt(item.dataset.gpu);
-    if (un === 'g')   qtyEl.textContent = '100g';
-    else if (un === 'ml') qtyEl.textContent = '200ml';
-    else if (un === 'fat') qtyEl.textContent = '1 fatia';
-    else qtyEl.textContent = '1 un';
-  });
-
-  // ── Barra de progresso ─────────────────────────
-  var fillEl  = document.getElementById('prog-fill-' + refId);
-  var curEl   = document.getElementById('prog-cur-'  + refId);
-  var hintEl  = document.getElementById('prog-hint-' + refId);
-  var pct     = nSel > 0 ? Math.min(100, Math.round((totalKcal / metaRef) * 100)) : 0;
-  var faltam  = metaRef - totalKcal;
-  var over    = totalKcal > metaRef * 1.1;
-  var ok      = pct >= 85 && pct <= 115;
-
-  if (fillEl) {
-    fillEl.style.width = pct + '%';
-    fillEl.className   = 'ref-progress-fill' + (ok ? ' ok' : over ? ' over' : '');
-  }
-  if (curEl)  curEl.textContent = nSel > 0 ? totalKcal : '0';
-  if (hintEl) {
-    hintEl.className = 'ref-progress-hint' + (ok ? ' ok' : over ? ' over' : '');
-    if (nSel === 0)  hintEl.textContent = 'Selecione alimentos';
-    else if (ok)     hintEl.textContent = '✓ Meta atingida!';
-    else if (over)   hintEl.textContent = '+' + Math.abs(faltam) + ' kcal acima · remova um item';
-    else             hintEl.textContent = 'Faltam ' + faltam + ' kcal · adicione mais itens';
-  }
-
-  // ── Resultado compacto ──────────────────────────
-  var resEl = document.getElementById('res-' + refId);
-  if (!resEl) return;
-  if (nSel === 0) {
-    resEl.innerHTML = '<div class="refeicao-hint">Selecione os alimentos desta refeição.</div>';
-    resEl.className = 'refeicao-resultado';
-  } else {
-    resEl.className = 'refeicao-resultado' + (ok ? ' ok' : '');
-    resEl.innerHTML =
-      '<div class="refeicao-resultado-row">' +
-        '<div class="refeicao-resultado-lbl">Total selecionado</div>' +
-        '<div class="refeicao-resultado-vals">' + totalKcal + '<span>kcal</span>' + totalProt + '<span>g prot</span></div>' +
-      '</div>' +
-      '<div class="refeicao-hint ' + (ok?'ok':over?'over':'') + '">' +
-        (ok ? '✓ Meta atingida — ' + metaRef + ' kcal' :
-         over ? '+' + Math.abs(faltam) + ' kcal acima da meta' :
-               'Faltam ' + faltam + ' kcal para a meta') +
-      '</div>';
-  }
-}
-
-function initDietaEstatica() {
-  var progId   = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
-  var metaKcal = parseInt(localStorage.getItem('maj_kcal')) || 2000;
-  var pcts     = { cafe:.25, almoco:.35, lanche:.15, jantar:.25 };
-  var container = document.getElementById('dietaRefeicoes');
-  if (!container) return;
-
-  // Label e summary
-  var lbl = document.getElementById('dietaPlanLabel');
-  var sum = document.getElementById('dietaMacroSummary');
-  if (lbl) {
-    var prog = typeof PROGRAMAS !== 'undefined'
-      ? PROGRAMAS.find(function(p){ return p.id === progId; }) : null;
-    lbl.textContent = prog ? 'Plano · ' + prog.nome : 'Plano Alimentar';
-  }
-  if (sum) sum.textContent = metaKcal + ' kcal · ' + (localStorage.getItem('maj_prot') || '120') + 'g prot';
-
-  // Metas por refeição
-  ['cafe','almoco','lanche','jantar'].forEach(function(r) {
-    var meta = Math.round(metaKcal * (pcts[r] || .25));
-    var el = document.getElementById('meta-' + r);
-    if (el) el.textContent = 'Meta: ' + meta + ' kcal';
-    var pm = document.getElementById('prog-meta-' + r);
-    if (pm) pm.textContent = meta;
-  });
-
-  // Marcar selecionados
-  container.querySelectorAll('.alim-item').forEach(function(item) {
-    var rId = item.getAttribute('data-ref');
-    var aId = item.getAttribute('data-id');
-    var sel = carregarPrefRefeicao(progId, rId);
-    item.classList.toggle('sel', sel.indexOf(aId) >= 0);
-  });
-
-  // Atualizar barras dos já selecionados
-  ['cafe','almoco','lanche','jantar'].forEach(function(r) {
-    atualizarQtdsRefeicao(r, progId);
-  });
-
-  // EVENT DELEGATION: um único listener no container
-  // Evita problemas de clone, re-attach e display:none no iOS
-  if (container._delegated) return; // só anexar uma vez
-  container._delegated = true;
-
-  container.addEventListener('click', function(e) {
-    var item = e.target.closest('.alim-item');
-    if (!item) return;
-    var rId = item.getAttribute('data-ref');
-    var aId = item.getAttribute('data-id');
-    var pId = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
-    item.classList.toggle('sel');
-    var cur = carregarPrefRefeicao(pId, rId);
-    var idx = cur.indexOf(aId);
-    if (idx >= 0) cur.splice(idx, 1); else cur.push(aId);
-    salvarPrefRefeicao(pId, rId, cur);
-    atualizarQtdsRefeicao(rId, pId);
-  });
-}
-
-
 
 function renderDietaAtiva() {
   // Garantir que programaAtivo é válido
@@ -7789,14 +7647,175 @@ function atualizarRefeicaoResultado(el, ref, sel, metaKcal, metaProt) {
     '</div>';
 }
 
+function initDietaEstatica() {
+  var progId   = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
+  var metaKcal = parseInt(localStorage.getItem('maj_kcal')) || 2000;
+  var pcts     = { cafe:.25, almoco:.35, lanche:.15, jantar:.25 };
+  var container = document.getElementById('dietaRefeicoes');
+  if (!container) return;
 
-document.addEventListener('DOMContentLoaded', () => {
-    const page = document.getElementById('pageTreino');
-    if (page) pageObs.observe(page, { attributes: true, attributeFilter: ['class'] });
-    // Caso já esteja ativa
-    if (page && page.classList.contains('active')) attachSwipe();
+  // Label e summary
+  var lbl = document.getElementById('dietaPlanLabel');
+  var sum = document.getElementById('dietaMacroSummary');
+  if (lbl) {
+    var prog = typeof PROGRAMAS !== 'undefined'
+      ? PROGRAMAS.find(function(p){ return p.id === progId; }) : null;
+    lbl.textContent = prog ? 'Plano · ' + prog.nome : 'Plano Alimentar';
+  }
+  if (sum) sum.textContent = metaKcal + ' kcal · ' + (localStorage.getItem('maj_prot') || '120') + 'g prot';
+
+  // Metas por refeição
+  ['cafe','almoco','lanche','jantar'].forEach(function(r) {
+    var meta = Math.round(metaKcal * (pcts[r] || .25));
+    var el = document.getElementById('meta-' + r);
+    if (el) el.textContent = 'Meta: ' + meta + ' kcal';
+    var pm = document.getElementById('prog-meta-' + r);
+    if (pm) pm.textContent = meta;
   });
-})();
+
+  // Marcar selecionados
+  container.querySelectorAll('.alim-item').forEach(function(item) {
+    var rId = item.getAttribute('data-ref');
+    var aId = item.getAttribute('data-id');
+    var sel = carregarPrefRefeicao(progId, rId);
+    item.classList.toggle('sel', sel.indexOf(aId) >= 0);
+  });
+
+  // Atualizar barras dos já selecionados
+  ['cafe','almoco','lanche','jantar'].forEach(function(r) {
+    atualizarQtdsRefeicao(r, progId);
+  });
+
+  // EVENT DELEGATION: um único listener no container
+  // Evita problemas de clone, re-attach e display:none no iOS
+  if (container._delegated) return; // só anexar uma vez
+  container._delegated = true;
+
+  container.addEventListener('click', function(e) {
+    var item = e.target.closest('.alim-item');
+    if (!item) return;
+    var rId = item.getAttribute('data-ref');
+    var aId = item.getAttribute('data-id');
+    var pId = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
+    item.classList.toggle('sel');
+    var cur = carregarPrefRefeicao(pId, rId);
+    var idx = cur.indexOf(aId);
+    if (idx >= 0) cur.splice(idx, 1); else cur.push(aId);
+    salvarPrefRefeicao(pId, rId, cur);
+    atualizarQtdsRefeicao(rId, pId);
+  });
+}
+
+function atualizarQtdsRefeicao(refId, progId) {
+  progId   = progId || programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
+  var metaKcal = parseInt(localStorage.getItem('maj_kcal')) || 2000;
+  var pcts     = { cafe:.25, almoco:.35, lanche:.15, jantar:.25 };
+  var metaRef  = Math.round(metaKcal * (pcts[refId] || .25));
+
+  var container = document.getElementById('dietaRefeicoes');
+  if (!container) return;
+
+  var items    = container.querySelectorAll('.alim-item[data-ref="' + refId + '"]');
+  var selItems = Array.from(items).filter(function(i){ return i.classList.contains('sel'); });
+  var nSel     = selItems.length;
+  var kcalEach = nSel > 0 ? metaRef / nSel : 0;
+
+  // Porções típicas por unidade (não divide meta — usa porção real)
+  // gpu = gramas por unidade. Porção padrão: 1 unidade ou 100g/ml
+  var totalKcal = 0, totalProt = 0;
+
+  function porcaoG(item) {
+    // Porção de consumo típica
+    var un  = item.dataset.un;
+    var gpu = parseInt(item.dataset.gpu);
+    if (un === 'g')   return 100;   // 100g
+    if (un === 'ml')  return 200;   // 200ml
+    if (un === 'un')  return gpu;   // 1 unidade
+    if (un === 'fat') return gpu;   // 1 fatia
+    return 100;
+  }
+
+  selItems.forEach(function(item) {
+    var kcal100 = parseInt(item.dataset.kcal);
+    var prot100 = parseInt(item.dataset.prot);
+    var g = porcaoG(item);
+    totalKcal += Math.round(kcal100 * g / 100);
+    totalProt += Math.round(prot100 * g / 100);
+  });
+
+  // Quantidade exibida = porção típica legível
+  items.forEach(function(item) {
+    var qtyEl = document.getElementById('q-' + refId + '-' + item.dataset.id);
+    if (!qtyEl) return;
+    if (!item.classList.contains('sel') || nSel === 0) { qtyEl.textContent = ''; return; }
+    var un  = item.dataset.un;
+    var gpu = parseInt(item.dataset.gpu);
+    if (un === 'g')   qtyEl.textContent = '100g';
+    else if (un === 'ml') qtyEl.textContent = '200ml';
+    else if (un === 'fat') qtyEl.textContent = '1 fatia';
+    else qtyEl.textContent = '1 un';
+  });
+
+  // ── Barra de progresso ─────────────────────────
+  var fillEl  = document.getElementById('prog-fill-' + refId);
+  var curEl   = document.getElementById('prog-cur-'  + refId);
+  var hintEl  = document.getElementById('prog-hint-' + refId);
+  var pct     = nSel > 0 ? Math.min(100, Math.round((totalKcal / metaRef) * 100)) : 0;
+  var faltam  = metaRef - totalKcal;
+  var over    = totalKcal > metaRef * 1.1;
+  var ok      = pct >= 85 && pct <= 115;
+
+  if (fillEl) {
+    fillEl.style.width = pct + '%';
+    fillEl.className   = 'ref-progress-fill' + (ok ? ' ok' : over ? ' over' : '');
+  }
+  if (curEl)  curEl.textContent = nSel > 0 ? totalKcal : '0';
+  if (hintEl) {
+    hintEl.className = 'ref-progress-hint' + (ok ? ' ok' : over ? ' over' : '');
+    if (nSel === 0)  hintEl.textContent = 'Selecione alimentos';
+    else if (ok)     hintEl.textContent = '✓ Meta atingida!';
+    else if (over)   hintEl.textContent = '+' + Math.abs(faltam) + ' kcal acima · remova um item';
+    else             hintEl.textContent = 'Faltam ' + faltam + ' kcal · adicione mais itens';
+  }
+
+  // ── Resultado compacto ──────────────────────────
+  var resEl = document.getElementById('res-' + refId);
+  if (!resEl) return;
+  if (nSel === 0) {
+    resEl.innerHTML = '<div class="refeicao-hint">Selecione os alimentos desta refeição.</div>';
+    resEl.className = 'refeicao-resultado';
+  } else {
+    resEl.className = 'refeicao-resultado' + (ok ? ' ok' : '');
+    resEl.innerHTML =
+      '<div class="refeicao-resultado-row">' +
+        '<div class="refeicao-resultado-lbl">Total selecionado</div>' +
+        '<div class="refeicao-resultado-vals">' + totalKcal + '<span>kcal</span>' + totalProt + '<span>g prot</span></div>' +
+      '</div>' +
+      '<div class="refeicao-hint ' + (ok?'ok':over?'over':'') + '">' +
+        (ok ? '✓ Meta atingida — ' + metaRef + ' kcal' :
+         over ? '+' + Math.abs(faltam) + ' kcal acima da meta' :
+               'Faltam ' + faltam + ' kcal para a meta') +
+      '</div>';
+  }
+}
+
+function toggleAlim(item) {
+  var refId  = item.dataset.ref;
+  var alimId = item.dataset.id;
+  item.classList.toggle('sel');
+
+  // Salvar preferência
+  var progId = programaAtivo || localStorage.getItem('maj_programa_ativo') || 'secar';
+  var cur = carregarPrefRefeicao(progId, refId);
+  var idx = cur.indexOf(alimId);
+  if (idx >= 0) cur.splice(idx, 1); else cur.push(alimId);
+  salvarPrefRefeicao(progId, refId, cur);
+
+  // Recalcular quantidade
+  atualizarQtdsRefeicao(refId, progId);
+}
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
   const passInp = document.getElementById('passInp');
