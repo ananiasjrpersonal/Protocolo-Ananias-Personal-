@@ -283,6 +283,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-se
           <th>Aluno</th>
           <th>Programa Ativo</th>
           <th>Último Treino</th>
+          <th>Último Acesso</th>
           <th>Acesso</th>
           <th>Peso</th>
         </tr>
@@ -391,8 +392,13 @@ async function carregarDados() {
   const hoje = new Date().toISOString().slice(0,10);
   const em7  = new Date(Date.now() + 7*86400000).toISOString();
 
-  // Todos os perfis
-  const { data: profiles } = await _sb.from('profiles').select('*').neq('email', ADMIN_EMAIL);
+  // Todos os perfis com último acesso (via view alunos_admin)
+  const { data: profiles } = await _sb.from('alunos_admin')
+    .select('*').neq('email', ADMIN_EMAIL);
+
+  // Mapear último acesso por user_id
+  const lastAccessMap = {};
+  if (profiles) profiles.forEach(p => { lastAccessMap[p.id] = p.last_sign_in_at; });
 
   // Treinos de hoje
   const { data: treinosHoje } = await _sb.from('treinos_log').select('user_id').eq('data', hoje);

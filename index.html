@@ -6996,16 +6996,20 @@ function setDiaTreino(btn, dia) {
 }
 
 function getTreinoAtivo() {
-  // Retorna o treino do programa ativo se disponível, senão usa TREINOS padrão
   const prog = PROGRAMAS.find(function(p){ return p.id === programaAtivo; });
-  if (prog && prog.treino && prog.treino[treinoDia]) {
-    // Programa base tem treino próprio — usar ele
-    // Modalidade é ignorada para programas (eles têm um treino único por dia)
+  // Programas base (secar/manter/crescer) usam TREINOS[casa/academia]
+  // Programas premium com treino próprio E sem modalidade definida usam o próprio
+  var baseProg = ['secar','manter','crescer'];
+  var isBase = !programaAtivo || baseProg.indexOf(programaAtivo) >= 0;
+
+  if (!isBase && prog && prog.treino && prog.treino[treinoDia]) {
+    // Programa premium com treino próprio
     return { t: prog.treino[treinoDia], key: prog.id + '_' + treinoDia, useModal: false };
   }
-  // Fallback: TREINOS padrão (casa/academia)
-  const t = TREINOS[treinoModalidade] && TREINOS[treinoModalidade][treinoDia];
-  return { t: t, key: treinoModalidade + treinoDia, useModal: true };
+  // Base ou sem programa: usa TREINOS[casa ou academia]
+  var mod = treinoModalidade || 'casa';
+  var t = TREINOS[mod] && TREINOS[mod][treinoDia];
+  return { t: t, key: mod + treinoDia, useModal: true };
 }
 
 function renderTreino() {
