@@ -155,6 +155,87 @@ body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-se
 @media (max-width: 480px) {
   .kpi-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Botão novo aluno ─────────────────────────────── */
+.btn-novo-aluno {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background .15s;
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-novo-aluno:hover { background: #ff1a40; }
+
+/* ── Modal novo aluno ─────────────────────────────── */
+#modalNovoAluno {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,.85);
+  align-items: flex-start; justify-content: center;
+  padding: 60px 20px; overflow-y: auto;
+}
+#modalNovoAluno.open { display: flex; }
+.novo-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: rgba(255,255,255,.4);
+  margin-bottom: 6px; display: block;
+}
+.novo-inp {
+  width: 100%; background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,.1);
+  color: #f0f0f0; padding: 12px 14px;
+  font-size: 15px; outline: none; margin-bottom: 16px;
+  font-family: 'Barlow', sans-serif;
+  transition: border-color .2s;
+}
+.novo-inp:focus { border-color: rgba(232,0,42,.5); }
+.novo-select {
+  width: 100%; background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,.1);
+  color: #f0f0f0; padding: 12px 14px;
+  font-size: 14px; outline: none; margin-bottom: 16px;
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 1px;
+}
+.novo-row { display: flex; gap: 8px; }
+.novo-row .novo-btn { flex: 1; }
+.novo-btn {
+  background: var(--red); color: #fff; border: none;
+  padding: 13px; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; cursor: pointer;
+  transition: background .15s;
+}
+.novo-btn:hover { background: #ff1a40; }
+.novo-btn.cancel {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.4);
+}
+.novo-btn.cancel:hover { color: #fff; border-color: rgba(255,255,255,.3); }
+.novo-status {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; letter-spacing: 1px;
+  margin-top: 12px; text-align: center; min-height: 18px;
+}
+.novo-step {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; color: rgba(255,255,255,.3);
+  letter-spacing: 2px; margin-bottom: 20px;
+}
+.novo-step-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,.2); flex-shrink: 0;
+}
+.novo-step-dot.done { background: #00e676; }
+.novo-step-dot.active { background: #e8002a; }
+
 </style>
 </head>
 <body>
@@ -180,6 +261,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-se
     <div class="topbar-logo">Método <span>Ananias Jr</span> <small style="font-family:'Barlow Condensed';font-size:10px;letter-spacing:3px;color:var(--faint);margin-left:8px;">PROFESSOR</small></div>
     <div class="topbar-right">
       <span class="topbar-badge">Painel Admin</span>
+      <button class="btn-novo-aluno" onclick="abrirNovoAluno()">+ Novo Aluno</button>
       <button class="logout-btn" onclick="adminLogout()">Sair</button>
     </div>
   </div>
@@ -458,9 +540,134 @@ async function liberarPrograma() {
   }
 }
 
+
+/* ── Novo Aluno ──────────────────────────────────── */
+function abrirNovoAluno() {
+  document.getElementById('modalNovoAluno').classList.add('open');
+  document.getElementById('novoStep1').style.display = 'block';
+  document.getElementById('novoStep2').style.display = 'none';
+  document.getElementById('novoNome').value = '';
+  document.getElementById('novoEmail').value = '';
+  document.getElementById('novoSenha').value = '';
+  document.getElementById('novoStatus').textContent = '';
+  document.getElementById('novoCriarBtn').disabled = false;
+  document.getElementById('novoCriarBtn').textContent = 'Criar Aluno';
+  // Reset steps
+  document.getElementById('step1dot').className = 'novo-step-dot active';
+  document.getElementById('step2dot').className = 'novo-step-dot';
+  document.getElementById('step1txt').style.color = '';
+  document.getElementById('step2txt').style.color = 'rgba(255,255,255,.2)';
+  setTimeout(function() { document.getElementById('novoNome').focus(); }, 100);
+}
+
+function fecharNovoAluno() {
+  document.getElementById('modalNovoAluno').classList.remove('open');
+}
+
+function novoStep2() {
+  var nome  = document.getElementById('novoNome').value.trim();
+  var email = document.getElementById('novoEmail').value.trim().toLowerCase();
+  var senha = document.getElementById('novoSenha').value.trim();
+  if (!nome)  { alert('Digite o nome do aluno.'); return; }
+  if (!email || !email.includes('@')) { alert('Email inválido.'); return; }
+  if (senha.length < 6) { alert('Senha deve ter pelo menos 6 caracteres.'); return; }
+  document.getElementById('novoStep1').style.display = 'none';
+  document.getElementById('novoStep2').style.display = 'block';
+  document.getElementById('step1dot').className = 'novo-step-dot done';
+  document.getElementById('step2dot').className = 'novo-step-dot active';
+  document.getElementById('step2txt').style.color = '';
+}
+
+function novoVoltarStep1() {
+  document.getElementById('novoStep1').style.display = 'block';
+  document.getElementById('novoStep2').style.display = 'none';
+  document.getElementById('step1dot').className = 'novo-step-dot active';
+  document.getElementById('step2dot').className = 'novo-step-dot';
+  document.getElementById('step2txt').style.color = 'rgba(255,255,255,.2)';
+}
+
+async function criarAluno() {
+  var nome      = document.getElementById('novoNome').value.trim();
+  var email     = document.getElementById('novoEmail').value.trim().toLowerCase();
+  var senha     = document.getElementById('novoSenha').value.trim();
+  var progBase  = document.getElementById('novoProgBase').value;
+  var progPrem  = document.getElementById('novoProgPremium').value;
+  var status    = document.getElementById('novoStatus');
+  var btn       = document.getElementById('novoCriarBtn');
+
+  btn.disabled = true;
+  btn.textContent = 'Criando...';
+  status.style.color = 'rgba(255,255,255,.4)';
+  status.textContent = '⏳ Criando conta...';
+
+  try {
+    // 1. Criar usuário via Admin API (usa service role — não disponível no frontend)
+    // Usamos signUp que cria e auto-confirma via Supabase settings
+    const { data: signData, error: signErr } = await _sb.auth.admin
+      ? await _sb.auth.admin.createUser({ email, password: senha, email_confirm: true, user_metadata: { nome } })
+      : { data: null, error: { message: 'Admin API não disponível' } };
+
+    // Fallback: tentar via signUp normal
+    let userId = signData?.user?.id;
+    if (signErr || !userId) {
+      status.textContent = '⏳ Registrando via signup...';
+      const { data: suData, error: suErr } = await _sb.auth.signUp({
+        email, password: senha,
+        options: { data: { nome } }
+      });
+      if (suErr) throw new Error(suErr.message);
+      userId = suData?.user?.id;
+      if (!userId) throw new Error('Usuário criado mas ID não retornado. Confirme o email no Supabase.');
+    }
+
+    // 2. Atualizar profile com nome e programa base
+    status.textContent = '⏳ Salvando perfil...';
+    await _sb.from('profiles').upsert({
+      id: userId,
+      nome: nome,
+      email: email,
+      programa_ativo: progBase,
+    });
+
+    // 3. Liberar programa premium se selecionado
+    if (progPrem) {
+      status.textContent = '⏳ Liberando programa...';
+      const expira = new Date(Date.now() + 35 * 86400000).toISOString();
+      await _sb.from('prog_acesso').upsert({
+        user_id: userId,
+        programa_id: progPrem,
+        data_pagamento: new Date().toISOString(),
+        expira_em: expira,
+      }, { onConflict: 'user_id,programa_id' });
+    }
+
+    // Sucesso
+    status.style.color = '#00e676';
+    status.innerHTML =
+      '<b>✓ Aluno criado!</b><br>' +
+      '<span style="font-size:11px;color:rgba(255,255,255,.4);">' +
+        nome + ' · ' + email + '<br>' +
+        'Senha: ' + senha +
+      '</span>';
+
+    btn.textContent = '✓ Criado';
+    carregarDados();
+    setTimeout(fecharNovoAluno, 4000);
+
+  } catch(e) {
+    status.style.color = '#ff1a40';
+    status.textContent = '✗ Erro: ' + e.message;
+    btn.disabled = false;
+    btn.textContent = 'Tentar novamente';
+  }
+}
+
 /* ── Fechar modal ao clicar fora ── */
-document.getElementById('modalAluno').addEventListener('click', function(e) {
-  if (e.target === this) fecharModal();
+document.addEventListener('DOMContentLoaded', function() {
+  var mA = document.getElementById('modalAluno');
+  var mN = document.getElementById('modalNovoAluno');
+  if (mA) mA.addEventListener('click', function(e) { if (e.target === this) fecharModal(); });
+  if (mN) mN.addEventListener('click', function(e) { if (e.target === this) fecharNovoAluno(); });
 });
 
 /* ── Verificar sessão existente ── */
@@ -472,5 +679,76 @@ _sb.auth.getSession().then(({ data: { session } }) => {
   }
 });
 </script>
+
+<!-- Modal Novo Aluno -->
+<div id="modalNovoAluno">
+  <div class="modal-box" style="max-width:460px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-nome" style="font-size:24px;">Novo Aluno</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.3);margin-top:2px;font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;">
+          Criar conta + liberar acesso
+        </div>
+      </div>
+      <button class="modal-close" onclick="fecharNovoAluno()">✕</button>
+    </div>
+
+    <div class="novo-step">
+      <div class="novo-step-dot active" id="step1dot"></div>
+      <span id="step1txt">Dados do aluno</span>
+      <div style="flex:1;height:1px;background:rgba(255,255,255,.08);margin:0 8px;"></div>
+      <div class="novo-step-dot" id="step2dot"></div>
+      <span id="step2txt" style="color:rgba(255,255,255,.2);">Programa</span>
+    </div>
+
+    <!-- Etapa 1: dados -->
+    <div id="novoStep1">
+      <label class="novo-lbl">Nome do aluno</label>
+      <input class="novo-inp" id="novoNome" type="text" placeholder="João Silva" autocomplete="off">
+
+      <label class="novo-lbl">Email</label>
+      <input class="novo-inp" id="novoEmail" type="email" placeholder="joao@email.com" autocomplete="off">
+
+      <label class="novo-lbl">Senha temporária</label>
+      <input class="novo-inp" id="novoSenha" type="text" placeholder="MinhaSenha123" autocomplete="off">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:rgba(255,255,255,.25);letter-spacing:1px;margin-top:-12px;margin-bottom:16px;">
+        Você avisa a senha por WhatsApp. O aluno pode trocar depois.
+      </div>
+
+      <div class="novo-row">
+        <button class="novo-btn cancel" onclick="fecharNovoAluno()">Cancelar</button>
+        <button class="novo-btn" onclick="novoStep2()">Próximo →</button>
+      </div>
+    </div>
+
+    <!-- Etapa 2: programa -->
+    <div id="novoStep2" style="display:none;">
+      <label class="novo-lbl">Programa base</label>
+      <select class="novo-select" id="novoProgBase">
+        <option value="secar">Secar — déficit calórico</option>
+        <option value="manter">Manter — manutenção</option>
+        <option value="crescer">Crescer — ganho de massa</option>
+      </select>
+
+      <label class="novo-lbl">Liberar programa premium (opcional)</label>
+      <select class="novo-select" id="novoProgPremium">
+        <option value="">Nenhum por enquanto</option>
+        <option value="seca-barriga">Seca Barriga — 30 dias HIIT</option>
+        <option value="projeto-verao">Projeto Verão — 60 dias definição</option>
+        <option value="trimestre-ouro">Trimestre de Ouro — 90 dias</option>
+        <option value="desafio-30">Desafio 30 Dias</option>
+      </select>
+
+      <div class="novo-row">
+        <button class="novo-btn cancel" onclick="novoVoltarStep1()">← Voltar</button>
+        <button class="novo-btn" id="novoCriarBtn" onclick="criarAluno()">Criar Aluno</button>
+      </div>
+
+      <div class="novo-status" id="novoStatus"></div>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
