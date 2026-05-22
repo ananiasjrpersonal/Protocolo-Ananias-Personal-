@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -600,24 +600,46 @@ async function criarAluno() {
   status.style.color = 'rgba(255,255,255,.4)';
   status.textContent = '';
 
+  // Gerar SQL para criar no Supabase (service_role necessária para criar users)
+  var expira = new Date(Date.now() + 35 * 86400000).toISOString();
+  var sqlPrem = progPrem
+    ? "\nSELECT public.liberar_programa(id, '" + progPrem + "', 35) FROM auth.users WHERE email = '" + email + "';"
+    : '';
+
+  var sql =
+    "-- Cole no SQL Editor do Supabase:\n" +
+    "SELECT public.criar_aluno('" + email + "', '" + senha + "', '" + nome + "', '" + progBase + "');" +
+    sqlPrem;
+
+  // Tentar criar via signUp (funciona se o aluno ainda não existir)
   try {
-    var resp = await fetch(SUPABASE_URL + '/functions/v1/criar-aluno', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-      },
-      body: JSON.stringify({
-        email: email,
-        password: senha,
-        nome: nome,
-        programa_base: progBase,
-        programa_premium: progPrem || null,
-      }),
+    var { data, error } = await _sb.auth.signUp({
+      email: email,
+      password: senha,
+      options: { data: { nome: nome } }
     });
 
-    var result = await resp.json();
-    if (!resp.ok) throw new Error(result.error || 'Erro desconhecido');
+    if (error && error.message.includes('already registered')) {
+      throw new Error('Email já cadastrado.');
+    }
+    if (error) throw new Error(error.message);
+
+    var userId = data?.user?.id;
+    if (!userId) throw new Error('Conta criada — aguardando confirmação de email no Supabase.');
+
+    // Salvar profile
+    await _sb.from('profiles').upsert({
+      id: userId, nome: nome, email: email, programa_ativo: progBase,
+    });
+
+    // Liberar premium se selecionado
+    if (progPrem) {
+      await _sb.from('prog_acesso').upsert({
+        user_id: userId, programa_id: progPrem,
+        data_pagamento: new Date().toISOString(),
+        expira_em: expira,
+      }, { onConflict: 'user_id,programa_id' });
+    }
 
     var msgWpp =
       'Olá, ' + nome.split(' ')[0] + '! 👋\n\n' +
@@ -631,7 +653,7 @@ async function criarAluno() {
     status.innerHTML =
       '<div style="color:#00e676;font-weight:700;margin-bottom:10px;">✓ Aluno criado!</div>' +
       '<div style="background:#0a0a0a;border:1px solid rgba(255,255,255,.1);border-left:3px solid #25D366;padding:12px;font-size:12px;color:rgba(255,255,255,.7);white-space:pre-wrap;line-height:1.5;margin-bottom:8px;">' +
-        msgWpp.replace(/\*([^*]+)\*/g, '<b>$1</b>') +
+        msgWpp.replace(/\n/g,'<br>') +
       '</div>' +
       '<button onclick="copiarWpp()" style="background:#25D366;color:#fff;border:none;padding:10px;width:100%;font-family:sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;">📱 Copiar mensagem WhatsApp</button>';
     window._wppMsg = msgWpp;
@@ -639,10 +661,26 @@ async function criarAluno() {
     carregarDados();
 
   } catch(e) {
-    status.style.color = '#ff4444';
-    status.innerHTML =
-      '<div style="color:#ff4444;font-weight:700;margin-bottom:6px;">✗ Erro ao criar aluno</div>' +
-      '<div style="font-size:11px;color:rgba(255,255,255,.4);">' + e.message + '</div>';
+    // Se signUp falhar, mostrar SQL para fazer manualmente
+    var isConfirmErr = e.message === 'confirm_email';
+    status.style.color = isConfirmErr ? '#00e676' : '#ffb300';
+    status.innerHTML = isConfirmErr
+      ? '<div style="color:#00e676;font-weight:700;margin-bottom:8px;">✓ Conta criada!</div>' +
+        '<div style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:10px;line-height:1.5;">' +
+          'Para ativar sem confirmação de email:<br>' +
+          '<b style="color:#fff">Supabase → Authentication → Sign In / Providers → Email → desmarcar "Confirm email" → Save</b>' +
+        '</div>' +
+        '<div style="font-size:11px;color:rgba(255,255,255,.4);">Após desativar, novos alunos entram direto sem precisar confirmar.</div>'
+      : '<div style="margin-bottom:8px;color:#ffb300;font-weight:700;">⚠ Criar manualmente no Supabase:</div>' +
+      '<div style="background:#0a0a0a;border:1px solid rgba(255,255,255,.1);padding:10px;font-family:monospace;font-size:11px;color:#f0f0f0;white-space:pre-wrap;word-break:break-all;margin-bottom:8px;">' +
+        "UPDATE auth.users\nSET encrypted_password = crypt('" + senha + "', gen_salt('bf'))\nWHERE email = '" + email + "';\n\n" +
+        "-- Se o aluno não existir ainda, vá em:\n" +
+        "-- Authentication → Users → Add user" +
+      '</div>' +
+      '<button onclick="copiarSQL()" style="background:var(--red);color:#fff;border:none;padding:8px 16px;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;width:100%;">📋 Copiar SQL</button>' +
+      '<div style="margin-top:6px;font-size:10px;color:rgba(255,255,255,.3);">Erro: ' + e.message + '</div>';
+    window._sqlParaCopiar =
+      "UPDATE auth.users SET encrypted_password = crypt('" + senha + "', gen_salt('bf')) WHERE email = '" + email + "';";
     btn.disabled = false;
     btn.textContent = 'Tentar novamente';
   }
@@ -656,6 +694,12 @@ function copiarWpp() {
   }
 }
 
+function copiarSQL() {
+  if (navigator.clipboard && window._sqlParaCopiar) {
+    navigator.clipboard.writeText(window._sqlParaCopiar).then(function() {
+      alert('SQL copiado! Cole no SQL Editor do Supabase.');
+    });
+  }
 }
 
 /* ── Fechar modal ao clicar fora ── */
