@@ -5578,13 +5578,18 @@ async function tryLogin() {
 
     // Login ok
     _uid = data.user.id;
-    const nome = data.user.user_metadata?.nome || email.split('@')[0];
     localStorage.setItem('maj_email', email);
     localStorage.setItem('maj_auth', '1');
-    if (!localStorage.getItem('maj_nome')) localStorage.setItem('maj_nome', nome);
 
-    // Carregar dados do banco antes de bootar
+    // Carregar dados do banco — inclui o nome real do perfil
     await sbCarregarDados();
+
+    // Usar nome do Supabase (profiles) se existir, senão metadata, senão email
+    const nomeDb   = localStorage.getItem('maj_nome');
+    const nomeMeta = data.user.user_metadata?.nome;
+    const nome     = nomeDb || nomeMeta || email.split('@')[0];
+    localStorage.setItem('maj_nome', nome);
+
     if (btn) { btn.textContent = 'Entrar'; btn.disabled = false; }
     bootApp(email, nome);
 
@@ -7946,7 +7951,13 @@ document.addEventListener('DOMContentLoaded', function() {
       localStorage.setItem('maj_auth', '1');
       localStorage.setItem('maj_email', email);
       await sbCarregarDados();
-      const nome = localStorage.getItem('maj_nome') || email.split('@')[0];
+      // Prioridade: Supabase profile > localStorage > email
+      const nomeSession = localStorage.getItem('maj_nome');
+      if (!nomeSession || nomeSession === email.split('@')[0]) {
+        // Nome não definido ou é o email — não usar
+        localStorage.removeItem('maj_nome');
+      }
+      const nome = localStorage.getItem('maj_nome') || '';
       bootApp(email, nome);
     } else if (localStorage.getItem('maj_auth') === '1') {
       // Fallback: localStorage (offline ou sessão expirada)
