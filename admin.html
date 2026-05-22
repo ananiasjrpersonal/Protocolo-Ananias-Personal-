@@ -392,7 +392,8 @@ async function carregarDados() {
   const em7  = new Date(Date.now() + 7*86400000).toISOString();
 
   // Todos os perfis
-  const { data: profiles } = await _sb.from('profiles').select('*').neq('email', ADMIN_EMAIL);
+  const { data: profiles, error: profErr } = await _sb.from('profiles').select('*').neq('email', ADMIN_EMAIL);
+  console.log('profiles:', profiles, 'error:', profErr);
 
   // Treinos de hoje
   const { data: treinosHoje } = await _sb.from('treinos_log').select('user_id').eq('data', hoje);
