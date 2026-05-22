@@ -3491,6 +3491,59 @@ canvas#pesoChart {
 
     <button class="lock-btn" onclick="tryLogin()">Acessar o Método</button>
     <div class="lock-err" id="lockErr"></div>
+
+    <button type="button" onclick="abrirRecuperacao()" style="
+      background:none;border:none;color:var(--muted);
+      font-family:'Barlow Condensed',sans-serif;
+      font-size:11px;letter-spacing:2px;text-transform:uppercase;
+      cursor:pointer;margin-top:14px;display:block;width:100%;
+      text-align:center;padding:4px;
+      transition:color .15s;
+    " onmouseover="this.style.color='var(--white)'"
+       onmouseout="this.style.color='var(--muted)'">
+      Esqueci minha senha
+    </button>
+  </div>
+</div>
+
+<!-- Modal recuperação de senha -->
+<div id="recoveryModal" style="
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.85);
+  align-items:center;justify-content:center;padding:24px;
+">
+  <div style="
+    background:var(--card);border:1px solid var(--border);
+    border-top:2px solid var(--red);
+    padding:32px 24px;width:100%;max-width:380px;
+  ">
+    <div style="font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;margin-bottom:4px;">Recuperar Senha</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:20px;">
+      Digite seu email e enviaremos um link para criar uma nova senha.
+    </div>
+
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Email</div>
+    <input id="recoveryEmail" type="email" placeholder="seu@email.com"
+      style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--white);padding:12px 14px;font-size:15px;outline:none;margin-bottom:14px;"
+      onkeydown="if(event.key==='Enter') enviarRecuperacao()">
+
+    <button onclick="enviarRecuperacao()" style="
+      width:100%;background:var(--red);color:#fff;border:none;
+      font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;
+      letter-spacing:5px;text-transform:uppercase;padding:14px;cursor:pointer;
+      margin-bottom:10px;
+    ">Enviar Link</button>
+
+    <button onclick="fecharRecuperacao()" style="
+      width:100%;background:none;border:1px solid var(--border);color:var(--muted);
+      font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;
+      letter-spacing:3px;text-transform:uppercase;padding:10px;cursor:pointer;
+    ">Cancelar</button>
+
+    <div id="recoveryMsg" style="
+      font-family:'Barlow Condensed',sans-serif;font-size:12px;
+      margin-top:12px;text-align:center;min-height:18px;letter-spacing:1px;
+    "></div>
   </div>
 </div>
 
@@ -7747,6 +7800,57 @@ function _buildDietaHTML(app, refs, progId, metaKcal, metaProt) {
     }, { passive: true });
     app.appendChild(card);
   });
+}
+
+
+/* ── Recuperação de senha ─────────────────────────── */
+function abrirRecuperacao() {
+  var modal = document.getElementById('recoveryModal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  var em = document.getElementById('emailInp');
+  var rec = document.getElementById('recoveryEmail');
+  if (rec && em && em.value) rec.value = em.value; // pré-preencher
+  document.getElementById('recoveryMsg').textContent = '';
+  document.getElementById('recoveryMsg').style.color = '';
+  setTimeout(function() { if(rec) rec.focus(); }, 100);
+}
+
+function fecharRecuperacao() {
+  var modal = document.getElementById('recoveryModal');
+  if (modal) modal.style.display = 'none';
+}
+
+async function enviarRecuperacao() {
+  var email = document.getElementById('recoveryEmail').value.trim().toLowerCase();
+  var msg   = document.getElementById('recoveryMsg');
+  var btn   = document.querySelector('#recoveryModal button');
+
+  if (!email || !email.includes('@')) {
+    msg.textContent = 'Digite um email válido.';
+    msg.style.color = 'var(--red2)';
+    return;
+  }
+
+  msg.textContent = 'Enviando...';
+  msg.style.color = 'var(--muted)';
+
+  try {
+    var redirectTo = 'https://ananiasjrpersonal.github.io/Protocolo-Ananias-Personal-/';
+    var { error } = await _sb.auth.resetPasswordForEmail(email, { redirectTo: redirectTo });
+
+    if (error) {
+      msg.textContent = 'Erro: ' + error.message;
+      msg.style.color = 'var(--red2)';
+    } else {
+      msg.textContent = '✓ Link enviado! Verifique seu email.';
+      msg.style.color = 'var(--green)';
+      setTimeout(fecharRecuperacao, 3000);
+    }
+  } catch(e) {
+    msg.textContent = 'Erro de conexão. Tente novamente.';
+    msg.style.color = 'var(--red2)';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
