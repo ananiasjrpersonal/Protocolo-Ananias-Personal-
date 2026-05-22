@@ -5950,7 +5950,7 @@ const PROGRAMAS = [
 ];
 
 /* ── ESTADO DO PROGRAMA ATIVO ──────────────────── */
-let programaAtivo = localStorage.getItem('maj_programa_ativo') || 'secar';
+let programaAtivo = localStorage.getItem('maj_programa_ativo') || null;
 
 /* Arquitetura Supabase-ready:
    Futuramente: { id, acesso: ['seca-barriga','projeto-verao'] }
@@ -6163,11 +6163,23 @@ function progRenderDieta(prog) {
 
 
 function updateProgAtivoBadge() {
-  const progId = localStorage.getItem('maj_programa_ativo') || 'secar';
+  const progId = localStorage.getItem('maj_programa_ativo'); // sem fallback
   const progNomes = { secar:'Secar', manter:'Manter', crescer:'Crescer',
     'seca-barriga':'Seca Barriga', 'projeto-verao':'Projeto Verão', 'trimestre-ouro':'Trimestre de Ouro' };
-  const el = document.getElementById('dashProgAtivo');
-  if (el) el.textContent = progNomes[progId] || 'Método';
+  const el    = document.getElementById('dashProgAtivo');
+  const badge = el ? el.closest('.dash-prog-badge') : null;
+
+  if (!progId) {
+    // Nunca escolheu — estado neutro
+    if (el)    el.textContent = 'Escolher Programa';
+    if (badge) badge.style.opacity = '.5';
+  } else {
+    // Programa escolhido — sempre visível e persistente
+    if (el)    el.textContent = progNomes[progId] || progId;
+    if (badge) badge.style.opacity = '1';
+    // Sincronizar variável global
+    if (typeof programaAtivo !== 'undefined') programaAtivo = progId;
+  }
 }
 
 
@@ -6214,7 +6226,7 @@ function bootApp(email, rawName) {
   updateProgAtivoBadge();
   setTimeout(dtRender, 50);
   // Garantir programaAtivo antes de renderizar dieta
-  if (!programaAtivo) programaAtivo = localStorage.getItem('maj_programa_ativo') || 'secar';
+  if (!programaAtivo) programaAtivo = localStorage.getItem('maj_programa_ativo') || null;
   setTimeout(initDietaEstatica, 200);
   buildHistorico();
   buildPesoChart();
