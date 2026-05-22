@@ -5584,6 +5584,10 @@ async function tryLogin() {
     // Carregar dados do banco — inclui o nome real do perfil
     await sbCarregarDados();
 
+    // Registrar último acesso (para o painel do professor)
+    _sb.from('profiles').update({ updated_at: new Date().toISOString() })
+      .eq('id', _uid).then(() => {});
+
     // Usar nome do Supabase (profiles) se existir, senão metadata, senão email
     const nomeDb   = localStorage.getItem('maj_nome');
     const nomeMeta = data.user.user_metadata?.nome;
@@ -7955,6 +7959,9 @@ document.addEventListener('DOMContentLoaded', function() {
       localStorage.setItem('maj_auth', '1');
       localStorage.setItem('maj_email', email);
       await sbCarregarDados();
+      // Registrar último acesso
+      _sb.from('profiles').update({ updated_at: new Date().toISOString() })
+        .eq('id', _uid).then(() => {});
       // Prioridade: Supabase profile > localStorage > email
       const nomeSession = localStorage.getItem('maj_nome');
       if (!nomeSession || nomeSession === email.split('@')[0]) {

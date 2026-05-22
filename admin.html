@@ -392,13 +392,13 @@ async function carregarDados() {
   const hoje = new Date().toISOString().slice(0,10);
   const em7  = new Date(Date.now() + 7*86400000).toISOString();
 
-  // Todos os perfis com último acesso (via view alunos_admin)
-  const { data: profiles } = await _sb.from('alunos_admin')
+  // Todos os perfis
+  const { data: profiles } = await _sb.from('profiles')
     .select('*').neq('email', ADMIN_EMAIL);
 
-  // Mapear último acesso por user_id
+  // Último acesso: updated_at do perfil como proxy
   const lastAccessMap = {};
-  if (profiles) profiles.forEach(p => { lastAccessMap[p.id] = p.last_sign_in_at; });
+  if (profiles) profiles.forEach(p => { lastAccessMap[p.id] = p.updated_at; });
 
   // Treinos de hoje
   const { data: treinosHoje } = await _sb.from('treinos_log').select('user_id').eq('data', hoje);
