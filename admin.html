@@ -587,78 +587,111 @@ function novoVoltarStep1() {
 }
 
 async function criarAluno() {
-  var nome      = document.getElementById('novoNome').value.trim();
-  var email     = document.getElementById('novoEmail').value.trim().toLowerCase();
-  var senha     = document.getElementById('novoSenha').value.trim();
-  var progBase  = document.getElementById('novoProgBase').value;
-  var progPrem  = document.getElementById('novoProgPremium').value;
-  var status    = document.getElementById('novoStatus');
-  var btn       = document.getElementById('novoCriarBtn');
+  var nome     = document.getElementById('novoNome').value.trim();
+  var email    = document.getElementById('novoEmail').value.trim().toLowerCase();
+  var senha    = document.getElementById('novoSenha').value.trim();
+  var progBase = document.getElementById('novoProgBase').value;
+  var progPrem = document.getElementById('novoProgPremium').value;
+  var status   = document.getElementById('novoStatus');
+  var btn      = document.getElementById('novoCriarBtn');
 
   btn.disabled = true;
   btn.textContent = 'Criando...';
   status.style.color = 'rgba(255,255,255,.4)';
-  status.textContent = '⏳ Criando conta...';
+  status.textContent = '';
 
+  // Gerar SQL para criar no Supabase (service_role necessária para criar users)
+  var expira = new Date(Date.now() + 35 * 86400000).toISOString();
+  var sqlPrem = progPrem
+    ? "\nSELECT public.liberar_programa(id, '" + progPrem + "', 35) FROM auth.users WHERE email = '" + email + "';"
+    : '';
+
+  var sql =
+    "-- Cole no SQL Editor do Supabase:\n" +
+    "SELECT public.criar_aluno('" + email + "', '" + senha + "', '" + nome + "', '" + progBase + "');" +
+    sqlPrem;
+
+  // Tentar criar via signUp (funciona se o aluno ainda não existir)
   try {
-    // 1. Criar usuário via Admin API (usa service role — não disponível no frontend)
-    // Usamos signUp que cria e auto-confirma via Supabase settings
-    const { data: signData, error: signErr } = await _sb.auth.admin
-      ? await _sb.auth.admin.createUser({ email, password: senha, email_confirm: true, user_metadata: { nome } })
-      : { data: null, error: { message: 'Admin API não disponível' } };
-
-    // Fallback: tentar via signUp normal
-    let userId = signData?.user?.id;
-    if (signErr || !userId) {
-      status.textContent = '⏳ Registrando via signup...';
-      const { data: suData, error: suErr } = await _sb.auth.signUp({
-        email, password: senha,
-        options: { data: { nome } }
-      });
-      if (suErr) throw new Error(suErr.message);
-      userId = suData?.user?.id;
-      if (!userId) throw new Error('Usuário criado mas ID não retornado. Confirme o email no Supabase.');
-    }
-
-    // 2. Atualizar profile com nome e programa base
-    status.textContent = '⏳ Salvando perfil...';
-    await _sb.from('profiles').upsert({
-      id: userId,
-      nome: nome,
+    var { data, error } = await _sb.auth.signUp({
       email: email,
-      programa_ativo: progBase,
+      password: senha,
+      options: { data: { nome: nome } }
     });
 
-    // 3. Liberar programa premium se selecionado
+    if (error && error.message.includes('already registered')) {
+      throw new Error('Email já cadastrado.');
+    }
+    if (error) throw new Error(error.message);
+
+    var userId = data?.user?.id;
+    if (!userId) throw new Error('Conta criada — aguardando confirmação de email no Supabase.');
+
+    // Salvar profile
+    await _sb.from('profiles').upsert({
+      id: userId, nome: nome, email: email, programa_ativo: progBase,
+    });
+
+    // Liberar premium se selecionado
     if (progPrem) {
-      status.textContent = '⏳ Liberando programa...';
-      const expira = new Date(Date.now() + 35 * 86400000).toISOString();
       await _sb.from('prog_acesso').upsert({
-        user_id: userId,
-        programa_id: progPrem,
+        user_id: userId, programa_id: progPrem,
         data_pagamento: new Date().toISOString(),
         expira_em: expira,
       }, { onConflict: 'user_id,programa_id' });
     }
 
-    // Sucesso
+    var msgWpp =
+      'Olá, ' + nome.split(' ')[0] + '! 👋\n\n' +
+      'Seu acesso ao *Método Ananias Jr* está pronto.\n\n' +
+      '🔗 *Link:* https://ananiasjrpersonal.github.io/Protocolo-Ananias-Personal-/\n' +
+      '📧 *Email:* ' + email + '\n' +
+      '🔑 *Senha:* ' + senha + '\n\n' +
+      'Entre e troque a senha pelo botão "Esqueci minha senha". Qualquer dúvida é só chamar! 💪';
+
     status.style.color = '#00e676';
     status.innerHTML =
-      '<b>✓ Aluno criado!</b><br>' +
-      '<span style="font-size:11px;color:rgba(255,255,255,.4);">' +
-        nome + ' · ' + email + '<br>' +
-        'Senha: ' + senha +
-      '</span>';
-
+      '<div style="color:#00e676;font-weight:700;margin-bottom:10px;">✓ Aluno criado!</div>' +
+      '<div style="background:#0a0a0a;border:1px solid rgba(255,255,255,.1);border-left:3px solid #25D366;padding:12px;font-size:12px;color:rgba(255,255,255,.7);white-space:pre-wrap;line-height:1.5;margin-bottom:8px;">' +
+        msgWpp.replace(/\*/g,'<b>').replace(//g,'</b>') +
+      '</div>' +
+      '<button onclick="copiarWpp()" style="background:#25D366;color:#fff;border:none;padding:10px;width:100%;font-family:sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;">📱 Copiar mensagem WhatsApp</button>';
+    window._wppMsg = msgWpp;
     btn.textContent = '✓ Criado';
     carregarDados();
-    setTimeout(fecharNovoAluno, 4000);
 
   } catch(e) {
-    status.style.color = '#ff1a40';
-    status.textContent = '✗ Erro: ' + e.message;
+    // Se signUp falhar, mostrar SQL para fazer manualmente
+    status.style.color = '#ffb300';
+    status.innerHTML =
+      '<div style="margin-bottom:8px;color:#ffb300;font-weight:700;">⚠ Criar manualmente no Supabase:</div>' +
+      '<div style="background:#0a0a0a;border:1px solid rgba(255,255,255,.1);padding:10px;font-family:monospace;font-size:11px;color:#f0f0f0;white-space:pre-wrap;word-break:break-all;margin-bottom:8px;">' +
+        "UPDATE auth.users\nSET encrypted_password = crypt('" + senha + "', gen_salt('bf'))\nWHERE email = '" + email + "';\n\n" +
+        "-- Se o aluno não existir ainda, vá em:\n" +
+        "-- Authentication → Users → Add user" +
+      '</div>' +
+      '<button onclick="copiarSQL()" style="background:var(--red);color:#fff;border:none;padding:8px 16px;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;width:100%;">📋 Copiar SQL</button>' +
+      '<div style="margin-top:6px;font-size:10px;color:rgba(255,255,255,.3);">Erro: ' + e.message + '</div>';
+    window._sqlParaCopiar =
+      "UPDATE auth.users SET encrypted_password = crypt('" + senha + "', gen_salt('bf')) WHERE email = '" + email + "';";
     btn.disabled = false;
     btn.textContent = 'Tentar novamente';
+  }
+}
+
+function copiarWpp() {
+  if (navigator.clipboard && window._wppMsg) {
+    navigator.clipboard.writeText(window._wppMsg).then(function() {
+      alert('Mensagem copiada! Cole no WhatsApp.');
+    });
+  }
+}
+
+function copiarSQL() {
+  if (navigator.clipboard && window._sqlParaCopiar) {
+    navigator.clipboard.writeText(window._sqlParaCopiar).then(function() {
+      alert('SQL copiado! Cole no SQL Editor do Supabase.');
+    });
   }
 }
 
@@ -710,9 +743,12 @@ _sb.auth.getSession().then(({ data: { session } }) => {
       <input class="novo-inp" id="novoEmail" type="email" placeholder="joao@email.com" autocomplete="off">
 
       <label class="novo-lbl">Senha temporária</label>
-      <input class="novo-inp" id="novoSenha" type="text" placeholder="MinhaSenha123" autocomplete="off">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:rgba(255,255,255,.25);letter-spacing:1px;margin-top:-12px;margin-bottom:16px;">
-        Você avisa a senha por WhatsApp. O aluno pode trocar depois.
+      <div style="position:relative;">
+        <input class="novo-inp" id="novoSenha" type="text" value="Ananias2025" autocomplete="off" style="margin-bottom:0;">
+        <button type="button" onclick="document.getElementById('novoSenha').value='Ananias2025'" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.3);font-size:11px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;">↺ padrão</button>
+      </div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:rgba(255,255,255,.25);letter-spacing:1px;margin-top:6px;margin-bottom:16px;">
+        Senha padrão <b style="color:rgba(255,255,255,.4)">Ananias2025</b> · O aluno troca depois pelo link "Esqueci minha senha"
       </div>
 
       <div class="novo-row">
