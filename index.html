@@ -6716,7 +6716,8 @@ function renderDesafios() {
   list.appendChild(frag);
 
   // Pre-fill inputs with last saved measurement
-  const last = saved.length > 0 ? saved[0] : null;
+  const _medSaved = JSON.parse(localStorage.getItem('maj_medidas') || '[]');
+  const last = _medSaved.length > 0 ? _medSaved[0] : null;
   if (last) {
     const setInp = (id, val) => { const el=document.getElementById(id); if(el&&val&&val!=='—') el.placeholder=val+''; };
     setInp('mPeso',    last.peso);
