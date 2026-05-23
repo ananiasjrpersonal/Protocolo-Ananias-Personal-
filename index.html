@@ -4951,6 +4951,8 @@ async function sbCarregarDados() {
       if (prof.meta_agua)       localStorage.setItem('maj_water_l', String(prof.meta_agua));
       if (prof.programa_ativo)  localStorage.setItem('maj_programa_ativo', prof.programa_ativo);
       if (prof.onboarding_done) localStorage.setItem('maj_onboarding_done', '1');
+      // Se tem nome no Supabase (mesmo sem peso), marcar onboarding como feito
+      if (prof.nome && prof.nome.length > 1) localStorage.setItem('maj_onboarding_done', '1');
       if (prof.peso || prof.altura || prof.idade) {
         const saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
         localStorage.setItem('maj_tmb_form', JSON.stringify({
@@ -5585,13 +5587,18 @@ async function tryLogin() {
     await sbCarregarDados();
 
     // Registrar último acesso (para o painel do professor)
-    _sb.from('profiles').update({ updated_at: new Date().toISOString() })
-      .eq('id', _uid).then(() => {});
+    _sb.from('profiles')
+      .update({ updated_at: new Date().toISOString() })
+      .eq('id', _uid)
+      .then(function(res) {
+        if (res.error) console.warn('last_access update:', res.error.message);
+      });
 
-    // Usar nome do Supabase (profiles) se existir, senão metadata, senão email
+    // Nome: sbCarregarDados já carregou do Supabase, usar o que está no localStorage
     const nomeDb   = localStorage.getItem('maj_nome');
     const nomeMeta = data.user.user_metadata?.nome;
     const nome     = nomeDb || nomeMeta || email.split('@')[0];
+    // Garantir que está salvo ANTES do bootApp
     localStorage.setItem('maj_nome', nome);
 
     if (btn) { btn.textContent = 'Entrar'; btn.disabled = false; }
@@ -6197,16 +6204,24 @@ function updateProgAtivoBadge() {
 
 function bootApp(email, rawName) {
   // 1. Check if onboarding is needed FIRST — before showing anything
-  const done = localStorage.getItem('maj_onboarding_done');
+  const done       = localStorage.getItem('maj_onboarding_done');
   const nome_saved = localStorage.getItem('maj_nome');
-  const peso_saved = JSON.parse(localStorage.getItem('maj_tmb_form')||'{}').dPeso;
-  if (!done || !nome_saved || !peso_saved) {
-    localStorage.removeItem('maj_onboarding_done');
-    // Store email for after onboarding
+
+  // Marcar onboarding como feito se tem nome (compatibilidade com versões anteriores)
+  if (nome_saved && nome_saved.length > 1 && !done) {
+    localStorage.setItem('maj_onboarding_done', '1');
+  }
+
+  // Pedir onboarding APENAS se não tem nome salvo em nenhum lugar
+  // Não exigir peso — o aluno pode preencher depois
+  const nomeValido = nome_saved && nome_saved.length > 1 && !nome_saved.includes('@');
+  const precisaOnboarding = !localStorage.getItem('maj_onboarding_done') && !nomeValido;
+
+  if (precisaOnboarding) {
     localStorage.setItem('maj_pending_email', email);
     document.getElementById('lockScreen').style.display = 'none';
     document.getElementById('onboarding').classList.add('open');
-    return; // don't init app yet — obFinish() will call bootApp again
+    return;
   }
 
   // 2. Data is complete — boot normally
@@ -7960,15 +7975,14 @@ document.addEventListener('DOMContentLoaded', function() {
       localStorage.setItem('maj_email', email);
       await sbCarregarDados();
       // Registrar último acesso
-      _sb.from('profiles').update({ updated_at: new Date().toISOString() })
-        .eq('id', _uid).then(() => {});
-      // Prioridade: Supabase profile > localStorage > email
-      const nomeSession = localStorage.getItem('maj_nome');
-      if (!nomeSession || nomeSession === email.split('@')[0]) {
-        // Nome não definido ou é o email — não usar
-        localStorage.removeItem('maj_nome');
-      }
-      const nome = localStorage.getItem('maj_nome') || '';
+      _sb.from('profiles')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', _uid)
+        .then(function(res) {
+          if (res.error) console.warn('last_access update:', res.error.message);
+        });
+      // Nome: prioridade é o que veio do Supabase (sbCarregarDados já setou)
+      const nome = localStorage.getItem('maj_nome') || email.split('@')[0];
       bootApp(email, nome);
     } else if (localStorage.getItem('maj_auth') === '1') {
       // Fallback: localStorage (offline ou sessão expirada)
