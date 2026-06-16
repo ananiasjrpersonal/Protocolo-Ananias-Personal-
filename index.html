@@ -5253,197 +5253,538 @@ const LS_VERSION = 3;
    ══════════════════════════════════════════════════════ */
 const TREINOS_OBJ = {
 
-  /* ── SECAR ──────────────────────────────────────────
-     Alto volume, reps altas, descanso curto (20–45s)
-     Cardio no treino C. Queima calórica máxima.       */
+  /* ════════════════════════════════════════════════════
+     SECAR — déficit calórico, volume alto, descanso curto
+     ════════════════════════════════════════════════════ */
   secar: {
-    casa: {
-      A: { titulo:'Circuito Superior — Queima', grupo:'Peito, Ombro e Tríceps · Alto Volume', meta:{ex:7,min:40,series:'4×15'}, ex:[
-        {n:'Flexão de Braços',              d:'4 × 15 · sem pausa · 30s desc',   rest:30, video:''},
-        {n:'Flexão Inclinada (pés na cadeira)',d:'3 × 12 · peito superior · 30s desc',rest:30, video:''},
-        {n:'Flexão Diamante',               d:'3 × 12 · foco tríceps · 30s desc',rest:30, video:''},
-        {n:'Mergulho entre Cadeiras',       d:'4 × 15 · tríceps · 30s desc',     rest:30, video:''},
-        {n:'Elevação Lateral com Garrafa',  d:'4 × 20 · deltoide · 20s desc',    rest:20, video:''},
-        {n:'Burpee',                        d:'3 × 10 · cardio e core · 30s desc',rest:30, video:''},
-        {n:'Prancha com Toque no Ombro',    d:'3 × 20 toques · core · 20s desc', rest:20, video:''},
-      ]},
-      B: { titulo:'Circuito Superior — Queima', grupo:'Costas, Bíceps e Core · Alto Volume', meta:{ex:7,min:40,series:'4×15'}, ex:[
-        {n:'Remada Invertida (mesa)',        d:'4 × 15 · costas · 30s desc',      rest:30, video:''},
-        {n:'Superman com Hold 2s',          d:'3 × 15 · lombar · 20s desc',      rest:20, video:''},
-        {n:'Flexão com Rotação',            d:'3 × 12 · serrátil · 30s desc',    rest:30, video:''},
-        {n:'Rosca Isométrica com Toalha',   d:'4 × 30s · bíceps · 20s desc',     rest:20, video:''},
-        {n:'Prancha Lateral',               d:'3 × 30s cada · oblíquo · 20s desc',rest:20, video:''},
-        {n:'Abdominal Bicicleta',           d:'4 × 25 · oblíquo · 20s desc',     rest:20, video:''},
-        {n:'Mountain Climber',              d:'3 × 30s · cardio e core · 20s desc',rest:20, video:''},
-      ]},
-      C: { titulo:'Cardio + Inferior — Queima Total', grupo:'Pernas, Glúteos e Cardio · Condicionamento', meta:{ex:7,min:45,series:'4×20'}, ex:[
-        {n:'Pulo de Agachamento (Jump Squat)',d:'4 × 15 · potência e queima · 30s desc',rest:30, video:''},
-        {n:'Avanço Alternado',              d:'4 × 20 passos · glúteo e quad · 30s desc',rest:30, video:''},
-        {n:'Elevação Pélvica com Pausa',    d:'4 × 20 · glúteo · 20s desc',      rest:20, video:''},
-        {n:'Agachamento Sumô',              d:'4 × 20 · adutores · 20s desc',    rest:20, video:''},
-        {n:'Polichinelo',                   d:'3 × 1min · cardio · 20s desc',    rest:20, video:''},
-        {n:'Panturrilha Unilateral',        d:'4 × 20 cada · panturrilha · 20s desc',rest:20, video:''},
-        {n:'Abdominal com Bicicleta',       d:'3 × 30 · core e cardio · 20s desc',rest:20, video:''},
-      ]},
+
+    /* ── INICIANTE (ativ = 1.2 — não treina) ─────────── */
+    iniciante: {
+      casa: {
+        A: { titulo:'Superior Empurra — Iniciante', grupo:'Peito, Ombro e Tríceps · Peso Corporal', meta:{ex:5,min:30,series:'3×10'}, ex:[
+          {n:'Flexão de Braços (joelhos)',    d:'3 × 10 · peitoral · 60s desc',    rest:60, video:''},
+          {n:'Flexão Inclinada na Parede',    d:'3 × 12 · peito superior · 60s desc',rest:60, video:''},
+          {n:'Mergulho entre Cadeiras',       d:'3 × 8  · tríceps · 60s desc',     rest:60, video:''},
+          {n:'Elevação Lateral com Garrafa',  d:'3 × 12 · deltoide · 45s desc',    rest:45, video:''},
+          {n:'Prancha',                       d:'3 × 20s · core · 45s desc',       rest:45, video:''},
+        ]},
+        B: { titulo:'Superior Puxa — Iniciante', grupo:'Costas, Bíceps e Core · Peso Corporal', meta:{ex:5,min:30,series:'3×10'}, ex:[
+          {n:'Remada com Garrafa d\'Água',    d:'3 × 12 · costas · 60s desc',      rest:60, video:''},
+          {n:'Superman',                      d:'3 × 12 · lombar · 45s desc',      rest:45, video:''},
+          {n:'Rosca com Garrafa',             d:'3 × 12 · bíceps · 45s desc',      rest:45, video:''},
+          {n:'Abdominal Crunch',              d:'3 × 15 · abdômen · 45s desc',     rest:45, video:''},
+          {n:'Prancha Lateral',               d:'3 × 20s cada · oblíquo · 30s desc',rest:30, video:''},
+        ]},
+        C: { titulo:'Inferior + Cardio — Iniciante', grupo:'Pernas, Glúteos e Condicionamento · Peso Corporal', meta:{ex:5,min:35,series:'3×12'}, ex:[
+          {n:'Agachamento Livre',             d:'3 × 12 · quadríceps · 60s desc',  rest:60, video:''},
+          {n:'Avanço Alternado',              d:'3 × 10 cada · glúteo · 60s desc', rest:60, video:''},
+          {n:'Elevação Pélvica',              d:'3 × 15 · glúteo · 45s desc',      rest:45, video:''},
+          {n:'Panturrilha em Pé',             d:'3 × 20 · panturrilha · 30s desc', rest:30, video:''},
+          {n:'Polichinelo',                   d:'3 × 40s · cardio · 30s desc',     rest:30, video:''},
+        ]},
+      },
+      academia: {
+        A: { titulo:'Superior Empurra — Iniciante', grupo:'Peito, Ombro e Tríceps · Máquinas', meta:{ex:5,min:35,series:'3×12'}, ex:[
+          {n:'Supino na Máquina',             d:'3 × 12 · peitoral · 60s desc',    rest:60, video:''},
+          {n:'Crucifixo na Máquina',          d:'3 × 12 · peitoral externo · 60s desc',rest:60, video:''},
+          {n:'Desenvolvimento na Máquina',    d:'3 × 12 · ombro · 60s desc',       rest:60, video:''},
+          {n:'Elevação Lateral',              d:'3 × 15 · deltoide · 45s desc',    rest:45, video:''},
+          {n:'Tríceps Pulley',                d:'3 × 15 · tríceps · 45s desc',     rest:45, video:''},
+        ]},
+        B: { titulo:'Superior Puxa — Iniciante', grupo:'Costas e Bíceps · Máquinas', meta:{ex:5,min:35,series:'3×12'}, ex:[
+          {n:'Puxada Frontal (máquina)',       d:'3 × 12 · dorsal · 60s desc',      rest:60, video:''},
+          {n:'Remada Sentada (máquina)',       d:'3 × 12 · costas · 60s desc',      rest:60, video:''},
+          {n:'Rosca Direta com Halteres',     d:'3 × 12 · bíceps · 45s desc',      rest:45, video:''},
+          {n:'Prancha',                       d:'3 × 25s · core · 30s desc',       rest:30, video:''},
+          {n:'Abdominal na Máquina',          d:'3 × 15 · abdômen · 30s desc',     rest:30, video:''},
+        ]},
+        C: { titulo:'Inferior + Cardio — Iniciante', grupo:'Pernas e Condicionamento · Máquinas', meta:{ex:5,min:40,series:'3×15'}, ex:[
+          {n:'Leg Press (carga leve)',         d:'3 × 15 · pernas · 60s desc',      rest:60, video:''},
+          {n:'Cadeira Extensora',             d:'3 × 15 · quadríceps · 45s desc',  rest:45, video:''},
+          {n:'Cadeira Flexora',               d:'3 × 15 · posterior · 45s desc',   rest:45, video:''},
+          {n:'Panturrilha Sentado',           d:'3 × 20 · panturrilha · 30s desc', rest:30, video:''},
+          {n:'Esteira',                       d:'15 min · caminhada rápida',        rest:0,  video:''},
+        ]},
+      },
     },
-    academia: {
-      A: { titulo:'Superior Empurra — Queima', grupo:'Peito, Ombro e Tríceps · Alto Volume', meta:{ex:7,min:50,series:'4×15'}, ex:[
-        {n:'Supino Reto com Halteres',      d:'4 × 15 · peitoral · 45s desc',    rest:45, video:''},
-        {n:'Supino Inclinado com Halteres', d:'4 × 15 · peito superior · 45s desc',rest:45, video:''},
-        {n:'Crossover (Polia)',             d:'3 × 20 · peitoral externo · 30s desc',rest:30, video:''},
-        {n:'Desenvolvimento com Halteres',  d:'4 × 15 · ombro · 45s desc',       rest:45, video:''},
-        {n:'Elevação Lateral',              d:'4 × 20 · deltoide · 30s desc',    rest:30, video:''},
-        {n:'Tríceps Pulley Corda',          d:'4 × 20 · tríceps · 30s desc',     rest:30, video:''},
-        {n:'Tríceps Francês com Halter',    d:'3 × 15 · tríceps · 30s desc',     rest:30, video:''},
-      ]},
-      B: { titulo:'Superior Puxa — Queima', grupo:'Costas, Bíceps e Core · Alto Volume', meta:{ex:7,min:50,series:'4×15'}, ex:[
-        {n:'Puxada Frontal Aberta',         d:'4 × 15 · dorsal · 45s desc',      rest:45, video:''},
-        {n:'Remada Sentada na Polia',       d:'4 × 15 · costas · 45s desc',      rest:45, video:''},
-        {n:'Remada Unilateral com Halter',  d:'3 × 15 · lombar · 30s desc',      rest:30, video:''},
-        {n:'Rosca Direta com Barra',        d:'4 × 15 · bíceps · 30s desc',      rest:30, video:''},
-        {n:'Rosca Martelo',                 d:'3 × 15 · braquial · 30s desc',    rest:30, video:''},
-        {n:'Prancha Abdominal',             d:'3 × 45s · core · 20s desc',       rest:20, video:''},
-        {n:'Abdominal Bicicleta',           d:'3 × 25 · oblíquo · 20s desc',     rest:20, video:''},
-      ]},
-      C: { titulo:'Inferior + Cardio — Queima Total', grupo:'Pernas e Condicionamento · Alto Volume', meta:{ex:7,min:55,series:'4×20'}, ex:[
-        {n:'Agachamento Hack (Leg Press estreito)',d:'4 × 20 · quadríceps · 45s desc',rest:45, video:''},
-        {n:'Leg Press 45°',                 d:'4 × 20 · pernas · 45s desc',      rest:45, video:''},
-        {n:'Cadeira Extensora',             d:'4 × 20 · quadríceps isolado · 30s desc',rest:30, video:''},
-        {n:'Cadeira Flexora',               d:'4 × 20 · posterior · 30s desc',   rest:30, video:''},
-        {n:'Stiff com Halteres',            d:'4 × 15 · glúteo e posterior · 45s desc',rest:45, video:''},
-        {n:'Panturrilha em Pé no Aparelho', d:'4 × 25 · panturrilha · 20s desc', rest:20, video:''},
-        {n:'Esteira ou Bicicleta',          d:'15 min · intensidade moderada',    rest:0,  video:''},
-      ]},
+
+    /* ── INTERMEDIÁRIO (ativ = 1.375 — 1-3x/sem) ─────── */
+    intermediario: {
+      casa: {
+        A: { titulo:'Circuito Superior — Queima', grupo:'Peito, Ombro e Tríceps · Alto Volume', meta:{ex:7,min:40,series:'4×15'}, ex:[
+          {n:'Flexão de Braços',              d:'4 × 15 · sem pausa · 30s desc',   rest:30, video:''},
+          {n:'Flexão Inclinada (pés na cadeira)',d:'3 × 12 · peito superior · 30s desc',rest:30, video:''},
+          {n:'Flexão Diamante',               d:'3 × 12 · foco tríceps · 30s desc',rest:30, video:''},
+          {n:'Mergulho entre Cadeiras',       d:'4 × 15 · tríceps · 30s desc',     rest:30, video:''},
+          {n:'Elevação Lateral com Garrafa',  d:'4 × 20 · deltoide · 20s desc',    rest:20, video:''},
+          {n:'Burpee',                        d:'3 × 10 · cardio e core · 30s desc',rest:30, video:''},
+          {n:'Prancha com Toque no Ombro',    d:'3 × 20 toques · core · 20s desc', rest:20, video:''},
+        ]},
+        B: { titulo:'Circuito Superior — Queima', grupo:'Costas, Bíceps e Core · Alto Volume', meta:{ex:7,min:40,series:'4×15'}, ex:[
+          {n:'Remada Invertida (mesa)',        d:'4 × 15 · costas · 30s desc',      rest:30, video:''},
+          {n:'Superman com Hold 2s',          d:'3 × 15 · lombar · 20s desc',      rest:20, video:''},
+          {n:'Flexão com Rotação',            d:'3 × 12 · serrátil · 30s desc',    rest:30, video:''},
+          {n:'Rosca Isométrica com Toalha',   d:'4 × 30s · bíceps · 20s desc',     rest:20, video:''},
+          {n:'Prancha Lateral',               d:'3 × 30s cada · oblíquo · 20s desc',rest:20, video:''},
+          {n:'Abdominal Bicicleta',           d:'4 × 25 · oblíquo · 20s desc',     rest:20, video:''},
+          {n:'Mountain Climber',              d:'3 × 30s · cardio e core · 20s desc',rest:20, video:''},
+        ]},
+        C: { titulo:'Cardio + Inferior — Queima Total', grupo:'Pernas, Glúteos e Cardio · Condicionamento', meta:{ex:7,min:45,series:'4×20'}, ex:[
+          {n:'Jump Squat',                    d:'4 × 15 · potência e queima · 30s desc',rest:30, video:''},
+          {n:'Avanço Alternado',              d:'4 × 20 passos · glúteo e quad · 30s desc',rest:30, video:''},
+          {n:'Elevação Pélvica com Pausa',    d:'4 × 20 · glúteo · 20s desc',      rest:20, video:''},
+          {n:'Agachamento Sumô',              d:'4 × 20 · adutores · 20s desc',    rest:20, video:''},
+          {n:'Polichinelo',                   d:'3 × 1min · cardio · 20s desc',    rest:20, video:''},
+          {n:'Panturrilha Unilateral',        d:'4 × 20 cada · panturrilha · 20s desc',rest:20, video:''},
+          {n:'Abdominal Bicicleta',           d:'3 × 30 · core e cardio · 20s desc',rest:20, video:''},
+        ]},
+      },
+      academia: {
+        A: { titulo:'Superior Empurra — Queima', grupo:'Peito, Ombro e Tríceps · Alto Volume', meta:{ex:7,min:50,series:'4×15'}, ex:[
+          {n:'Supino Reto com Halteres',      d:'4 × 15 · peitoral · 45s desc',    rest:45, video:''},
+          {n:'Supino Inclinado com Halteres', d:'4 × 15 · peito superior · 45s desc',rest:45, video:''},
+          {n:'Crossover (Polia)',             d:'3 × 20 · peitoral externo · 30s desc',rest:30, video:''},
+          {n:'Desenvolvimento com Halteres',  d:'4 × 15 · ombro · 45s desc',       rest:45, video:''},
+          {n:'Elevação Lateral',              d:'4 × 20 · deltoide · 30s desc',    rest:30, video:''},
+          {n:'Tríceps Pulley Corda',          d:'4 × 20 · tríceps · 30s desc',     rest:30, video:''},
+          {n:'Tríceps Francês com Halter',    d:'3 × 15 · tríceps · 30s desc',     rest:30, video:''},
+        ]},
+        B: { titulo:'Superior Puxa — Queima', grupo:'Costas, Bíceps e Core · Alto Volume', meta:{ex:7,min:50,series:'4×15'}, ex:[
+          {n:'Puxada Frontal Aberta',         d:'4 × 15 · dorsal · 45s desc',      rest:45, video:''},
+          {n:'Remada Sentada na Polia',       d:'4 × 15 · costas · 45s desc',      rest:45, video:''},
+          {n:'Remada Unilateral com Halter',  d:'3 × 15 · lombar · 30s desc',      rest:30, video:''},
+          {n:'Rosca Direta com Barra',        d:'4 × 15 · bíceps · 30s desc',      rest:30, video:''},
+          {n:'Rosca Martelo',                 d:'3 × 15 · braquial · 30s desc',    rest:30, video:''},
+          {n:'Prancha Abdominal',             d:'3 × 45s · core · 20s desc',       rest:20, video:''},
+          {n:'Abdominal Bicicleta',           d:'3 × 25 · oblíquo · 20s desc',     rest:20, video:''},
+        ]},
+        C: { titulo:'Inferior + Cardio — Queima Total', grupo:'Pernas e Condicionamento · Alto Volume', meta:{ex:7,min:55,series:'4×20'}, ex:[
+          {n:'Leg Press 45°',                 d:'4 × 20 · pernas · 45s desc',      rest:45, video:''},
+          {n:'Cadeira Extensora',             d:'4 × 20 · quadríceps isolado · 30s desc',rest:30, video:''},
+          {n:'Cadeira Flexora',               d:'4 × 20 · posterior · 30s desc',   rest:30, video:''},
+          {n:'Stiff com Halteres',            d:'4 × 15 · glúteo e posterior · 45s desc',rest:45, video:''},
+          {n:'Panturrilha em Pé no Aparelho', d:'4 × 25 · panturrilha · 20s desc', rest:20, video:''},
+          {n:'Abdominal Bicicleta',           d:'3 × 25 · core · 20s desc',        rest:20, video:''},
+          {n:'Esteira ou Bicicleta',          d:'15 min · intensidade moderada',    rest:0,  video:''},
+        ]},
+      },
+    },
+
+    /* ── AVANÇADO (ativ = 1.725 — 4x+/sem) ──────────── */
+    avancado: {
+      casa: {
+        A: { titulo:'Superior Empurra — Avançado', grupo:'Peito, Ombro e Tríceps · Alta Intensidade', meta:{ex:7,min:50,series:'5×15'}, ex:[
+          {n:'Flexão Explosiva (palma)',       d:'5 × 10 · potência e peitoral · 30s desc',rest:30, video:''},
+          {n:'Flexão Archer',                 d:'4 × 8 cada · peitoral unilateral · 30s desc',rest:30, video:''},
+          {n:'Flexão Diamante com Pausa 2s',  d:'4 × 12 · tríceps intenso · 20s desc',rest:20, video:''},
+          {n:'Mergulho entre Cadeiras com Peso',d:'5 × 15 · tríceps pesado · 30s desc',rest:30, video:''},
+          {n:'Pike Push-up',                  d:'4 × 12 · ombro · 30s desc',       rest:30, video:''},
+          {n:'Burpee com Salto',              d:'4 × 12 · cardio e potência · 20s desc',rest:20, video:''},
+          {n:'Prancha com Elevação de Braço', d:'4 × 16 toques · core · 20s desc', rest:20, video:''},
+        ]},
+        B: { titulo:'Superior Puxa — Avançado', grupo:'Costas, Bíceps e Core · Alta Intensidade', meta:{ex:7,min:50,series:'5×15'}, ex:[
+          {n:'Remada Invertida com Pausa 2s', d:'5 × 12 · costas · 30s desc',      rest:30, video:''},
+          {n:'Superman com Hold 3s',          d:'4 × 15 · lombar · 20s desc',      rest:20, video:''},
+          {n:'Flexão com Rotação',            d:'4 × 12 · serrátil · 20s desc',    rest:20, video:''},
+          {n:'Rosca Isométrica com Toalha',   d:'5 × 40s · bíceps intenso · 20s desc',rest:20, video:''},
+          {n:'Elevação de Pernas Suspenso',   d:'4 × 15 · infra abdominal · 20s desc',rest:20, video:''},
+          {n:'Prancha Lateral com Elevação',  d:'4 × 30s cada · oblíquo · 20s desc',rest:20, video:''},
+          {n:'Mountain Climber Rápido',       d:'4 × 40s · cardio e core · 20s desc',rest:20, video:''},
+        ]},
+        C: { titulo:'Inferior + HIIT — Avançado', grupo:'Pernas, Glúteos e HIIT · Alta Intensidade', meta:{ex:7,min:55,series:'5×20'}, ex:[
+          {n:'Jump Squat',                    d:'5 × 15 · potência · 20s desc',    rest:20, video:''},
+          {n:'Avanço com Salto Alternado',    d:'4 × 20 · glúteo e quad · 20s desc',rest:20, video:''},
+          {n:'Elevação Pélvica Unilateral',   d:'5 × 15 cada · glúteo · 20s desc', rest:20, video:''},
+          {n:'Agachamento Búlgaro',           d:'4 × 12 cada · quadríceps · 30s desc',rest:30, video:''},
+          {n:'Sprints no Lugar',              d:'5 × 30s · HIIT · 20s desc',       rest:20, video:''},
+          {n:'Panturrilha Unilateral',        d:'5 × 20 cada · panturrilha · 15s desc',rest:15, video:''},
+          {n:'Burpee com Salto',              d:'4 × 12 · finalizador · 20s desc', rest:20, video:''},
+        ]},
+      },
+      academia: {
+        A: { titulo:'Superior Empurra — Avançado', grupo:'Peito, Ombro e Tríceps · Alta Intensidade', meta:{ex:7,min:55,series:'5×15'}, ex:[
+          {n:'Supino Reto com Barra',         d:'5 × 12 · peitoral · 45s desc',    rest:45, video:''},
+          {n:'Supino Inclinado com Halteres', d:'5 × 12 · peito superior · 45s desc',rest:45, video:''},
+          {n:'Crossover Polia Alta',          d:'4 × 20 · peitoral externo · 30s desc',rest:30, video:''},
+          {n:'Desenvolvimento com Barra',     d:'4 × 12 · ombro · 45s desc',       rest:45, video:''},
+          {n:'Elevação Lateral Drop-set',     d:'3 × 20+15+10 · deltoide · 30s desc',rest:30, video:''},
+          {n:'Tríceps Pulley + Francês (bi-set)',d:'4 × 15+12 · tríceps · 30s desc',rest:30, video:''},
+          {n:'Tríceps Testa com Barra W',     d:'3 × 15 · tríceps · 30s desc',     rest:30, video:''},
+        ]},
+        B: { titulo:'Superior Puxa — Avançado', grupo:'Costas, Bíceps e Core · Alta Intensidade', meta:{ex:7,min:55,series:'5×15'}, ex:[
+          {n:'Puxada Frontal Aberta',         d:'5 × 15 · dorsal · 45s desc',      rest:45, video:''},
+          {n:'Remada Curvada com Barra',      d:'5 × 12 · costas espessura · 45s desc',rest:45, video:''},
+          {n:'Remada Unilateral com Halter',  d:'4 × 15 · lombar · 30s desc',      rest:30, video:''},
+          {n:'Rosca Direta + Martelo (bi-set)',d:'4 × 15+15 · bíceps · 30s desc',  rest:30, video:''},
+          {n:'Rosca 21',                      d:'3 × · bíceps total · 30s desc',   rest:30, video:''},
+          {n:'Abdominal Roldana',             d:'4 × 20 · abdômen · 20s desc',     rest:20, video:''},
+          {n:'Prancha com Anilha',            d:'3 × 45s · core · 20s desc',       rest:20, video:''},
+        ]},
+        C: { titulo:'Inferior + HIIT — Avançado', grupo:'Pernas e HIIT · Alta Intensidade', meta:{ex:7,min:60,series:'5×20'}, ex:[
+          {n:'Agachamento Hack',              d:'5 × 20 · quadríceps · 45s desc',  rest:45, video:''},
+          {n:'Leg Press 45° (carga alta)',    d:'5 × 20 · pernas · 45s desc',      rest:45, video:''},
+          {n:'Cadeira Extensora Drop-set',    d:'4 × 20+15 · quadríceps · 30s desc',rest:30, video:''},
+          {n:'Cadeira Flexora',               d:'4 × 20 · posterior · 30s desc',   rest:30, video:''},
+          {n:'Stiff com Barra',               d:'4 × 15 · glúteo e posterior · 45s desc',rest:45, video:''},
+          {n:'Panturrilha em Pé Drop-set',    d:'4 × 25+20 · panturrilha · 20s desc',rest:20, video:''},
+          {n:'Esteira HIIT',                  d:'10 min · 30s sprint / 30s lento', rest:0,  video:''},
+        ]},
+      },
     },
   },
 
-  /* ── MANTER ─────────────────────────────────────────
-     Volume moderado, reps médias, descanso médio (45–75s)
-     Equilíbrio força + resistência. Sem perder nem ganhar. */
+  /* ════════════════════════════════════════════════════
+     MANTER — equilíbrio, volume moderado, descanso médio
+     ════════════════════════════════════════════════════ */
   manter: {
-    casa: {
-      A: { titulo:'Full Body A — Equilíbrio', grupo:'Superior Completo · Peso Corporal', meta:{ex:6,min:45,series:'3×12'}, ex:[
-        {n:'Flexão de Braços',              d:'3 × 12 · peitoral e tríceps · 60s desc',rest:60, video:''},
-        {n:'Flexão Inclinada (pés na cadeira)',d:'3 × 10 · peito superior · 60s desc',rest:60, video:''},
-        {n:'Mergulho entre Cadeiras',       d:'3 × 12 · tríceps · 45s desc',     rest:45, video:''},
-        {n:'Elevação Lateral com Garrafa',  d:'3 × 12 · deltoide · 45s desc',    rest:45, video:''},
-        {n:'Remada Invertida (mesa)',        d:'3 × 12 · costas · 60s desc',      rest:60, video:''},
-        {n:'Prancha com Toque no Ombro',    d:'3 × 16 toques · core · 30s desc', rest:30, video:''},
-      ]},
-      B: { titulo:'Full Body B — Equilíbrio', grupo:'Inferior + Core · Peso Corporal', meta:{ex:6,min:45,series:'3×12'}, ex:[
-        {n:'Agachamento Livre',             d:'3 × 12 · quadríceps · 60s desc',  rest:60, video:''},
-        {n:'Avanço Alternado',              d:'3 × 10 cada · glúteo e quad · 60s desc',rest:60, video:''},
-        {n:'Elevação Pélvica',              d:'3 × 15 · glúteo · 45s desc',      rest:45, video:''},
-        {n:'Terra Romeno Unilateral',       d:'3 × 10 cada · posterior · 45s desc',rest:45, video:''},
-        {n:'Panturrilha Unilateral',        d:'3 × 15 cada · panturrilha · 30s desc',rest:30, video:''},
-        {n:'Abdominal Bicicleta',           d:'3 × 20 · oblíquo e core · 30s desc',rest:30, video:''},
-      ]},
-      C: { titulo:'Cardio + Core — Equilíbrio', grupo:'Condicionamento e Funcional · Peso Corporal', meta:{ex:6,min:40,series:'3×10'}, ex:[
-        {n:'Burpee',                        d:'3 × 8 · condicionamento geral · 60s desc',rest:60, video:''},
-        {n:'Mountain Climber',              d:'3 × 30s · cardio e core · 45s desc',rest:45, video:''},
-        {n:'Agachamento com Salto',         d:'3 × 10 · potência · 60s desc',    rest:60, video:''},
-        {n:'Flexão de Braços',              d:'3 × 10 · manutenção superior · 45s desc',rest:45, video:''},
-        {n:'Prancha Lateral',               d:'3 × 30s cada · oblíquo · 30s desc',rest:30, video:''},
-        {n:'Abdominal Infra (Elevação de Pernas)',d:'3 × 12 · infra abdominal · 30s desc',rest:30, video:''},
-      ]},
+
+    /* ── INICIANTE ────────────────────────────────────── */
+    iniciante: {
+      casa: {
+        A: { titulo:'Full Body A — Iniciante', grupo:'Superior Completo · Peso Corporal', meta:{ex:5,min:30,series:'3×10'}, ex:[
+          {n:'Flexão de Braços (joelhos)',    d:'3 × 10 · peitoral e tríceps · 60s desc',rest:60, video:''},
+          {n:'Remada com Garrafa',            d:'3 × 12 · costas · 60s desc',      rest:60, video:''},
+          {n:'Elevação Lateral com Garrafa',  d:'3 × 12 · deltoide · 45s desc',    rest:45, video:''},
+          {n:'Mergulho entre Cadeiras',       d:'3 × 10 · tríceps · 60s desc',     rest:60, video:''},
+          {n:'Prancha',                       d:'3 × 25s · core · 30s desc',       rest:30, video:''},
+        ]},
+        B: { titulo:'Full Body B — Iniciante', grupo:'Inferior + Core · Peso Corporal', meta:{ex:5,min:30,series:'3×10'}, ex:[
+          {n:'Agachamento Livre',             d:'3 × 12 · quadríceps · 60s desc',  rest:60, video:''},
+          {n:'Avanço Alternado',              d:'3 × 8 cada · glúteo · 60s desc',  rest:60, video:''},
+          {n:'Elevação Pélvica',              d:'3 × 15 · glúteo · 45s desc',      rest:45, video:''},
+          {n:'Panturrilha em Pé',             d:'3 × 20 · panturrilha · 30s desc', rest:30, video:''},
+          {n:'Abdominal Crunch',              d:'3 × 15 · abdômen · 30s desc',     rest:30, video:''},
+        ]},
+        C: { titulo:'Cardio Leve + Core — Iniciante', grupo:'Condicionamento Suave · Peso Corporal', meta:{ex:5,min:30,series:'3×10'}, ex:[
+          {n:'Caminhada no Lugar',            d:'5 min · aquecimento',              rest:0,  video:''},
+          {n:'Polichinelo',                   d:'3 × 30s · cardio · 45s desc',     rest:45, video:''},
+          {n:'Flexão de Braços (joelhos)',    d:'3 × 10 · manutenção superior · 60s desc',rest:60, video:''},
+          {n:'Agachamento Livre',             d:'3 × 10 · manutenção inferior · 60s desc',rest:60, video:''},
+          {n:'Prancha',                       d:'3 × 25s · core · 30s desc',       rest:30, video:''},
+        ]},
+      },
+      academia: {
+        A: { titulo:'Superior Completo — Iniciante', grupo:'Peito, Costas e Ombro · Máquinas', meta:{ex:5,min:35,series:'3×12'}, ex:[
+          {n:'Supino na Máquina',             d:'3 × 12 · peitoral · 60s desc',    rest:60, video:''},
+          {n:'Puxada Frontal (máquina)',       d:'3 × 12 · dorsal · 60s desc',      rest:60, video:''},
+          {n:'Desenvolvimento na Máquina',    d:'3 × 12 · ombro · 60s desc',       rest:60, video:''},
+          {n:'Elevação Lateral',              d:'3 × 12 · deltoide · 45s desc',    rest:45, video:''},
+          {n:'Prancha',                       d:'3 × 25s · core · 30s desc',       rest:30, video:''},
+        ]},
+        B: { titulo:'Inferior Completo — Iniciante', grupo:'Pernas e Glúteos · Máquinas', meta:{ex:5,min:35,series:'3×12'}, ex:[
+          {n:'Leg Press (carga leve)',         d:'3 × 12 · pernas · 60s desc',      rest:60, video:''},
+          {n:'Cadeira Extensora',             d:'3 × 12 · quadríceps · 45s desc',  rest:45, video:''},
+          {n:'Cadeira Flexora',               d:'3 × 12 · posterior · 45s desc',   rest:45, video:''},
+          {n:'Panturrilha Sentado',           d:'3 × 15 · panturrilha · 30s desc', rest:30, video:''},
+          {n:'Abdominal na Máquina',          d:'3 × 15 · abdômen · 30s desc',     rest:30, video:''},
+        ]},
+        C: { titulo:'Braços + Cardio Leve — Iniciante', grupo:'Bíceps, Tríceps e Condicionamento · Máquinas', meta:{ex:5,min:35,series:'3×12'}, ex:[
+          {n:'Rosca Direta com Halteres',     d:'3 × 12 · bíceps · 60s desc',      rest:60, video:''},
+          {n:'Tríceps Pulley',                d:'3 × 12 · tríceps · 60s desc',     rest:60, video:''},
+          {n:'Rosca Martelo',                 d:'3 × 12 · braquial · 45s desc',    rest:45, video:''},
+          {n:'Abdominal Crunch',              d:'3 × 15 · abdômen · 30s desc',     rest:30, video:''},
+          {n:'Esteira',                       d:'10 min · caminhada moderada',      rest:0,  video:''},
+        ]},
+      },
     },
-    academia: {
-      A: { titulo:'Superior Completo — Equilíbrio', grupo:'Peito, Costas e Ombro · Com Pesos', meta:{ex:7,min:50,series:'3×12'}, ex:[
-        {n:'Supino Reto com Barra',         d:'3 × 12 · peitoral · 60s desc',    rest:60, video:''},
-        {n:'Puxada Frontal Aberta',         d:'3 × 12 · dorsal · 60s desc',      rest:60, video:''},
-        {n:'Desenvolvimento com Halteres',  d:'3 × 12 · ombro · 60s desc',       rest:60, video:''},
-        {n:'Crucifixo Reto',                d:'3 × 12 · peitoral externo · 45s desc',rest:45, video:''},
-        {n:'Remada Curvada com Barra',      d:'3 × 12 · costas espessura · 60s desc',rest:60, video:''},
-        {n:'Elevação Lateral',              d:'3 × 15 · deltoide · 45s desc',    rest:45, video:''},
-        {n:'Prancha com Disco',             d:'3 × 45s · core · 30s desc',       rest:30, video:''},
-      ]},
-      B: { titulo:'Inferior Completo — Equilíbrio', grupo:'Pernas e Glúteos · Com Pesos', meta:{ex:6,min:50,series:'3×12'}, ex:[
-        {n:'Agachamento Livre com Barra',   d:'3 × 12 · quadríceps · 75s desc',  rest:75, video:''},
-        {n:'Leg Press 45°',                 d:'3 × 12 · pernas · 60s desc',      rest:60, video:''},
-        {n:'Cadeira Extensora',             d:'3 × 15 · quadríceps isolado · 45s desc',rest:45, video:''},
-        {n:'Cadeira Flexora',               d:'3 × 12 · posterior · 45s desc',   rest:45, video:''},
-        {n:'Stiff com Barra',               d:'3 × 12 · glúteo e posterior · 60s desc',rest:60, video:''},
-        {n:'Panturrilha em Pé no Aparelho', d:'4 × 15 · panturrilha · 30s desc', rest:30, video:''},
-      ]},
-      C: { titulo:'Braços + Cardio — Equilíbrio', grupo:'Bíceps, Tríceps e Condicionamento · Com Pesos', meta:{ex:6,min:45,series:'3×12'}, ex:[
-        {n:'Rosca Direta com Barra',        d:'3 × 12 · bíceps · 60s desc',      rest:60, video:''},
-        {n:'Tríceps Testa com Barra W',     d:'3 × 12 · tríceps · 60s desc',     rest:60, video:''},
-        {n:'Rosca Martelo',                 d:'3 × 12 · braquial · 45s desc',    rest:45, video:''},
-        {n:'Tríceps Pulley Corda',          d:'3 × 15 · tríceps · 45s desc',     rest:45, video:''},
-        {n:'Abdominal Bicicleta',           d:'3 × 20 · oblíquo · 30s desc',     rest:30, video:''},
-        {n:'Esteira ou Bicicleta',          d:'10 min · ritmo moderado',          rest:0,  video:''},
-      ]},
+
+    /* ── INTERMEDIÁRIO ────────────────────────────────── */
+    intermediario: {
+      casa: {
+        A: { titulo:'Full Body A — Equilíbrio', grupo:'Superior Completo · Peso Corporal', meta:{ex:6,min:45,series:'3×12'}, ex:[
+          {n:'Flexão de Braços',              d:'3 × 12 · peitoral e tríceps · 60s desc',rest:60, video:''},
+          {n:'Flexão Inclinada (pés na cadeira)',d:'3 × 10 · peito superior · 60s desc',rest:60, video:''},
+          {n:'Mergulho entre Cadeiras',       d:'3 × 12 · tríceps · 45s desc',     rest:45, video:''},
+          {n:'Elevação Lateral com Garrafa',  d:'3 × 12 · deltoide · 45s desc',    rest:45, video:''},
+          {n:'Remada Invertida (mesa)',        d:'3 × 12 · costas · 60s desc',      rest:60, video:''},
+          {n:'Prancha com Toque no Ombro',    d:'3 × 16 toques · core · 30s desc', rest:30, video:''},
+        ]},
+        B: { titulo:'Full Body B — Equilíbrio', grupo:'Inferior + Core · Peso Corporal', meta:{ex:6,min:45,series:'3×12'}, ex:[
+          {n:'Agachamento Livre',             d:'3 × 12 · quadríceps · 60s desc',  rest:60, video:''},
+          {n:'Avanço Alternado',              d:'3 × 10 cada · glúteo e quad · 60s desc',rest:60, video:''},
+          {n:'Elevação Pélvica',              d:'3 × 15 · glúteo · 45s desc',      rest:45, video:''},
+          {n:'Terra Romeno Unilateral',       d:'3 × 10 cada · posterior · 45s desc',rest:45, video:''},
+          {n:'Panturrilha Unilateral',        d:'3 × 15 cada · panturrilha · 30s desc',rest:30, video:''},
+          {n:'Abdominal Bicicleta',           d:'3 × 20 · oblíquo e core · 30s desc',rest:30, video:''},
+        ]},
+        C: { titulo:'Cardio + Core — Equilíbrio', grupo:'Condicionamento e Funcional · Peso Corporal', meta:{ex:6,min:40,series:'3×10'}, ex:[
+          {n:'Burpee',                        d:'3 × 8 · condicionamento · 60s desc',rest:60, video:''},
+          {n:'Mountain Climber',              d:'3 × 30s · cardio e core · 45s desc',rest:45, video:''},
+          {n:'Agachamento com Salto',         d:'3 × 10 · potência · 60s desc',    rest:60, video:''},
+          {n:'Flexão de Braços',              d:'3 × 10 · manutenção superior · 45s desc',rest:45, video:''},
+          {n:'Prancha Lateral',               d:'3 × 30s cada · oblíquo · 30s desc',rest:30, video:''},
+          {n:'Elevação de Pernas no Solo',    d:'3 × 12 · infra abdominal · 30s desc',rest:30, video:''},
+        ]},
+      },
+      academia: {
+        A: { titulo:'Superior Completo — Equilíbrio', grupo:'Peito, Costas e Ombro · Com Pesos', meta:{ex:7,min:50,series:'3×12'}, ex:[
+          {n:'Supino Reto com Barra',         d:'3 × 12 · peitoral · 60s desc',    rest:60, video:''},
+          {n:'Puxada Frontal Aberta',         d:'3 × 12 · dorsal · 60s desc',      rest:60, video:''},
+          {n:'Desenvolvimento com Halteres',  d:'3 × 12 · ombro · 60s desc',       rest:60, video:''},
+          {n:'Crucifixo Reto',                d:'3 × 12 · peitoral externo · 45s desc',rest:45, video:''},
+          {n:'Remada Curvada com Barra',      d:'3 × 12 · costas espessura · 60s desc',rest:60, video:''},
+          {n:'Elevação Lateral',              d:'3 × 15 · deltoide · 45s desc',    rest:45, video:''},
+          {n:'Prancha com Disco',             d:'3 × 45s · core · 30s desc',       rest:30, video:''},
+        ]},
+        B: { titulo:'Inferior Completo — Equilíbrio', grupo:'Pernas e Glúteos · Com Pesos', meta:{ex:6,min:50,series:'3×12'}, ex:[
+          {n:'Agachamento Livre com Barra',   d:'3 × 12 · quadríceps · 75s desc',  rest:75, video:''},
+          {n:'Leg Press 45°',                 d:'3 × 12 · pernas · 60s desc',      rest:60, video:''},
+          {n:'Cadeira Extensora',             d:'3 × 15 · quadríceps isolado · 45s desc',rest:45, video:''},
+          {n:'Cadeira Flexora',               d:'3 × 12 · posterior · 45s desc',   rest:45, video:''},
+          {n:'Stiff com Barra',               d:'3 × 12 · glúteo e posterior · 60s desc',rest:60, video:''},
+          {n:'Panturrilha em Pé no Aparelho', d:'4 × 15 · panturrilha · 30s desc', rest:30, video:''},
+        ]},
+        C: { titulo:'Braços + Cardio — Equilíbrio', grupo:'Bíceps, Tríceps e Condicionamento · Com Pesos', meta:{ex:6,min:45,series:'3×12'}, ex:[
+          {n:'Rosca Direta com Barra',        d:'3 × 12 · bíceps · 60s desc',      rest:60, video:''},
+          {n:'Tríceps Testa com Barra W',     d:'3 × 12 · tríceps · 60s desc',     rest:60, video:''},
+          {n:'Rosca Martelo',                 d:'3 × 12 · braquial · 45s desc',    rest:45, video:''},
+          {n:'Tríceps Pulley Corda',          d:'3 × 15 · tríceps · 45s desc',     rest:45, video:''},
+          {n:'Abdominal Bicicleta',           d:'3 × 20 · oblíquo · 30s desc',     rest:30, video:''},
+          {n:'Esteira ou Bicicleta',          d:'10 min · ritmo moderado',          rest:0,  video:''},
+        ]},
+      },
+    },
+
+    /* ── AVANÇADO ─────────────────────────────────────── */
+    avancado: {
+      casa: {
+        A: { titulo:'Full Body A — Avançado', grupo:'Superior Completo · Alta Intensidade', meta:{ex:6,min:50,series:'4×12'}, ex:[
+          {n:'Flexão Explosiva',              d:'4 × 12 · peitoral e potência · 45s desc',rest:45, video:''},
+          {n:'Flexão Archer',                 d:'4 × 8 cada · peitoral unilateral · 45s desc',rest:45, video:''},
+          {n:'Remada Invertida com Pausa',    d:'4 × 12 · costas · 45s desc',      rest:45, video:''},
+          {n:'Pike Push-up',                  d:'4 × 12 · ombro · 45s desc',       rest:45, video:''},
+          {n:'Mergulho entre Cadeiras com Peso',d:'4 × 12 · tríceps pesado · 45s desc',rest:45, video:''},
+          {n:'Prancha com Elevação de Braço', d:'4 × 16 toques · core · 30s desc', rest:30, video:''},
+        ]},
+        B: { titulo:'Full Body B — Avançado', grupo:'Inferior + Core · Alta Intensidade', meta:{ex:6,min:50,series:'4×12'}, ex:[
+          {n:'Agachamento Búlgaro com Peso',  d:'4 × 10 cada · quadríceps · 60s desc',rest:60, video:''},
+          {n:'Avanço com Salto Alternado',    d:'4 × 12 · glúteo e quad · 45s desc',rest:45, video:''},
+          {n:'Terra Romeno Unilateral',       d:'4 × 10 cada · posterior · 45s desc',rest:45, video:''},
+          {n:'Elevação Pélvica Unilateral',   d:'4 × 15 cada · glúteo · 30s desc', rest:30, video:''},
+          {n:'Panturrilha Unilateral com Peso',d:'4 × 20 cada · panturrilha · 20s desc',rest:20, video:''},
+          {n:'Abdominal com Torção',          d:'4 × 20 · oblíquo · 30s desc',     rest:30, video:''},
+        ]},
+        C: { titulo:'Cardio + Core — Avançado', grupo:'HIIT e Funcional · Alta Intensidade', meta:{ex:6,min:45,series:'4×12'}, ex:[
+          {n:'Burpee com Salto',              d:'4 × 10 · HIIT · 30s desc',        rest:30, video:''},
+          {n:'Mountain Climber Rápido',       d:'4 × 40s · cardio e core · 20s desc',rest:20, video:''},
+          {n:'Jump Squat',                    d:'4 × 15 · potência · 30s desc',    rest:30, video:''},
+          {n:'Flexão Explosiva',              d:'4 × 10 · superior · 30s desc',    rest:30, video:''},
+          {n:'Prancha Lateral com Elevação',  d:'4 × 30s cada · oblíquo · 20s desc',rest:20, video:''},
+          {n:'Elevação de Pernas Suspenso',   d:'4 × 15 · infra abdominal · 20s desc',rest:20, video:''},
+        ]},
+      },
+      academia: {
+        A: { titulo:'Superior Completo — Avançado', grupo:'Peito, Costas e Ombro · Alta Carga', meta:{ex:7,min:55,series:'4×10'}, ex:[
+          {n:'Supino Reto com Barra',         d:'4 × 10 · peitoral · 75s desc',    rest:75, video:''},
+          {n:'Puxada Frontal Aberta',         d:'4 × 10 · dorsal · 75s desc',      rest:75, video:''},
+          {n:'Desenvolvimento com Barra',     d:'4 × 10 · ombro · 75s desc',       rest:75, video:''},
+          {n:'Crucifixo Reto',                d:'3 × 12 · peitoral externo · 60s desc',rest:60, video:''},
+          {n:'Remada Curvada com Barra',      d:'4 × 10 · costas espessura · 75s desc',rest:75, video:''},
+          {n:'Elevação Lateral Drop-set',     d:'3 × 15+12 · deltoide · 45s desc', rest:45, video:''},
+          {n:'Prancha com Anilha',            d:'3 × 45s · core · 30s desc',       rest:30, video:''},
+        ]},
+        B: { titulo:'Inferior Completo — Avançado', grupo:'Pernas e Glúteos · Alta Carga', meta:{ex:6,min:55,series:'4×10'}, ex:[
+          {n:'Agachamento Livre com Barra',   d:'4 × 10 · quadríceps · 90s desc',  rest:90, video:''},
+          {n:'Leg Press 45°',                 d:'4 × 12 · pernas · 75s desc',      rest:75, video:''},
+          {n:'Cadeira Extensora',             d:'3 × 15 · quadríceps isolado · 45s desc',rest:45, video:''},
+          {n:'Stiff com Barra',               d:'4 × 10 · glúteo e posterior · 75s desc',rest:75, video:''},
+          {n:'Agachamento Búlgaro',           d:'3 × 10 cada · quadríceps · 60s desc',rest:60, video:''},
+          {n:'Panturrilha em Pé Drop-set',    d:'4 × 20+15 · panturrilha · 30s desc',rest:30, video:''},
+        ]},
+        C: { titulo:'Braços + Cardio — Avançado', grupo:'Bíceps, Tríceps e HIIT · Alta Intensidade', meta:{ex:6,min:50,series:'4×12'}, ex:[
+          {n:'Rosca Direta com Barra',        d:'4 × 12 · bíceps · 60s desc',      rest:60, video:''},
+          {n:'Tríceps Testa com Barra W',     d:'4 × 12 · tríceps · 60s desc',     rest:60, video:''},
+          {n:'Rosca 21',                      d:'3 × · bíceps total · 45s desc',   rest:45, video:''},
+          {n:'Tríceps Pulley + Francês (bi-set)',d:'3 × 15+12 · tríceps · 45s desc',rest:45, video:''},
+          {n:'Abdominal Roldana',             d:'3 × 20 · abdômen · 30s desc',     rest:30, video:''},
+          {n:'Esteira HIIT',                  d:'12 min · 30s sprint / 30s lento', rest:0,  video:''},
+        ]},
+      },
     },
   },
 
-  /* ── CRESCER ────────────────────────────────────────
-     Força progressiva, reps baixas, descanso longo (90–120s)
-     Sobrecarga mecânica máxima. Superávit calórico.   */
+  /* ════════════════════════════════════════════════════
+     CRESCER — força progressiva, reps baixas, descanso longo
+     ════════════════════════════════════════════════════ */
   crescer: {
-    casa: {
-      A: { titulo:'Força Superior A — Hipertrofia', grupo:'Peito e Tríceps · Sobrecarga Progressiva', meta:{ex:6,min:50,series:'5×8'}, ex:[
-        {n:'Flexão de Braços com Pausa 3s', d:'5 × 8 · peitoral · 90s desc',     rest:90, video:''},
-        {n:'Flexão Inclinada (pés na cadeira)',d:'4 × 10 · peito superior · 90s desc',rest:90, video:''},
-        {n:'Flexão Diamante',               d:'4 × 10 · tríceps · 75s desc',     rest:75, video:''},
-        {n:'Mergulho entre Cadeiras com Peso',d:'4 × 8 · tríceps pesado · 90s desc',rest:90, video:''},
-        {n:'Flexão com Afastamento Lenta',  d:'3 × 10 · peitoral externo · 75s desc',rest:75, video:''},
-        {n:'Prancha com Peso nas Costas',   d:'3 × 45s · core · 45s desc',       rest:45, video:''},
-      ]},
-      B: { titulo:'Força Superior B — Hipertrofia', grupo:'Costas e Bíceps · Sobrecarga Progressiva', meta:{ex:6,min:50,series:'5×8'}, ex:[
-        {n:'Remada Invertida (mesa)',        d:'5 × 8 · costas · 90s desc',       rest:90, video:''},
-        {n:'Superman com Hold 3s',          d:'4 × 12 · lombar · 75s desc',      rest:75, video:''},
-        {n:'Flexão com Rotação',            d:'4 × 10 · serrátil · 75s desc',    rest:75, video:''},
-        {n:'Rosca Isométrica com Toalha',   d:'4 × 40s · bíceps intenso · 60s desc',rest:60, video:''},
-        {n:'Elevação de Pernas no Solo',    d:'4 × 15 · infra abdominal · 45s desc',rest:45, video:''},
-        {n:'Prancha Lateral com Elevação',  d:'3 × 30s cada · oblíquo · 45s desc',rest:45, video:''},
-      ]},
-      C: { titulo:'Força Inferior — Hipertrofia', grupo:'Pernas e Glúteos · Sobrecarga Progressiva', meta:{ex:6,min:55,series:'5×8'}, ex:[
-        {n:'Agachamento Búlgaro com Peso',  d:'5 × 8 cada · quadríceps · 120s desc',rest:120, video:''},
-        {n:'Avanço com Joelho Pulsante',    d:'4 × 10 · glúteo e quad · 90s desc',rest:90, video:''},
-        {n:'Terra Romeno Unilateral',       d:'4 × 10 cada · posterior · 90s desc',rest:90, video:''},
-        {n:'Elevação Pélvica com Pausa 2s', d:'5 × 12 · glúteo · 75s desc',      rest:75, video:''},
-        {n:'Agachamento Sumô com Pausa',    d:'4 × 10 · adutores · 75s desc',    rest:75, video:''},
-        {n:'Panturrilha Unilateral com Peso',d:'5 × 15 cada · panturrilha · 45s desc',rest:45, video:''},
-      ]},
+
+    /* ── INICIANTE ────────────────────────────────────── */
+    iniciante: {
+      casa: {
+        A: { titulo:'Força Superior A — Iniciante', grupo:'Peito e Tríceps · Fundamentos', meta:{ex:5,min:35,series:'3×8'}, ex:[
+          {n:'Flexão de Braços (joelhos)',    d:'3 × 8  · peitoral · 90s desc',    rest:90, video:''},
+          {n:'Flexão Inclinada na Parede',    d:'3 × 10 · peito superior · 90s desc',rest:90, video:''},
+          {n:'Mergulho entre Cadeiras',       d:'3 × 8  · tríceps · 90s desc',     rest:90, video:''},
+          {n:'Elevação Lateral com Garrafa',  d:'3 × 10 · deltoide · 75s desc',    rest:75, video:''},
+          {n:'Prancha',                       d:'3 × 30s · core · 60s desc',       rest:60, video:''},
+        ]},
+        B: { titulo:'Força Superior B — Iniciante', grupo:'Costas e Bíceps · Fundamentos', meta:{ex:5,min:35,series:'3×8'}, ex:[
+          {n:'Remada com Garrafa',            d:'3 × 10 · costas · 90s desc',      rest:90, video:''},
+          {n:'Superman com Hold 2s',          d:'3 × 12 · lombar · 75s desc',      rest:75, video:''},
+          {n:'Rosca com Garrafa',             d:'3 × 10 · bíceps · 75s desc',      rest:75, video:''},
+          {n:'Elevação de Pernas no Solo',    d:'3 × 12 · infra abdominal · 60s desc',rest:60, video:''},
+          {n:'Prancha Lateral',               d:'3 × 25s cada · oblíquo · 60s desc',rest:60, video:''},
+        ]},
+        C: { titulo:'Força Inferior — Iniciante', grupo:'Pernas e Glúteos · Fundamentos', meta:{ex:5,min:40,series:'3×8'}, ex:[
+          {n:'Agachamento Livre',             d:'3 × 10 · quadríceps · 90s desc',  rest:90, video:''},
+          {n:'Avanço Alternado',              d:'3 × 8 cada · glúteo · 90s desc',  rest:90, video:''},
+          {n:'Elevação Pélvica',              d:'3 × 12 · glúteo · 75s desc',      rest:75, video:''},
+          {n:'Terra Romeno (peso corporal)',   d:'3 × 10 · posterior · 75s desc',   rest:75, video:''},
+          {n:'Panturrilha em Pé',             d:'3 × 15 · panturrilha · 60s desc', rest:60, video:''},
+        ]},
+      },
+      academia: {
+        A: { titulo:'Força Superior A — Iniciante', grupo:'Peito, Ombro e Tríceps · Máquinas', meta:{ex:5,min:40,series:'3×10'}, ex:[
+          {n:'Supino na Máquina',             d:'3 × 10 · peitoral · 90s desc',    rest:90, video:''},
+          {n:'Crucifixo na Máquina',          d:'3 × 12 · peitoral externo · 75s desc',rest:75, video:''},
+          {n:'Desenvolvimento na Máquina',    d:'3 × 10 · ombro · 90s desc',       rest:90, video:''},
+          {n:'Elevação Lateral',              d:'3 × 12 · deltoide · 60s desc',    rest:60, video:''},
+          {n:'Tríceps Pulley',                d:'3 × 12 · tríceps · 60s desc',     rest:60, video:''},
+        ]},
+        B: { titulo:'Força Superior B — Iniciante', grupo:'Costas e Bíceps · Máquinas', meta:{ex:5,min:40,series:'3×10'}, ex:[
+          {n:'Puxada Frontal (máquina)',       d:'3 × 10 · dorsal · 90s desc',      rest:90, video:''},
+          {n:'Remada Sentada (máquina)',       d:'3 × 10 · costas · 90s desc',      rest:90, video:''},
+          {n:'Rosca Direta com Halteres',     d:'3 × 12 · bíceps · 60s desc',      rest:60, video:''},
+          {n:'Rosca Martelo',                 d:'3 × 12 · braquial · 60s desc',    rest:60, video:''},
+          {n:'Prancha',                       d:'3 × 30s · core · 60s desc',       rest:60, video:''},
+        ]},
+        C: { titulo:'Força Inferior — Iniciante', grupo:'Pernas e Glúteos · Máquinas', meta:{ex:5,min:40,series:'3×10'}, ex:[
+          {n:'Leg Press (carga moderada)',     d:'3 × 10 · pernas · 90s desc',      rest:90, video:''},
+          {n:'Cadeira Extensora',             d:'3 × 12 · quadríceps · 75s desc',  rest:75, video:''},
+          {n:'Cadeira Flexora',               d:'3 × 12 · posterior · 75s desc',   rest:75, video:''},
+          {n:'Stiff com Halteres',            d:'3 × 10 · glúteo e posterior · 75s desc',rest:75, video:''},
+          {n:'Panturrilha Sentado',           d:'3 × 15 · panturrilha · 60s desc', rest:60, video:''},
+        ]},
+      },
     },
-    academia: {
-      A: { titulo:'Força Superior A — Hipertrofia', grupo:'Peito, Ombro e Tríceps · Com Pesos', meta:{ex:7,min:60,series:'5×6'}, ex:[
-        {n:'Supino Reto com Barra',         d:'5 × 6 · peitoral · 120s desc',    rest:120, video:''},
-        {n:'Supino Inclinado com Halteres', d:'4 × 8 · peito superior · 90s desc',rest:90, video:''},
-        {n:'Crucifixo Reto',                d:'3 × 10 · peitoral externo · 75s desc',rest:75, video:''},
-        {n:'Desenvolvimento com Barra',     d:'5 × 6 · ombro · 120s desc',       rest:120, video:''},
-        {n:'Elevação Lateral',              d:'4 × 10 · deltoide · 60s desc',    rest:60, video:''},
-        {n:'Tríceps Testa com Barra W',     d:'4 × 8 · tríceps · 75s desc',      rest:75, video:''},
-        {n:'Tríceps Pulley Corda',          d:'3 × 10 · tríceps · 60s desc',     rest:60, video:''},
-      ]},
-      B: { titulo:'Força Superior B — Hipertrofia', grupo:'Costas e Bíceps · Com Pesos', meta:{ex:7,min:60,series:'5×6'}, ex:[
-        {n:'Levantamento Terra',            d:'5 × 5 · posterior e costas · 180s desc',rest:180, video:''},
-        {n:'Puxada Frontal Fechada',        d:'4 × 8 · dorsal · 90s desc',       rest:90, video:''},
-        {n:'Remada Curvada com Barra',      d:'4 × 8 · costas espessura · 90s desc',rest:90, video:''},
-        {n:'Remada Unilateral com Halter',  d:'3 × 10 · lombar · 75s desc',      rest:75, video:''},
-        {n:'Rosca Direta com Barra W',      d:'4 × 8 · bíceps · 75s desc',       rest:75, video:''},
-        {n:'Rosca Martelo',                 d:'3 × 10 · braquial · 60s desc',    rest:60, video:''},
-        {n:'Face Pull',                     d:'3 × 12 · deltoide posterior · 45s desc',rest:45, video:''},
-      ]},
-      C: { titulo:'Força Inferior — Hipertrofia', grupo:'Pernas e Glúteos · Com Pesos', meta:{ex:7,min:65,series:'5×6'}, ex:[
-        {n:'Agachamento Livre com Barra',   d:'5 × 5 · quadríceps · 180s desc',  rest:180, video:''},
-        {n:'Leg Press 45°',                 d:'4 × 10 · pernas · 90s desc',      rest:90, video:''},
-        {n:'Cadeira Extensora',             d:'3 × 12 · quadríceps isolado · 60s desc',rest:60, video:''},
-        {n:'Cadeira Flexora',               d:'3 × 12 · posterior · 60s desc',   rest:60, video:''},
-        {n:'Stiff com Barra',               d:'4 × 8 · glúteo e posterior · 90s desc',rest:90, video:''},
-        {n:'Agachamento Búlgaro',           d:'3 × 8 cada · quadríceps · 75s desc',rest:75, video:''},
-        {n:'Panturrilha em Pé no Aparelho', d:'5 × 15 · panturrilha · 45s desc', rest:45, video:''},
-      ]},
+
+    /* ── INTERMEDIÁRIO ────────────────────────────────── */
+    intermediario: {
+      casa: {
+        A: { titulo:'Força Superior A — Hipertrofia', grupo:'Peito e Tríceps · Sobrecarga Progressiva', meta:{ex:6,min:50,series:'5×8'}, ex:[
+          {n:'Flexão de Braços com Pausa 3s', d:'5 × 8 · peitoral · 90s desc',     rest:90, video:''},
+          {n:'Flexão Inclinada (pés na cadeira)',d:'4 × 10 · peito superior · 90s desc',rest:90, video:''},
+          {n:'Flexão Diamante',               d:'4 × 10 · tríceps · 75s desc',     rest:75, video:''},
+          {n:'Mergulho entre Cadeiras com Peso',d:'4 × 8 · tríceps pesado · 90s desc',rest:90, video:''},
+          {n:'Flexão com Afastamento Lenta',  d:'3 × 10 · peitoral externo · 75s desc',rest:75, video:''},
+          {n:'Prancha com Peso nas Costas',   d:'3 × 45s · core · 45s desc',       rest:45, video:''},
+        ]},
+        B: { titulo:'Força Superior B — Hipertrofia', grupo:'Costas e Bíceps · Sobrecarga Progressiva', meta:{ex:6,min:50,series:'5×8'}, ex:[
+          {n:'Remada Invertida (mesa)',        d:'5 × 8 · costas · 90s desc',       rest:90, video:''},
+          {n:'Superman com Hold 3s',          d:'4 × 12 · lombar · 75s desc',      rest:75, video:''},
+          {n:'Flexão com Rotação',            d:'4 × 10 · serrátil · 75s desc',    rest:75, video:''},
+          {n:'Rosca Isométrica com Toalha',   d:'4 × 40s · bíceps intenso · 60s desc',rest:60, video:''},
+          {n:'Elevação de Pernas no Solo',    d:'4 × 15 · infra abdominal · 45s desc',rest:45, video:''},
+          {n:'Prancha Lateral com Elevação',  d:'3 × 30s cada · oblíquo · 45s desc',rest:45, video:''},
+        ]},
+        C: { titulo:'Força Inferior — Hipertrofia', grupo:'Pernas e Glúteos · Sobrecarga Progressiva', meta:{ex:6,min:55,series:'5×8'}, ex:[
+          {n:'Agachamento Búlgaro com Peso',  d:'5 × 8 cada · quadríceps · 120s desc',rest:120, video:''},
+          {n:'Avanço com Joelho Pulsante',    d:'4 × 10 · glúteo e quad · 90s desc',rest:90, video:''},
+          {n:'Terra Romeno Unilateral',       d:'4 × 10 cada · posterior · 90s desc',rest:90, video:''},
+          {n:'Elevação Pélvica com Pausa 2s', d:'5 × 12 · glúteo · 75s desc',      rest:75, video:''},
+          {n:'Agachamento Sumô com Pausa',    d:'4 × 10 · adutores · 75s desc',    rest:75, video:''},
+          {n:'Panturrilha Unilateral com Peso',d:'5 × 15 cada · panturrilha · 45s desc',rest:45, video:''},
+        ]},
+      },
+      academia: {
+        A: { titulo:'Força Superior A — Hipertrofia', grupo:'Peito, Ombro e Tríceps · Com Pesos', meta:{ex:7,min:60,series:'5×6'}, ex:[
+          {n:'Supino Reto com Barra',         d:'5 × 6 · peitoral · 120s desc',    rest:120, video:''},
+          {n:'Supino Inclinado com Halteres', d:'4 × 8 · peito superior · 90s desc',rest:90, video:''},
+          {n:'Crucifixo Reto',                d:'3 × 10 · peitoral externo · 75s desc',rest:75, video:''},
+          {n:'Desenvolvimento com Barra',     d:'5 × 6 · ombro · 120s desc',       rest:120, video:''},
+          {n:'Elevação Lateral',              d:'4 × 10 · deltoide · 60s desc',    rest:60, video:''},
+          {n:'Tríceps Testa com Barra W',     d:'4 × 8 · tríceps · 75s desc',      rest:75, video:''},
+          {n:'Tríceps Pulley Corda',          d:'3 × 10 · tríceps · 60s desc',     rest:60, video:''},
+        ]},
+        B: { titulo:'Força Superior B — Hipertrofia', grupo:'Costas e Bíceps · Com Pesos', meta:{ex:7,min:60,series:'5×6'}, ex:[
+          {n:'Levantamento Terra',            d:'5 × 5 · posterior e costas · 180s desc',rest:180, video:''},
+          {n:'Puxada Frontal Fechada',        d:'4 × 8 · dorsal · 90s desc',       rest:90, video:''},
+          {n:'Remada Curvada com Barra',      d:'4 × 8 · costas espessura · 90s desc',rest:90, video:''},
+          {n:'Remada Unilateral com Halter',  d:'3 × 10 · lombar · 75s desc',      rest:75, video:''},
+          {n:'Rosca Direta com Barra W',      d:'4 × 8 · bíceps · 75s desc',       rest:75, video:''},
+          {n:'Rosca Martelo',                 d:'3 × 10 · braquial · 60s desc',    rest:60, video:''},
+          {n:'Face Pull',                     d:'3 × 12 · deltoide posterior · 45s desc',rest:45, video:''},
+        ]},
+        C: { titulo:'Força Inferior — Hipertrofia', grupo:'Pernas e Glúteos · Com Pesos', meta:{ex:7,min:65,series:'5×6'}, ex:[
+          {n:'Agachamento Livre com Barra',   d:'5 × 5 · quadríceps · 180s desc',  rest:180, video:''},
+          {n:'Leg Press 45°',                 d:'4 × 10 · pernas · 90s desc',      rest:90, video:''},
+          {n:'Cadeira Extensora',             d:'3 × 12 · quadríceps isolado · 60s desc',rest:60, video:''},
+          {n:'Cadeira Flexora',               d:'3 × 12 · posterior · 60s desc',   rest:60, video:''},
+          {n:'Stiff com Barra',               d:'4 × 8 · glúteo e posterior · 90s desc',rest:90, video:''},
+          {n:'Agachamento Búlgaro',           d:'3 × 8 cada · quadríceps · 75s desc',rest:75, video:''},
+          {n:'Panturrilha em Pé no Aparelho', d:'5 × 15 · panturrilha · 45s desc', rest:45, video:''},
+        ]},
+      },
+    },
+
+    /* ── AVANÇADO ─────────────────────────────────────── */
+    avancado: {
+      casa: {
+        A: { titulo:'Força Superior A — Elite', grupo:'Peito e Tríceps · Máxima Intensidade', meta:{ex:6,min:55,series:'6×6'}, ex:[
+          {n:'Flexão com Colete de Peso',     d:'6 × 6 · peitoral pesado · 120s desc',rest:120, video:''},
+          {n:'Flexão Archer',                 d:'5 × 6 cada · peitoral unilateral · 120s desc',rest:120, video:''},
+          {n:'Mergulho entre Cadeiras com Peso',d:'5 × 8 · tríceps pesado · 90s desc',rest:90, video:''},
+          {n:'Pike Push-up com Pausa 3s',     d:'4 × 8 · ombro · 90s desc',        rest:90, video:''},
+          {n:'Flexão Explosiva',              d:'5 × 8 · potência · 90s desc',      rest:90, video:''},
+          {n:'Prancha com Peso + Elevação',   d:'4 × 45s · core pesado · 60s desc', rest:60, video:''},
+        ]},
+        B: { titulo:'Força Superior B — Elite', grupo:'Costas e Bíceps · Máxima Intensidade', meta:{ex:6,min:55,series:'6×6'}, ex:[
+          {n:'Remada Invertida com Peso',     d:'6 × 6 · costas · 120s desc',       rest:120, video:''},
+          {n:'Pull-up (barra)',               d:'5 × 6 · dorsal · 120s desc',       rest:120, video:''},
+          {n:'Superman com Hold 4s',          d:'4 × 12 · lombar · 90s desc',       rest:90, video:''},
+          {n:'Rosca Isométrica com Toalha',   d:'5 × 45s · bíceps intenso · 75s desc',rest:75, video:''},
+          {n:'Elevação de Pernas Suspenso',   d:'5 × 15 · infra abdominal · 60s desc',rest:60, video:''},
+          {n:'Prancha Lateral com Peso',      d:'4 × 35s cada · oblíquo · 60s desc',rest:60, video:''},
+        ]},
+        C: { titulo:'Força Inferior — Elite', grupo:'Pernas e Glúteos · Máxima Intensidade', meta:{ex:6,min:60,series:'6×6'}, ex:[
+          {n:'Agachamento Búlgaro com Colete',d:'6 × 6 cada · quadríceps · 120s desc',rest:120, video:''},
+          {n:'Terra Romeno Unilateral com Peso',d:'5 × 8 cada · posterior · 90s desc',rest:90, video:''},
+          {n:'Avanço com Peso no Ombro',      d:'5 × 8 cada · glúteo e quad · 90s desc',rest:90, video:''},
+          {n:'Elevação Pélvica com Peso no Quadril',d:'6 × 10 · glúteo pesado · 75s desc',rest:75, video:''},
+          {n:'Agachamento Sumô com Peso',     d:'4 × 10 · adutores · 75s desc',    rest:75, video:''},
+          {n:'Panturrilha Unilateral com Peso',d:'6 × 15 cada · panturrilha · 45s desc',rest:45, video:''},
+        ]},
+      },
+      academia: {
+        A: { titulo:'Força Superior A — Elite', grupo:'Peito, Ombro e Tríceps · Força Máxima', meta:{ex:7,min:70,series:'6×4'}, ex:[
+          {n:'Supino Reto com Barra',         d:'6 × 4 · peitoral · 180s desc',    rest:180, video:''},
+          {n:'Supino Inclinado com Halteres', d:'5 × 6 · peito superior · 120s desc',rest:120, video:''},
+          {n:'Crossover Polia + Crucifixo (bi-set)',d:'4 × 12+10 · peitoral · 60s desc',rest:60, video:''},
+          {n:'Desenvolvimento com Barra',     d:'5 × 5 · ombro · 150s desc',       rest:150, video:''},
+          {n:'Elevação Lateral Drop-set',     d:'4 × 15+12+10 · deltoide · 45s desc',rest:45, video:''},
+          {n:'Tríceps Testa + Pulley (bi-set)',d:'5 × 8+12 · tríceps · 60s desc',  rest:60, video:''},
+          {n:'Mergulho com Carga',            d:'4 × 8 · tríceps pesado · 90s desc',rest:90, video:''},
+        ]},
+        B: { titulo:'Força Superior B — Elite', grupo:'Costas e Bíceps · Força Máxima', meta:{ex:7,min:70,series:'6×4'}, ex:[
+          {n:'Levantamento Terra',            d:'6 × 4 · posterior e costas · 240s desc',rest:240, video:''},
+          {n:'Puxada Frontal Fechada',        d:'5 × 6 · dorsal · 120s desc',       rest:120, video:''},
+          {n:'Remada Curvada com Barra',      d:'5 × 6 · costas espessura · 120s desc',rest:120, video:''},
+          {n:'Remada Unilateral com Halter',  d:'4 × 8 · lombar · 90s desc',       rest:90, video:''},
+          {n:'Rosca Direta com Barra W',      d:'5 × 6 · bíceps · 90s desc',       rest:90, video:''},
+          {n:'Rosca 21 com Barra',            d:'4 × · bíceps total · 75s desc',   rest:75, video:''},
+          {n:'Face Pull + Encolhimento (bi-set)',d:'4 × 15+12 · deltoide e trapézio · 60s desc',rest:60, video:''},
+        ]},
+        C: { titulo:'Força Inferior — Elite', grupo:'Pernas e Glúteos · Força Máxima', meta:{ex:7,min:75,series:'6×4'}, ex:[
+          {n:'Agachamento Livre com Barra',   d:'6 × 4 · quadríceps · 240s desc',  rest:240, video:''},
+          {n:'Leg Press 45° (carga máxima)',  d:'5 × 8 · pernas · 120s desc',      rest:120, video:''},
+          {n:'Levantamento Terra Romeno',     d:'5 × 6 · glúteo e posterior · 120s desc',rest:120, video:''},
+          {n:'Cadeira Extensora Drop-set',    d:'4 × 15+12+10 · quadríceps · 60s desc',rest:60, video:''},
+          {n:'Agachamento Búlgaro com Barra', d:'4 × 8 cada · quadríceps · 90s desc',rest:90, video:''},
+          {n:'Cadeira Flexora',               d:'4 × 10 · posterior · 60s desc',   rest:60, video:''},
+          {n:'Panturrilha em Pé Drop-set',    d:'5 × 20+15+10 · panturrilha · 45s desc',rest:45, video:''},
+        ]},
+      },
     },
   },
 };
 
-/* TREINOS — mantido como alias para os programas premium que ainda o referenciam.
-   Para programas base (secar/manter/crescer), getTreinoAtivo usa TREINOS_OBJ. */
-const TREINOS = TREINOS_OBJ.manter;
+
+/* TREINOS — alias para programas premium que referenciam modalidade diretamente */
+const TREINOS = TREINOS_OBJ.manter.intermediario;
 // Legacy compat
-const TREINOS_CASA = TREINOS_OBJ.manter.casa.A.ex;
-const TREINOS_ACA  = TREINOS_OBJ.manter.academia.A.ex;
+const TREINOS_CASA = TREINOS_OBJ.manter.intermediario.casa.A.ex;
+const TREINOS_ACA  = TREINOS_OBJ.manter.intermediario.academia.A.ex;
+// TREINOS declarado acima como alias de TREINOS_OBJ
 
 const HIST_MOCK = []; // sem dados de demonstração
 
@@ -7162,7 +7503,8 @@ function updateHojeTreino() {
   const next = getNextTreino();
   const mod  = treinoModalidade || 'casa';
   var _obj = (programaAtivo && TREINOS_OBJ[programaAtivo]) ? programaAtivo : 'manter';
-  const t    = TREINOS_OBJ[_obj] && TREINOS_OBJ[_obj][mod] && TREINOS_OBJ[_obj][mod][next] ? TREINOS_OBJ[_obj][mod][next] : null;
+  var _niv  = getNivelTreino();
+  const t    = TREINOS_OBJ[_obj] && TREINOS_OBJ[_obj][_niv] && TREINOS_OBJ[_obj][_niv][mod] && TREINOS_OBJ[_obj][_niv][mod][next] ? TREINOS_OBJ[_obj][_niv][mod][next] : null;
 
   const titleEl = document.getElementById('hojeTreinoTitulo');
   const grupoEl = document.getElementById('hojeTreinoGrupo');
@@ -7614,6 +7956,15 @@ function setDiaTreino(btn, dia) {
   renderTreino();
 }
 
+function getNivelTreino() {
+  // Retorna 'iniciante' | 'intermediario' | 'avancado' baseado no ativ do perfil
+  var saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
+  var ativ  = parseFloat(saved.ativ) || 1.375;
+  if (ativ <= 1.2)   return 'iniciante';
+  if (ativ <= 1.375) return 'intermediario';
+  return 'avancado';
+}
+
 function getTreinoAtivo() {
   const prog = PROGRAMAS.find(function(p){ return p.id === programaAtivo; });
   var baseProg = ['secar','manter','crescer'];
@@ -7624,11 +7975,15 @@ function getTreinoAtivo() {
     return { t: prog.treino[treinoDia], key: prog.id + '_' + treinoDia, useModal: false };
   }
 
-  // Programas base: usa TREINOS_OBJ[objetivo][modalidade][dia]
-  var obj = (programaAtivo && TREINOS_OBJ[programaAtivo]) ? programaAtivo : 'manter';
-  var mod = treinoModalidade || 'casa';
-  var t   = TREINOS_OBJ[obj] && TREINOS_OBJ[obj][mod] && TREINOS_OBJ[obj][mod][treinoDia];
-  return { t: t, key: obj + '_' + mod + '_' + treinoDia, useModal: true };
+  // Programas base: usa TREINOS_OBJ[objetivo][nivel][modalidade][dia]
+  var obj   = (programaAtivo && TREINOS_OBJ[programaAtivo]) ? programaAtivo : 'manter';
+  var nivel = getNivelTreino();
+  var mod   = treinoModalidade || 'casa';
+  var t     = TREINOS_OBJ[obj] &&
+              TREINOS_OBJ[obj][nivel] &&
+              TREINOS_OBJ[obj][nivel][mod] &&
+              TREINOS_OBJ[obj][nivel][mod][treinoDia];
+  return { t: t, key: obj + '_' + nivel + '_' + mod + '_' + treinoDia, useModal: true };
 }
 
 function renderTreino() {
@@ -7801,7 +8156,8 @@ function saveMedidas() {
 /* ── PAINEL TREINO DESKTOP ────────────────────────── */
 function dtRender() {
   var _obj2 = (programaAtivo && TREINOS_OBJ[programaAtivo]) ? programaAtivo : 'manter';
-  const t = TREINOS_OBJ[_obj2] && TREINOS_OBJ[_obj2][treinoModalidade] && TREINOS_OBJ[_obj2][treinoModalidade][treinoDia];
+  var _niv2 = getNivelTreino();
+  const t = TREINOS_OBJ[_obj2] && TREINOS_OBJ[_obj2][_niv2] && TREINOS_OBJ[_obj2][_niv2][treinoModalidade] && TREINOS_OBJ[_obj2][_niv2][treinoModalidade][treinoDia];
   if (!t) return;
   const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
 
@@ -7962,8 +8318,9 @@ function checkTreinoConcluido() {
 
 function mostrarConclusao() {
   var _objC = (programaAtivo && TREINOS_OBJ[programaAtivo]) ? programaAtivo : 'manter';
-  const t = (TREINOS_OBJ[_objC] && TREINOS_OBJ[_objC][treinoModalidade])
-    ? TREINOS_OBJ[_objC][treinoModalidade][treinoDia]
+  var _nivC = getNivelTreino();
+  const t = (TREINOS_OBJ[_objC] && TREINOS_OBJ[_objC][_nivC] && TREINOS_OBJ[_objC][_nivC][treinoModalidade])
+    ? TREINOS_OBJ[_objC][_nivC][treinoModalidade][treinoDia]
     : getTreinoAtivo().t;
   if (!t) return;
 
