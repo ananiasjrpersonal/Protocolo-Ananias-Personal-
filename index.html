@@ -5106,10 +5106,12 @@ let _uid = null;
 async function sbSyncProfile(data) {
   if (!_uid) return;
   try {
-    await _sb.from('profiles')
+    const res = await _sb.from('profiles')
       .upsert({ id: _uid, ...data, updated_at: new Date().toISOString() },
               { onConflict: 'id' });
-  } catch(e) { console.warn('sbSyncProfile:', e); }
+    if (res.error) console.error('sbSyncProfile ERRO:', res.error);
+    else console.log('sbSyncProfile OK:', Object.keys(data));
+  } catch(e) { console.error('sbSyncProfile EXCEPTION:', e); }
 }
 
 async function sbSyncTreino(data, key) {
@@ -5145,18 +5147,21 @@ async function sbCarregarDados() {
   if (!_uid) return;
   try {
     // Perfil
-    const { data: prof } = await _sb.from('profiles').select('*').eq('id', _uid).single();
+    const { data: prof, error: profErr } = await _sb.from('profiles').select('*').eq('id', _uid).single();
+    console.log('sbCarregarDados profiles:', prof ? 'OK nome=' + prof.nome : 'null', profErr?.message || '');
     if (prof) {
-      // Se perfil existe mas sem nome, tentar user_metadata e salvar de volta
-      if (!prof.nome) {
-        const { data: { user: _u } } = await _sb.auth.getUser().catch(() => ({ data: { user: null } }));
-        const _metaNome = _u?.user_metadata?.nome || _u?.user_metadata?.full_name || '';
-        if (_metaNome && !_metaNome.includes('@') && _metaNome.length > 1) {
-          prof.nome = _metaNome;
-          _sb.from('profiles').update({ nome: _metaNome }).eq('id', _uid).catch(() => {});
+      // Nome: Supabase so sobrescreve se vier valor valido
+      if (prof.nome && !prof.nome.includes('@') && prof.nome.length > 1) {
+        localStorage.setItem('maj_nome', prof.nome);
+      }
+      // Se Supabase nao tem nome, mas localStorage tem, salvar no Supabase agora
+      else {
+        const _nomeLs = localStorage.getItem('maj_nome');
+        if (_nomeLs && !_nomeLs.includes('@') && _nomeLs.length > 1) {
+          console.log('sbCarregarDados: salvando nome do localStorage no Supabase:', _nomeLs);
+          _sb.from('profiles').update({ nome: _nomeLs }).eq('id', _uid).catch(e => console.warn('update nome:', e));
         }
       }
-      if (prof.nome)            localStorage.setItem('maj_nome', prof.nome);
       if (prof.meta_kcal)       localStorage.setItem('maj_kcal', String(prof.meta_kcal));
       if (prof.meta_prot)       localStorage.setItem('maj_prot', String(prof.meta_prot));
       if (prof.meta_agua)       localStorage.setItem('maj_water_l', String(prof.meta_agua));
@@ -5771,9 +5776,10 @@ function dadosSave(){
     dadosClose();
   }
 
-  // 6. Sync Supabase (async, não bloqueia UI)
+  // 6. Sync Supabase (async, nao bloqueia UI)
+  // _uid pode estar null se sessao ainda nao foi carregada — aguardar getUser
   const _saved = JSON.parse(localStorage.getItem('maj_tmb_form') || '{}');
-  sbSyncProfile({
+  const _payload = {
     nome:            nome,
     peso:            _saved.dPeso   || null,
     altura:          _saved.dAltura || null,
@@ -5785,7 +5791,16 @@ function dadosSave(){
     meta_agua:       parseFloat(localStorage.getItem('maj_water_l')) || null,
     programa_ativo:  localStorage.getItem('maj_programa_ativo') || 'secar',
     onboarding_done: true,
-  });
+  };
+  if (_uid) {
+    sbSyncProfile(_payload);
+  } else {
+    // _uid ainda nao carregou — buscar sessao e tentar de novo
+    _sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) { _uid = session.user.id; sbSyncProfile(_payload); }
+      else console.warn('dadosSave: sem sessao ativa para sync');
+    });
+  }
 }
 
 // Alias para compatibilidade — renderDietaAtiva = initDietaEstatica
