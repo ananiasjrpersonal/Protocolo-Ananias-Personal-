@@ -5229,69 +5229,205 @@ const LS_VERSION = 3;
   }
 })(); // senha padrão
 
-const TREINOS = {
-  casa: {
-    A: { titulo:'Peito, Ombro e Tríceps', grupo:'Superior Empurra · Peso Corporal', meta:{ex:7,min:45,series:'4×12'}, ex:[
-      {n:'Flexão de Braços Lenta',        d:'4 × 12 · 3s descida · 60s desc',  rest:60, video:''},
-      {n:'Flexão Inclinada (pés na cadeira)',d:'3 × 10 · peito superior · 60s desc', rest:60, video:''},
-      {n:'Flexão Diamante',               d:'3 × 10 · foco tríceps · 45s desc',rest:45, video:''},
-      {n:'Mergulho entre Cadeiras',       d:'4 × 15 · tríceps isolado · 45s desc',rest:45, video:''},
-      {n:'Elevação Lateral com Garrafa',  d:'3 × 15 · deltoide · 30s desc',    rest:30, video:''},
-      {n:'Flexão com Afastamento',        d:'3 × 10 · peitoral externo · 45s desc',rest:45, video:''},
-      {n:'Prancha com Toque no Ombro',    d:'3 × 20 toques · core · 30s desc', rest:30, video:''},
-    ]},
-    B: { titulo:'Costas, Bíceps e Core', grupo:'Superior Puxa · Peso Corporal', meta:{ex:7,min:45,series:'3×15'}, ex:[
-      {n:'Remada Invertida (mesa ou barra baixa)',d:'4 × 10 · costas · 60s desc',rest:60, video:''},
-      {n:'Superman com Hold 2s',          d:'3 × 15 · lombar · 30s desc',      rest:30, video:''},
-      {n:'Flexão com Rotação',            d:'3 × 10 · serrátil e core · 45s desc',rest:45, video:''},
-      {n:'Rosca Isométrica com Toalha',   d:'3 × 30s · bíceps · 30s desc',     rest:30, video:''},
-      {n:'Prancha Lateral',               d:'3 × 30s cada lado · oblíquo · 20s desc',rest:20, video:''},
-      {n:'Abdominal Bicicleta',           d:'3 × 20 reps · oblíquo · 30s desc',rest:30, video:''},
-      {n:'Elevação de Pernas no Solo',    d:'3 × 15 · infra abdominal · 30s desc',rest:30, video:''},
-    ]},
-    C: { titulo:'Pernas, Glúteos e Cardio', grupo:'Inferior + Condicionamento · Peso Corporal', meta:{ex:7,min:50,series:'4×15'}, ex:[
-      {n:'Agachamento Búlgaro',           d:'4 × 10 cada · quadríceps · 60s desc',rest:60, video:''},
-      {n:'Avanço com Joelho Pulsante',    d:'3 × 12 · glúteo e quad · 45s desc',rest:45, video:''},
-      {n:'Terra Romeno Unilateral',       d:'3 × 12 cada · posterior · 45s desc',rest:45, video:''},
-      {n:'Elevação Pélvica Unilateral',   d:'4 × 15 cada · glúteo · 30s desc', rest:30, video:''},
-      {n:'Agachamento Sumô com Pausa',    d:'3 × 15 · adutores · 40s desc',    rest:40, video:''},
-      {n:'Panturrilha Unilateral',        d:'4 × 20 cada · panturrilha · 20s desc',rest:20, video:''},
-      {n:'Mountain Climber',              d:'3 × 30s · condicionamento · 30s desc',rest:30, video:''},
-    ]}
+/* ══════════════════════════════════════════════════════
+   TREINOS — indexados por objetivo × modalidade × dia
+   Objetivo: 'secar' | 'manter' | 'crescer'
+   Modalidade: 'casa' | 'academia'
+   Dia: 'A' | 'B' | 'C'
+   ══════════════════════════════════════════════════════ */
+const TREINOS_OBJ = {
+
+  /* ── SECAR ──────────────────────────────────────────
+     Alto volume, reps altas, descanso curto (20–45s)
+     Cardio no treino C. Queima calórica máxima.       */
+  secar: {
+    casa: {
+      A: { titulo:'Circuito Superior — Queima', grupo:'Peito, Ombro e Tríceps · Alto Volume', meta:{ex:7,min:40,series:'4×15'}, ex:[
+        {n:'Flexão de Braços',              d:'4 × 15 · sem pausa · 30s desc',   rest:30, video:''},
+        {n:'Flexão Inclinada (pés na cadeira)',d:'3 × 12 · peito superior · 30s desc',rest:30, video:''},
+        {n:'Flexão Diamante',               d:'3 × 12 · foco tríceps · 30s desc',rest:30, video:''},
+        {n:'Mergulho entre Cadeiras',       d:'4 × 15 · tríceps · 30s desc',     rest:30, video:''},
+        {n:'Elevação Lateral com Garrafa',  d:'4 × 20 · deltoide · 20s desc',    rest:20, video:''},
+        {n:'Burpee',                        d:'3 × 10 · cardio e core · 30s desc',rest:30, video:''},
+        {n:'Prancha com Toque no Ombro',    d:'3 × 20 toques · core · 20s desc', rest:20, video:''},
+      ]},
+      B: { titulo:'Circuito Superior — Queima', grupo:'Costas, Bíceps e Core · Alto Volume', meta:{ex:7,min:40,series:'4×15'}, ex:[
+        {n:'Remada Invertida (mesa)',        d:'4 × 15 · costas · 30s desc',      rest:30, video:''},
+        {n:'Superman com Hold 2s',          d:'3 × 15 · lombar · 20s desc',      rest:20, video:''},
+        {n:'Flexão com Rotação',            d:'3 × 12 · serrátil · 30s desc',    rest:30, video:''},
+        {n:'Rosca Isométrica com Toalha',   d:'4 × 30s · bíceps · 20s desc',     rest:20, video:''},
+        {n:'Prancha Lateral',               d:'3 × 30s cada · oblíquo · 20s desc',rest:20, video:''},
+        {n:'Abdominal Bicicleta',           d:'4 × 25 · oblíquo · 20s desc',     rest:20, video:''},
+        {n:'Mountain Climber',              d:'3 × 30s · cardio e core · 20s desc',rest:20, video:''},
+      ]},
+      C: { titulo:'Cardio + Inferior — Queima Total', grupo:'Pernas, Glúteos e Cardio · Condicionamento', meta:{ex:7,min:45,series:'4×20'}, ex:[
+        {n:'Pulo de Agachamento (Jump Squat)',d:'4 × 15 · potência e queima · 30s desc',rest:30, video:''},
+        {n:'Avanço Alternado',              d:'4 × 20 passos · glúteo e quad · 30s desc',rest:30, video:''},
+        {n:'Elevação Pélvica com Pausa',    d:'4 × 20 · glúteo · 20s desc',      rest:20, video:''},
+        {n:'Agachamento Sumô',              d:'4 × 20 · adutores · 20s desc',    rest:20, video:''},
+        {n:'Polichinelo',                   d:'3 × 1min · cardio · 20s desc',    rest:20, video:''},
+        {n:'Panturrilha Unilateral',        d:'4 × 20 cada · panturrilha · 20s desc',rest:20, video:''},
+        {n:'Abdominal com Bicicleta',       d:'3 × 30 · core e cardio · 20s desc',rest:20, video:''},
+      ]},
+    },
+    academia: {
+      A: { titulo:'Superior Empurra — Queima', grupo:'Peito, Ombro e Tríceps · Alto Volume', meta:{ex:7,min:50,series:'4×15'}, ex:[
+        {n:'Supino Reto com Halteres',      d:'4 × 15 · peitoral · 45s desc',    rest:45, video:''},
+        {n:'Supino Inclinado com Halteres', d:'4 × 15 · peito superior · 45s desc',rest:45, video:''},
+        {n:'Crossover (Polia)',             d:'3 × 20 · peitoral externo · 30s desc',rest:30, video:''},
+        {n:'Desenvolvimento com Halteres',  d:'4 × 15 · ombro · 45s desc',       rest:45, video:''},
+        {n:'Elevação Lateral',              d:'4 × 20 · deltoide · 30s desc',    rest:30, video:''},
+        {n:'Tríceps Pulley Corda',          d:'4 × 20 · tríceps · 30s desc',     rest:30, video:''},
+        {n:'Tríceps Francês com Halter',    d:'3 × 15 · tríceps · 30s desc',     rest:30, video:''},
+      ]},
+      B: { titulo:'Superior Puxa — Queima', grupo:'Costas, Bíceps e Core · Alto Volume', meta:{ex:7,min:50,series:'4×15'}, ex:[
+        {n:'Puxada Frontal Aberta',         d:'4 × 15 · dorsal · 45s desc',      rest:45, video:''},
+        {n:'Remada Sentada na Polia',       d:'4 × 15 · costas · 45s desc',      rest:45, video:''},
+        {n:'Remada Unilateral com Halter',  d:'3 × 15 · lombar · 30s desc',      rest:30, video:''},
+        {n:'Rosca Direta com Barra',        d:'4 × 15 · bíceps · 30s desc',      rest:30, video:''},
+        {n:'Rosca Martelo',                 d:'3 × 15 · braquial · 30s desc',    rest:30, video:''},
+        {n:'Prancha Abdominal',             d:'3 × 45s · core · 20s desc',       rest:20, video:''},
+        {n:'Abdominal Bicicleta',           d:'3 × 25 · oblíquo · 20s desc',     rest:20, video:''},
+      ]},
+      C: { titulo:'Inferior + Cardio — Queima Total', grupo:'Pernas e Condicionamento · Alto Volume', meta:{ex:7,min:55,series:'4×20'}, ex:[
+        {n:'Agachamento Hack (Leg Press estreito)',d:'4 × 20 · quadríceps · 45s desc',rest:45, video:''},
+        {n:'Leg Press 45°',                 d:'4 × 20 · pernas · 45s desc',      rest:45, video:''},
+        {n:'Cadeira Extensora',             d:'4 × 20 · quadríceps isolado · 30s desc',rest:30, video:''},
+        {n:'Cadeira Flexora',               d:'4 × 20 · posterior · 30s desc',   rest:30, video:''},
+        {n:'Stiff com Halteres',            d:'4 × 15 · glúteo e posterior · 45s desc',rest:45, video:''},
+        {n:'Panturrilha em Pé no Aparelho', d:'4 × 25 · panturrilha · 20s desc', rest:20, video:''},
+        {n:'Esteira ou Bicicleta',          d:'15 min · intensidade moderada',    rest:0,  video:''},
+      ]},
+    },
   },
-  academia: {
-    A: { titulo:'Peito, Ombro e Tríceps', grupo:'Superior Empurra · Com Pesos', meta:{ex:7,min:55,series:'4×10'}, ex:[
-      {n:'Supino Reto com Barra',         d:'4 × 10 · peitoral · 90s desc',    rest:90, video:''},
-      {n:'Supino Inclinado com Halteres', d:'4 × 10 · peito superior · 75s desc',rest:75, video:''},
-      {n:'Crucifixo Reto',                d:'3 × 12 · peitoral externo · 60s desc',rest:60, video:''},
-      {n:'Desenvolvimento com Halteres',  d:'4 × 10 · ombro · 75s desc',       rest:75, video:''},
-      {n:'Elevação Lateral',              d:'4 × 15 · deltoide · 45s desc',     rest:45, video:''},
-      {n:'Tríceps Testa com Barra W',     d:'3 × 12 · tríceps · 60s desc',     rest:60, video:''},
-      {n:'Tríceps Pulley Corda',          d:'3 × 15 · tríceps · 45s desc',     rest:45, video:''},
-    ]},
-    B: { titulo:'Costas, Bíceps e Core', grupo:'Superior Puxa · Com Pesos', meta:{ex:7,min:55,series:'4×10'}, ex:[
-      {n:'Puxada Frontal Aberta',         d:'4 × 10 · dorsal · 90s desc',      rest:90, video:''},
-      {n:'Remada Curvada com Barra',      d:'4 × 10 · costas espessura · 75s desc',rest:75, video:''},
-      {n:'Remada Unilateral com Halter',  d:'3 × 12 · lombar · 60s desc',      rest:60, video:''},
-      {n:'Pullover com Halter',           d:'3 × 12 · serrátil e dorsal · 60s desc',rest:60, video:''},
-      {n:'Rosca Direta com Barra W',      d:'4 × 10 · bíceps · 60s desc',      rest:60, video:''},
-      {n:'Rosca Martelo',                 d:'3 × 12 · braquial · 45s desc',    rest:45, video:''},
-      {n:'Prancha com Disco',             d:'3 × 45s · core · 30s desc',       rest:30, video:''},
-    ]},
-    C: { titulo:'Pernas e Ombro', grupo:'Inferior + Deltoide · Com Pesos', meta:{ex:7,min:60,series:'4×12'}, ex:[
-      {n:'Agachamento Livre com Barra',   d:'5 × 8 · quadríceps · 120s desc',  rest:120, video:''},
-      {n:'Leg Press 45°',                 d:'4 × 12 · pernas · 90s desc',      rest:90, video:''},
-      {n:'Cadeira Extensora',             d:'3 × 15 · quadríceps isolado · 60s desc',rest:60, video:''},
-      {n:'Cadeira Flexora',               d:'3 × 12 · posterior · 60s desc',   rest:60, video:''},
-      {n:'Stiff com Barra',               d:'4 × 10 · glúteo e posterior · 75s desc',rest:75, video:''},
-      {n:'Panturrilha em Pé no Leg Press',d:'5 × 20 · panturrilha · 30s desc', rest:30, video:''},
-      {n:'Desenvolvimento Arnold',        d:'3 × 12 · ombro completo · 60s desc',rest:60, video:''},
-    ]}
-  }
+
+  /* ── MANTER ─────────────────────────────────────────
+     Volume moderado, reps médias, descanso médio (45–75s)
+     Equilíbrio força + resistência. Sem perder nem ganhar. */
+  manter: {
+    casa: {
+      A: { titulo:'Full Body A — Equilíbrio', grupo:'Superior Completo · Peso Corporal', meta:{ex:6,min:45,series:'3×12'}, ex:[
+        {n:'Flexão de Braços',              d:'3 × 12 · peitoral e tríceps · 60s desc',rest:60, video:''},
+        {n:'Flexão Inclinada (pés na cadeira)',d:'3 × 10 · peito superior · 60s desc',rest:60, video:''},
+        {n:'Mergulho entre Cadeiras',       d:'3 × 12 · tríceps · 45s desc',     rest:45, video:''},
+        {n:'Elevação Lateral com Garrafa',  d:'3 × 12 · deltoide · 45s desc',    rest:45, video:''},
+        {n:'Remada Invertida (mesa)',        d:'3 × 12 · costas · 60s desc',      rest:60, video:''},
+        {n:'Prancha com Toque no Ombro',    d:'3 × 16 toques · core · 30s desc', rest:30, video:''},
+      ]},
+      B: { titulo:'Full Body B — Equilíbrio', grupo:'Inferior + Core · Peso Corporal', meta:{ex:6,min:45,series:'3×12'}, ex:[
+        {n:'Agachamento Livre',             d:'3 × 12 · quadríceps · 60s desc',  rest:60, video:''},
+        {n:'Avanço Alternado',              d:'3 × 10 cada · glúteo e quad · 60s desc',rest:60, video:''},
+        {n:'Elevação Pélvica',              d:'3 × 15 · glúteo · 45s desc',      rest:45, video:''},
+        {n:'Terra Romeno Unilateral',       d:'3 × 10 cada · posterior · 45s desc',rest:45, video:''},
+        {n:'Panturrilha Unilateral',        d:'3 × 15 cada · panturrilha · 30s desc',rest:30, video:''},
+        {n:'Abdominal Bicicleta',           d:'3 × 20 · oblíquo e core · 30s desc',rest:30, video:''},
+      ]},
+      C: { titulo:'Cardio + Core — Equilíbrio', grupo:'Condicionamento e Funcional · Peso Corporal', meta:{ex:6,min:40,series:'3×10'}, ex:[
+        {n:'Burpee',                        d:'3 × 8 · condicionamento geral · 60s desc',rest:60, video:''},
+        {n:'Mountain Climber',              d:'3 × 30s · cardio e core · 45s desc',rest:45, video:''},
+        {n:'Agachamento com Salto',         d:'3 × 10 · potência · 60s desc',    rest:60, video:''},
+        {n:'Flexão de Braços',              d:'3 × 10 · manutenção superior · 45s desc',rest:45, video:''},
+        {n:'Prancha Lateral',               d:'3 × 30s cada · oblíquo · 30s desc',rest:30, video:''},
+        {n:'Abdominal Infra (Elevação de Pernas)',d:'3 × 12 · infra abdominal · 30s desc',rest:30, video:''},
+      ]},
+    },
+    academia: {
+      A: { titulo:'Superior Completo — Equilíbrio', grupo:'Peito, Costas e Ombro · Com Pesos', meta:{ex:7,min:50,series:'3×12'}, ex:[
+        {n:'Supino Reto com Barra',         d:'3 × 12 · peitoral · 60s desc',    rest:60, video:''},
+        {n:'Puxada Frontal Aberta',         d:'3 × 12 · dorsal · 60s desc',      rest:60, video:''},
+        {n:'Desenvolvimento com Halteres',  d:'3 × 12 · ombro · 60s desc',       rest:60, video:''},
+        {n:'Crucifixo Reto',                d:'3 × 12 · peitoral externo · 45s desc',rest:45, video:''},
+        {n:'Remada Curvada com Barra',      d:'3 × 12 · costas espessura · 60s desc',rest:60, video:''},
+        {n:'Elevação Lateral',              d:'3 × 15 · deltoide · 45s desc',    rest:45, video:''},
+        {n:'Prancha com Disco',             d:'3 × 45s · core · 30s desc',       rest:30, video:''},
+      ]},
+      B: { titulo:'Inferior Completo — Equilíbrio', grupo:'Pernas e Glúteos · Com Pesos', meta:{ex:6,min:50,series:'3×12'}, ex:[
+        {n:'Agachamento Livre com Barra',   d:'3 × 12 · quadríceps · 75s desc',  rest:75, video:''},
+        {n:'Leg Press 45°',                 d:'3 × 12 · pernas · 60s desc',      rest:60, video:''},
+        {n:'Cadeira Extensora',             d:'3 × 15 · quadríceps isolado · 45s desc',rest:45, video:''},
+        {n:'Cadeira Flexora',               d:'3 × 12 · posterior · 45s desc',   rest:45, video:''},
+        {n:'Stiff com Barra',               d:'3 × 12 · glúteo e posterior · 60s desc',rest:60, video:''},
+        {n:'Panturrilha em Pé no Aparelho', d:'4 × 15 · panturrilha · 30s desc', rest:30, video:''},
+      ]},
+      C: { titulo:'Braços + Cardio — Equilíbrio', grupo:'Bíceps, Tríceps e Condicionamento · Com Pesos', meta:{ex:6,min:45,series:'3×12'}, ex:[
+        {n:'Rosca Direta com Barra',        d:'3 × 12 · bíceps · 60s desc',      rest:60, video:''},
+        {n:'Tríceps Testa com Barra W',     d:'3 × 12 · tríceps · 60s desc',     rest:60, video:''},
+        {n:'Rosca Martelo',                 d:'3 × 12 · braquial · 45s desc',    rest:45, video:''},
+        {n:'Tríceps Pulley Corda',          d:'3 × 15 · tríceps · 45s desc',     rest:45, video:''},
+        {n:'Abdominal Bicicleta',           d:'3 × 20 · oblíquo · 30s desc',     rest:30, video:''},
+        {n:'Esteira ou Bicicleta',          d:'10 min · ritmo moderado',          rest:0,  video:''},
+      ]},
+    },
+  },
+
+  /* ── CRESCER ────────────────────────────────────────
+     Força progressiva, reps baixas, descanso longo (90–120s)
+     Sobrecarga mecânica máxima. Superávit calórico.   */
+  crescer: {
+    casa: {
+      A: { titulo:'Força Superior A — Hipertrofia', grupo:'Peito e Tríceps · Sobrecarga Progressiva', meta:{ex:6,min:50,series:'5×8'}, ex:[
+        {n:'Flexão de Braços com Pausa 3s', d:'5 × 8 · peitoral · 90s desc',     rest:90, video:''},
+        {n:'Flexão Inclinada (pés na cadeira)',d:'4 × 10 · peito superior · 90s desc',rest:90, video:''},
+        {n:'Flexão Diamante',               d:'4 × 10 · tríceps · 75s desc',     rest:75, video:''},
+        {n:'Mergulho entre Cadeiras com Peso',d:'4 × 8 · tríceps pesado · 90s desc',rest:90, video:''},
+        {n:'Flexão com Afastamento Lenta',  d:'3 × 10 · peitoral externo · 75s desc',rest:75, video:''},
+        {n:'Prancha com Peso nas Costas',   d:'3 × 45s · core · 45s desc',       rest:45, video:''},
+      ]},
+      B: { titulo:'Força Superior B — Hipertrofia', grupo:'Costas e Bíceps · Sobrecarga Progressiva', meta:{ex:6,min:50,series:'5×8'}, ex:[
+        {n:'Remada Invertida (mesa)',        d:'5 × 8 · costas · 90s desc',       rest:90, video:''},
+        {n:'Superman com Hold 3s',          d:'4 × 12 · lombar · 75s desc',      rest:75, video:''},
+        {n:'Flexão com Rotação',            d:'4 × 10 · serrátil · 75s desc',    rest:75, video:''},
+        {n:'Rosca Isométrica com Toalha',   d:'4 × 40s · bíceps intenso · 60s desc',rest:60, video:''},
+        {n:'Elevação de Pernas no Solo',    d:'4 × 15 · infra abdominal · 45s desc',rest:45, video:''},
+        {n:'Prancha Lateral com Elevação',  d:'3 × 30s cada · oblíquo · 45s desc',rest:45, video:''},
+      ]},
+      C: { titulo:'Força Inferior — Hipertrofia', grupo:'Pernas e Glúteos · Sobrecarga Progressiva', meta:{ex:6,min:55,series:'5×8'}, ex:[
+        {n:'Agachamento Búlgaro com Peso',  d:'5 × 8 cada · quadríceps · 120s desc',rest:120, video:''},
+        {n:'Avanço com Joelho Pulsante',    d:'4 × 10 · glúteo e quad · 90s desc',rest:90, video:''},
+        {n:'Terra Romeno Unilateral',       d:'4 × 10 cada · posterior · 90s desc',rest:90, video:''},
+        {n:'Elevação Pélvica com Pausa 2s', d:'5 × 12 · glúteo · 75s desc',      rest:75, video:''},
+        {n:'Agachamento Sumô com Pausa',    d:'4 × 10 · adutores · 75s desc',    rest:75, video:''},
+        {n:'Panturrilha Unilateral com Peso',d:'5 × 15 cada · panturrilha · 45s desc',rest:45, video:''},
+      ]},
+    },
+    academia: {
+      A: { titulo:'Força Superior A — Hipertrofia', grupo:'Peito, Ombro e Tríceps · Com Pesos', meta:{ex:7,min:60,series:'5×6'}, ex:[
+        {n:'Supino Reto com Barra',         d:'5 × 6 · peitoral · 120s desc',    rest:120, video:''},
+        {n:'Supino Inclinado com Halteres', d:'4 × 8 · peito superior · 90s desc',rest:90, video:''},
+        {n:'Crucifixo Reto',                d:'3 × 10 · peitoral externo · 75s desc',rest:75, video:''},
+        {n:'Desenvolvimento com Barra',     d:'5 × 6 · ombro · 120s desc',       rest:120, video:''},
+        {n:'Elevação Lateral',              d:'4 × 10 · deltoide · 60s desc',    rest:60, video:''},
+        {n:'Tríceps Testa com Barra W',     d:'4 × 8 · tríceps · 75s desc',      rest:75, video:''},
+        {n:'Tríceps Pulley Corda',          d:'3 × 10 · tríceps · 60s desc',     rest:60, video:''},
+      ]},
+      B: { titulo:'Força Superior B — Hipertrofia', grupo:'Costas e Bíceps · Com Pesos', meta:{ex:7,min:60,series:'5×6'}, ex:[
+        {n:'Levantamento Terra',            d:'5 × 5 · posterior e costas · 180s desc',rest:180, video:''},
+        {n:'Puxada Frontal Fechada',        d:'4 × 8 · dorsal · 90s desc',       rest:90, video:''},
+        {n:'Remada Curvada com Barra',      d:'4 × 8 · costas espessura · 90s desc',rest:90, video:''},
+        {n:'Remada Unilateral com Halter',  d:'3 × 10 · lombar · 75s desc',      rest:75, video:''},
+        {n:'Rosca Direta com Barra W',      d:'4 × 8 · bíceps · 75s desc',       rest:75, video:''},
+        {n:'Rosca Martelo',                 d:'3 × 10 · braquial · 60s desc',    rest:60, video:''},
+        {n:'Face Pull',                     d:'3 × 12 · deltoide posterior · 45s desc',rest:45, video:''},
+      ]},
+      C: { titulo:'Força Inferior — Hipertrofia', grupo:'Pernas e Glúteos · Com Pesos', meta:{ex:7,min:65,series:'5×6'}, ex:[
+        {n:'Agachamento Livre com Barra',   d:'5 × 5 · quadríceps · 180s desc',  rest:180, video:''},
+        {n:'Leg Press 45°',                 d:'4 × 10 · pernas · 90s desc',      rest:90, video:''},
+        {n:'Cadeira Extensora',             d:'3 × 12 · quadríceps isolado · 60s desc',rest:60, video:''},
+        {n:'Cadeira Flexora',               d:'3 × 12 · posterior · 60s desc',   rest:60, video:''},
+        {n:'Stiff com Barra',               d:'4 × 8 · glúteo e posterior · 90s desc',rest:90, video:''},
+        {n:'Agachamento Búlgaro',           d:'3 × 8 cada · quadríceps · 75s desc',rest:75, video:''},
+        {n:'Panturrilha em Pé no Aparelho', d:'5 × 15 · panturrilha · 45s desc', rest:45, video:''},
+      ]},
+    },
+  },
 };
+
+/* TREINOS — mantido como alias para os programas premium que ainda o referenciam.
+   Para programas base (secar/manter/crescer), getTreinoAtivo usa TREINOS_OBJ. */
+const TREINOS = TREINOS_OBJ.manter;
 // Legacy compat
-const TREINOS_CASA = TREINOS.casa.A.ex;
-const TREINOS_ACA  = TREINOS.academia.A.ex;
+const TREINOS_CASA = TREINOS_OBJ.manter.casa.A.ex;
+const TREINOS_ACA  = TREINOS_OBJ.manter.academia.A.ex;
 
 const HIST_MOCK = []; // sem dados de demonstração
 
@@ -6989,7 +7125,8 @@ function getNextTreino() {
 function updateHojeTreino() {
   const next = getNextTreino();
   const mod  = treinoModalidade || 'casa';
-  const t    = (TREINOS[mod] && TREINOS[mod][next]) ? TREINOS[mod][next] : null;
+  var _obj = (programaAtivo && TREINOS_OBJ[programaAtivo]) ? programaAtivo : 'manter';
+  const t    = TREINOS_OBJ[_obj] && TREINOS_OBJ[_obj][mod] && TREINOS_OBJ[_obj][mod][next] ? TREINOS_OBJ[_obj][mod][next] : null;
 
   const titleEl = document.getElementById('hojeTreinoTitulo');
   const grupoEl = document.getElementById('hojeTreinoGrupo');
@@ -7443,19 +7580,19 @@ function setDiaTreino(btn, dia) {
 
 function getTreinoAtivo() {
   const prog = PROGRAMAS.find(function(p){ return p.id === programaAtivo; });
-  // Programas base (secar/manter/crescer) usam TREINOS[casa/academia]
-  // Programas premium com treino próprio E sem modalidade definida usam o próprio
   var baseProg = ['secar','manter','crescer'];
   var isBase = !programaAtivo || baseProg.indexOf(programaAtivo) >= 0;
 
   if (!isBase && prog && prog.treino && prog.treino[treinoDia]) {
-    // Programa premium com treino próprio
+    // Programa premium com treino proprio
     return { t: prog.treino[treinoDia], key: prog.id + '_' + treinoDia, useModal: false };
   }
-  // Base ou sem programa: usa TREINOS[casa ou academia]
+
+  // Programas base: usa TREINOS_OBJ[objetivo][modalidade][dia]
+  var obj = (programaAtivo && TREINOS_OBJ[programaAtivo]) ? programaAtivo : 'manter';
   var mod = treinoModalidade || 'casa';
-  var t = TREINOS[mod] && TREINOS[mod][treinoDia];
-  return { t: t, key: mod + treinoDia, useModal: true };
+  var t   = TREINOS_OBJ[obj] && TREINOS_OBJ[obj][mod] && TREINOS_OBJ[obj][mod][treinoDia];
+  return { t: t, key: obj + '_' + mod + '_' + treinoDia, useModal: true };
 }
 
 function renderTreino() {
@@ -7627,7 +7764,8 @@ function saveMedidas() {
 
 /* ── PAINEL TREINO DESKTOP ────────────────────────── */
 function dtRender() {
-  const t = TREINOS[treinoModalidade][treinoDia];
+  var _obj2 = (programaAtivo && TREINOS_OBJ[programaAtivo]) ? programaAtivo : 'manter';
+  const t = TREINOS_OBJ[_obj2] && TREINOS_OBJ[_obj2][treinoModalidade] && TREINOS_OBJ[_obj2][treinoModalidade][treinoDia];
   if (!t) return;
   const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
 
@@ -7787,7 +7925,10 @@ function checkTreinoConcluido() {
 }
 
 function mostrarConclusao() {
-  const t = TREINOS[treinoModalidade][treinoDia];
+  var _objC = (programaAtivo && TREINOS_OBJ[programaAtivo]) ? programaAtivo : 'manter';
+  const t = (TREINOS_OBJ[_objC] && TREINOS_OBJ[_objC][treinoModalidade])
+    ? TREINOS_OBJ[_objC][treinoModalidade][treinoDia]
+    : getTreinoAtivo().t;
   if (!t) return;
 
   const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
@@ -8066,12 +8207,119 @@ var _dietaRefeicoes = {
       {id:'whey',      nome:'Whey Protein (1 scoop)',kcal:130,prot:27,un:'un',gpu:35},
     ]},
   ],
-  manter: null,
-  crescer: null,
+  manter: [
+    { id:'cafe',   nome:'Café da Manhã',  icon:'☀️', pct:.25, alimentos:[
+      {id:'pao_integral', nome:'Pão integral',          kcal:247,prot:9, un:'fat',gpu:30},
+      {id:'ovo_mexido',   nome:'Ovo mexido',             kcal:155,prot:13,un:'un', gpu:55},
+      {id:'queijo_branco',nome:'Queijo minas frescal',   kcal:114,prot:7, un:'g',  gpu:1 },
+      {id:'tapioca',      nome:'Tapioca',                kcal:346,prot:0, un:'un', gpu:40},
+      {id:'iogurte',      nome:'Iogurte natural',        kcal:61, prot:3, un:'g',  gpu:1 },
+      {id:'fruta',        nome:'Fruta (banana/maçã)',    kcal:89, prot:1, un:'un', gpu:120},
+      {id:'aveia',        nome:'Aveia',                  kcal:374,prot:13,un:'g',  gpu:1 },
+      {id:'omelete',      nome:'Omelete',                kcal:154,prot:11,un:'un', gpu:70},
+      {id:'cafe_preto',   nome:'Café preto s/ açúcar',  kcal:2,  prot:0, un:'ml', gpu:1 },
+      {id:'suco_laranja', nome:'Suco de laranja natural',kcal:44, prot:1, un:'ml', gpu:1 },
+    ]},
+    { id:'almoco', nome:'Almoço',         icon:'🌞', pct:.35, alimentos:[
+      {id:'frango',     nome:'Frango grelhado',   kcal:165,prot:31,un:'g',gpu:1},
+      {id:'carne_magra',nome:'Carne magra',        kcal:190,prot:26,un:'g',gpu:1},
+      {id:'peixe',      nome:'Peixe',              kcal:128,prot:26,un:'g',gpu:1},
+      {id:'arroz',      nome:'Arroz branco',       kcal:130,prot:3, un:'g',gpu:1},
+      {id:'arroz_int',  nome:'Arroz integral',     kcal:124,prot:3, un:'g',gpu:1},
+      {id:'feijao',     nome:'Feijão',             kcal:114,prot:8, un:'g',gpu:1},
+      {id:'salada',     nome:'Salada variada',     kcal:17, prot:1, un:'g',gpu:1},
+      {id:'legumes',    nome:'Legumes refogados',  kcal:50, prot:2, un:'g',gpu:1},
+      {id:'batata_doce',nome:'Batata doce',        kcal:86, prot:2, un:'g',gpu:1},
+      {id:'azeite',     nome:'Azeite (1 col.)',    kcal:884,prot:0, un:'ml',gpu:10},
+    ]},
+    { id:'lanche', nome:'Lanche da Tarde', icon:'🍎', pct:.15, alimentos:[
+      {id:'iogurte_grego',nome:'Iogurte grego',      kcal:59, prot:10,un:'g',  gpu:1 },
+      {id:'granola',      nome:'Granola',             kcal:430,prot:10,un:'g',  gpu:1 },
+      {id:'fruta',        nome:'Fruta',               kcal:89, prot:1, un:'un', gpu:120},
+      {id:'castanha',     nome:'Castanha do Pará',    kcal:656,prot:14,un:'un', gpu:5 },
+      {id:'whey',         nome:'Whey Protein (1 scoop)',kcal:130,prot:27,un:'un',gpu:35},
+      {id:'barra_prot',   nome:'Barra proteica',      kcal:380,prot:30,un:'un', gpu:45},
+      {id:'cottage',      nome:'Cottage',             kcal:98, prot:11,un:'g',  gpu:1 },
+      {id:'amendoim',     nome:'Pasta de amendoim',   kcal:590,prot:25,un:'g',  gpu:1 },
+      {id:'ovo_cozido',   nome:'Ovo cozido',          kcal:155,prot:13,un:'un', gpu:55},
+      {id:'aveia',        nome:'Aveia',               kcal:374,prot:13,un:'g',  gpu:1 },
+    ]},
+    { id:'jantar', nome:'Jantar',          icon:'🌙', pct:.25, alimentos:[
+      {id:'frango',     nome:'Frango grelhado',kcal:165,prot:31,un:'g',gpu:1},
+      {id:'peixe',      nome:'Peixe',          kcal:128,prot:26,un:'g',gpu:1},
+      {id:'ovo_mexido', nome:'Ovo mexido',     kcal:155,prot:13,un:'un',gpu:55},
+      {id:'batata_doce',nome:'Batata doce',    kcal:86, prot:2, un:'g',gpu:1},
+      {id:'massa_int',  nome:'Macarrão integral',kcal:140,prot:5,un:'g',gpu:1},
+      {id:'legumes',    nome:'Legumes',        kcal:50, prot:2, un:'g',gpu:1},
+      {id:'salada',     nome:'Salada',         kcal:17, prot:1, un:'g',gpu:1},
+      {id:'azeite',     nome:'Azeite',         kcal:884,prot:0, un:'ml',gpu:10},
+      {id:'cottage',    nome:'Cottage',        kcal:98, prot:11,un:'g',gpu:1},
+      {id:'carne_magra',nome:'Carne magra',    kcal:190,prot:26,un:'g',gpu:1},
+    ]},
+  ],
+  crescer: [
+    { id:'cafe',      nome:'Café da Manhã',  icon:'☀️', pct:.22, alimentos:[
+      {id:'omelete',      nome:'Omelete (4 ovos)',      kcal:154,prot:11,un:'un', gpu:70},
+      {id:'aveia',        nome:'Aveia',                 kcal:374,prot:13,un:'g',  gpu:1 },
+      {id:'whey',         nome:'Whey Protein (1 scoop)',kcal:130,prot:27,un:'un', gpu:35},
+      {id:'fruta',        nome:'Banana',                kcal:89, prot:1, un:'un', gpu:120},
+      {id:'amendoim',     nome:'Pasta de amendoim',     kcal:590,prot:25,un:'g',  gpu:1 },
+      {id:'pao_integral', nome:'Pão integral',          kcal:247,prot:9, un:'fat',gpu:30},
+      {id:'iogurte_grego',nome:'Iogurte grego',         kcal:59, prot:10,un:'g',  gpu:1 },
+      {id:'granola',      nome:'Granola',               kcal:430,prot:10,un:'g',  gpu:1 },
+      {id:'tapioca',      nome:'Tapioca',               kcal:346,prot:0, un:'un', gpu:60},
+      {id:'crepioca',     nome:'Crepioca',              kcal:130,prot:6, un:'un', gpu:80},
+    ]},
+    { id:'lanche_manha', nome:'Lanche da Manhã', icon:'🍎', pct:.13, alimentos:[
+      {id:'iogurte_grego',nome:'Iogurte grego',         kcal:59, prot:10,un:'g',  gpu:1 },
+      {id:'granola',      nome:'Granola',               kcal:430,prot:10,un:'g',  gpu:1 },
+      {id:'fruta',        nome:'Fruta',                 kcal:89, prot:1, un:'un', gpu:120},
+      {id:'whey',         nome:'Whey Protein (1 scoop)',kcal:130,prot:27,un:'un', gpu:35},
+      {id:'amendoim',     nome:'Pasta de amendoim',     kcal:590,prot:25,un:'g',  gpu:1 },
+      {id:'castanha',     nome:'Castanha',              kcal:656,prot:14,un:'g',  gpu:1 },
+      {id:'barra_prot',   nome:'Barra proteica',        kcal:380,prot:30,un:'un', gpu:45},
+      {id:'aveia',        nome:'Aveia',                 kcal:374,prot:13,un:'g',  gpu:1 },
+      {id:'ovo_cozido',   nome:'Ovo cozido',            kcal:155,prot:13,un:'un', gpu:55},
+      {id:'cottage',      nome:'Cottage',               kcal:98, prot:11,un:'g',  gpu:1 },
+    ]},
+    { id:'almoco',    nome:'Almoço',         icon:'🌞', pct:.30, alimentos:[
+      {id:'frango',     nome:'Frango grelhado',  kcal:165,prot:31,un:'g',gpu:1},
+      {id:'carne_magra',nome:'Carne magra',       kcal:190,prot:26,un:'g',gpu:1},
+      {id:'arroz_int',  nome:'Arroz integral',    kcal:124,prot:3, un:'g',gpu:1},
+      {id:'feijao',     nome:'Feijão',            kcal:114,prot:8, un:'g',gpu:1},
+      {id:'batata_doce',nome:'Batata doce',       kcal:86, prot:2, un:'g',gpu:1},
+      {id:'salada',     nome:'Salada',            kcal:17, prot:1, un:'g',gpu:1},
+      {id:'azeite',     nome:'Azeite (1 col.)',   kcal:884,prot:0, un:'ml',gpu:10},
+      {id:'salmao',     nome:'Salmão',            kcal:208,prot:20,un:'g',gpu:1},
+      {id:'lentilha',   nome:'Lentilha',          kcal:116,prot:9, un:'g',gpu:1},
+      {id:'massa_int',  nome:'Macarrão integral', kcal:140,prot:5, un:'g',gpu:1},
+    ]},
+    { id:'pre_treino', nome:'Pré-Treino',    icon:'⚡', pct:.13, alimentos:[
+      {id:'batata_doce',nome:'Batata doce',        kcal:86, prot:2, un:'g',  gpu:1 },
+      {id:'frango',     nome:'Frango',             kcal:165,prot:31,un:'g',  gpu:1 },
+      {id:'fruta',      nome:'Banana',             kcal:89, prot:1, un:'un', gpu:120},
+      {id:'whey',       nome:'Whey Protein (1 scoop)',kcal:130,prot:27,un:'un',gpu:35},
+      {id:'arroz',      nome:'Arroz branco',       kcal:130,prot:3, un:'g',  gpu:1 },
+      {id:'amendoim',   nome:'Pasta de amendoim',  kcal:590,prot:25,un:'g',  gpu:1 },
+      {id:'aveia',      nome:'Aveia',              kcal:374,prot:13,un:'g',  gpu:1 },
+      {id:'tapioca',    nome:'Tapioca',            kcal:346,prot:0, un:'un', gpu:60},
+      {id:'barra_prot', nome:'Barra proteica',     kcal:380,prot:30,un:'un', gpu:45},
+      {id:'ovo_cozido', nome:'Ovo cozido',         kcal:155,prot:13,un:'un', gpu:55},
+    ]},
+    { id:'jantar',    nome:'Jantar',         icon:'🌙', pct:.22, alimentos:[
+      {id:'carne_magra',nome:'Carne magra',   kcal:190,prot:26,un:'g',gpu:1},
+      {id:'frango',     nome:'Frango',        kcal:165,prot:31,un:'g',gpu:1},
+      {id:'salmao',     nome:'Salmão',        kcal:208,prot:20,un:'g',gpu:1},
+      {id:'arroz_int',  nome:'Arroz integral',kcal:124,prot:3, un:'g',gpu:1},
+      {id:'batata_doce',nome:'Batata doce',   kcal:86, prot:2, un:'g',gpu:1},
+      {id:'legumes',    nome:'Legumes',       kcal:50, prot:2, un:'g',gpu:1},
+      {id:'azeite',     nome:'Azeite',        kcal:884,prot:0, un:'ml',gpu:10},
+      {id:'massa_int',  nome:'Macarrão integral',kcal:140,prot:5,un:'g',gpu:1},
+      {id:'feijao',     nome:'Feijão',        kcal:114,prot:8, un:'g',gpu:1},
+      {id:'whey',       nome:'Whey Protein (1 scoop)',kcal:130,prot:27,un:'un',gpu:35},
+    ]},
+  ],
 };
-// manter e crescer usam secar como fallback por ora
-_dietaRefeicoes.manter  = _dietaRefeicoes.secar;
-_dietaRefeicoes.crescer = _dietaRefeicoes.secar;
 
 function _dporcaoG(a) {
   if (a.un==='g')   return 100;
