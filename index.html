@@ -110,6 +110,126 @@ input, select { font-family: inherit; }
 .lock-remember input { width: 18px; height: 18px; accent-color: var(--red); flex-shrink: 0; }
 .lock-remember span { font-size: 13px; color: var(--muted); line-height: 1.4; user-select: none; }
 
+/* ── SIGNUP / TABS NA LOCK SCREEN ─────────────────── */
+.lock-tabs {
+  display: flex; width: 100%; max-width: 340px;
+  margin-bottom: 0; border-bottom: 1px solid var(--border);
+}
+.lock-tab {
+  flex: 1; padding: 11px 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--muted); background: none; border: none;
+  cursor: pointer; transition: color .2s;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.lock-tab.active { color: var(--red); border-bottom-color: var(--red); }
+.lock-panel { display: none; }
+.lock-panel.active { display: block; }
+.lock-divider {
+  text-align: center; font-size: 10px; letter-spacing: 3px;
+  color: var(--faint); text-transform: uppercase;
+  margin: 18px 0 14px; position: relative;
+}
+.lock-divider::before, .lock-divider::after {
+  content: ''; position: absolute; top: 50%;
+  width: 38%; height: 1px; background: var(--border);
+}
+.lock-divider::before { left: 0; }
+.lock-divider::after  { right: 0; }
+
+/* ── TELA ASSINATURA VENCIDA ──────────────────────── */
+#paywall {
+  position: fixed; inset: 0; z-index: 9998;
+  background: var(--bg);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px 20px; overflow-y: auto;
+}
+.paywall-logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(32px, 8vw, 46px);
+  letter-spacing: 6px; text-align: center; margin-bottom: 4px;
+}
+.paywall-logo span { color: var(--red); }
+.paywall-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 28px 24px; width: 100%; max-width: 340px; margin-top: 32px;
+  text-align: center;
+}
+.paywall-icon { font-size: 40px; margin-bottom: 16px; }
+.paywall-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--white); margin-bottom: 10px;
+}
+.paywall-msg {
+  font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px;
+}
+.paywall-btn {
+  width: 100%; background: var(--red); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 5px;
+  text-transform: uppercase; padding: 15px; min-height: 48px;
+  transition: background .2s; display: block;
+  text-decoration: none; text-align: center; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.paywall-btn:hover { background: var(--red2); }
+.paywall-logout {
+  margin-top: 16px; font-size: 11px; color: var(--faint);
+  background: none; border: none; cursor: pointer;
+  letter-spacing: 2px; text-transform: uppercase; text-decoration: underline;
+}
+.paywall-plans {
+  display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;
+}
+.paywall-plan {
+  background: var(--bg); border: 1px solid var(--border);
+  padding: 14px 16px; display: flex; align-items: center;
+  justify-content: space-between; gap: 12px;
+}
+.paywall-plan.featured { border-color: var(--red); }
+.paywall-plan-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--white);
+}
+.paywall-plan-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.paywall-plan-price {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 22px; color: var(--red); white-space: nowrap;
+}
+
+/* ── BANNER DE AVISO DE VENCIMENTO ────────────────── */
+#renewalBanner {
+  display: none;
+  position: fixed; top: var(--nav-h); left: 0; right: 0;
+  z-index: 900; padding: 10px 16px;
+  align-items: center; justify-content: space-between; gap: 10px;
+}
+#renewalBanner.warn-15 { background: #1a1500; border-bottom: 1px solid #3d3000; display: flex; }
+#renewalBanner.warn-10 { background: #1a0d00; border-bottom: 1px solid #4d2600; display: flex; }
+#renewalBanner.warn-5  { background: #1a0000; border-bottom: 1px solid var(--red); display: flex; }
+.renewal-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  flex: 1; line-height: 1.4;
+}
+#renewalBanner.warn-15 .renewal-text { color: var(--amber); }
+#renewalBanner.warn-10 .renewal-text { color: #ff8c00; }
+#renewalBanner.warn-5  .renewal-text { color: var(--red2); }
+.renewal-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  background: var(--red); color: #fff; padding: 6px 12px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.renewal-close {
+  color: var(--faint); font-size: 16px; flex-shrink: 0;
+  background: none; border: none; cursor: pointer; padding: 4px;
+}
+
 /* ── APP SHELL ────────────────────────────────────── */
 #appShell { display: none; min-height: 100vh; }
 
@@ -3470,39 +3590,104 @@ canvas#pesoChart {
 <body>
 
 <!-- ══ LOCK ════════════════════════════════════════ -->
+<!-- Banner de aviso de vencimento -->
+<div id="renewalBanner">
+  <span class="renewal-text" id="renewalText">Seu acesso vence em breve</span>
+  <button class="renewal-btn" onclick="abrirRenovacao()">Renovar</button>
+  <button class="renewal-close" onclick="fecharBanner()">✕</button>
+</div>
+
 <div id="lockScreen">
   <div class="lock-logo">Método<br><span>Ananias Jr</span></div>
   <div class="lock-sub">Plataforma de Performance</div>
 
-  <div class="lock-card">
-    <div class="lock-lbl">Email</div>
-    <input class="lock-inp" id="emailInp" type="email" placeholder="seu@email.com" autocomplete="email">
+  <!-- Tabs -->
+  <div class="lock-tabs">
+    <button class="lock-tab active" id="tabLogin" onclick="switchTab('login')">Entrar</button>
+    <button class="lock-tab" id="tabSignup" onclick="switchTab('signup')">Criar Conta</button>
+  </div>
 
-    <div class="lock-lbl lock-lbl-mt">Senha de Acesso</div>
-    <div class="pass-wrap">
-      <input class="lock-inp pass" id="passInp" type="password" placeholder="CÓDIGO" maxlength="20" autocomplete="current-password">
-      <button class="pass-eye" id="eyeBtn" onclick="toggleEye()">👁</button>
+  <div class="lock-card">
+    <!-- PAINEL LOGIN -->
+    <div class="lock-panel active" id="panelLogin">
+      <div class="lock-lbl">Email</div>
+      <input class="lock-inp" id="emailInp" type="email" placeholder="seu@email.com" autocomplete="email">
+
+      <div class="lock-lbl lock-lbl-mt">Senha</div>
+      <div class="pass-wrap">
+        <input class="lock-inp pass" id="passInp" type="password" placeholder="SENHA" maxlength="30" autocomplete="current-password">
+        <button class="pass-eye" id="eyeBtn" onclick="toggleEye()">👁</button>
+      </div>
+
+      <label class="lock-remember">
+        <input type="checkbox" id="rememberMe" checked>
+        <span>Manter acesso neste dispositivo</span>
+      </label>
+
+      <button class="lock-btn" onclick="tryLogin()">Acessar o Método</button>
+      <div class="lock-err" id="lockErr"></div>
+
+      <button type="button" onclick="abrirRecuperacao()" style="
+        background:none;border:none;color:var(--muted);
+        font-family:'Barlow Condensed',sans-serif;
+        font-size:11px;letter-spacing:2px;text-transform:uppercase;
+        cursor:pointer;margin-top:14px;display:block;width:100%;
+        text-align:center;padding:4px;transition:color .15s;
+      " onmouseover="this.style.color='var(--white)'"
+         onmouseout="this.style.color='var(--muted)'">
+        Esqueci minha senha
+      </button>
     </div>
 
-    <label class="lock-remember">
-      <input type="checkbox" id="rememberMe" checked>
-      <span>Manter acesso neste dispositivo</span>
-    </label>
+    <!-- PAINEL CADASTRO -->
+    <div class="lock-panel" id="panelSignup">
+      <div class="lock-lbl">Seu nome</div>
+      <input class="lock-inp" id="signupNome" type="text" placeholder="Como te chamamos?" autocomplete="name">
 
-    <button class="lock-btn" onclick="tryLogin()">Acessar o Método</button>
-    <div class="lock-err" id="lockErr"></div>
+      <div class="lock-lbl lock-lbl-mt">Email</div>
+      <input class="lock-inp" id="signupEmail" type="email" placeholder="seu@email.com" autocomplete="email">
 
-    <button type="button" onclick="abrirRecuperacao()" style="
-      background:none;border:none;color:var(--muted);
-      font-family:'Barlow Condensed',sans-serif;
-      font-size:11px;letter-spacing:2px;text-transform:uppercase;
-      cursor:pointer;margin-top:14px;display:block;width:100%;
-      text-align:center;padding:4px;
-      transition:color .15s;
-    " onmouseover="this.style.color='var(--white)'"
-       onmouseout="this.style.color='var(--muted)'">
-      Esqueci minha senha
-    </button>
+      <div class="lock-lbl lock-lbl-mt">Senha</div>
+      <div class="pass-wrap">
+        <input class="lock-inp" id="signupPass" type="password" placeholder="Mínimo 6 caracteres" maxlength="30" autocomplete="new-password">
+        <button class="pass-eye" onclick="toggleEyeSignup(this)">👁</button>
+      </div>
+
+      <button class="lock-btn" onclick="tryCadastro()" style="margin-top:24px;">Criar minha conta</button>
+      <div class="lock-err" id="signupErr"></div>
+
+      <div class="lock-divider">após criar</div>
+      <div style="font-size:12px;color:var(--muted);text-align:center;line-height:1.6;">
+        Você será direcionado para assinar<br>a plataforma e liberar seu acesso.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tela de assinatura vencida / necessária -->
+<div id="paywall">
+  <div class="paywall-logo">Método<br><span>Ananias Jr</span></div>
+
+  <div class="paywall-card" id="paywallCard">
+    <div class="paywall-icon">🔒</div>
+    <div class="paywall-title" id="paywallTitle">Acesso necessário</div>
+    <div class="paywall-msg" id="paywallMsg">Para acessar a plataforma, assine o Método Ananias Jr.</div>
+
+    <div class="paywall-plans">
+      <div class="paywall-plan featured">
+        <div>
+          <div class="paywall-plan-name">Acesso Mensal</div>
+          <div class="paywall-plan-desc">Treinos, nutrição, acompanhamento</div>
+        </div>
+        <div class="paywall-plan-price" id="paywallPreco">R$XX</div>
+      </div>
+    </div>
+
+    <a class="paywall-btn" id="paywallBtn" href="#" target="_blank" rel="noopener">
+      Assinar agora
+    </a>
+
+    <button class="paywall-logout" onclick="logout()">Sair da conta</button>
   </div>
 </div>
 
@@ -4894,6 +5079,20 @@ const SUPABASE_URL = 'https://tawvbdvkabxkixwujcfw.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhd3ZiZHZrYWJ4a2l4d3VqY2Z3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyOTY0ODMsImV4cCI6MjA5NDg3MjQ4M30.KXEE-kKXffkGvaEpq5884RwD2orxQrwnMEb_RnJRMdI';
 const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+/* ── HOTMART — substitua os links abaixo após criar os produtos ── */
+const HOTMART = {
+  assinatura: {
+    link:  'LINK_HOTMART_ASSINATURA_MENSAL',  // ex: https://pay.hotmart.com/XXXXXXXX
+    preco: 'R$XX',                             // ex: 'R$97'
+    dias:  35,                                 // dias de acesso por ciclo
+  },
+  premium: {
+    'seca-barriga':   { link: 'LINK_HOTMART_SECA_BARRIGA',   preco: 'R$XX', dias: 35 },
+    'projeto-verao':  { link: 'LINK_HOTMART_PROJETO_VERAO',  preco: 'R$XX', dias: 35 },
+    'trimestre-ouro': { link: 'LINK_HOTMART_TRIMESTRE_OURO', preco: 'R$XX', dias: 90 },
+  }
+};
+
 // ID do usuário logado (preenchido após login)
 let _uid = null;
 
@@ -4966,14 +5165,30 @@ async function sbCarregarDados() {
       }
     }
 
-    // Acesso premium
+    // Acesso premium + assinatura base
     const { data: acessos } = await _sb.from('prog_acesso')
-      .select('programa_id, expira_em')
+      .select('programa_id, expira_em, tipo')
       .eq('user_id', _uid)
       .gt('expira_em', new Date().toISOString());
+
     if (acessos && acessos.length > 0) {
-      const ids = acessos.map(a => a.programa_id);
+      // Assinatura mensal
+      const assinatura = acessos.find(a => a.tipo === 'assinatura' || a.programa_id === 'plataforma');
+      if (assinatura) {
+        localStorage.setItem('maj_assinatura_expira', assinatura.expira_em);
+        const diasRestantes = Math.ceil((new Date(assinatura.expira_em) - new Date()) / 86400000);
+        localStorage.setItem('maj_dias_restantes', String(diasRestantes));
+      } else {
+        localStorage.removeItem('maj_assinatura_expira');
+        localStorage.setItem('maj_dias_restantes', '0');
+      }
+      // Programas premium
+      const ids = acessos.filter(a => a.tipo === 'premium').map(a => a.programa_id);
       localStorage.setItem('maj_prog_acesso', JSON.stringify(ids));
+    } else {
+      localStorage.removeItem('maj_assinatura_expira');
+      localStorage.setItem('maj_dias_restantes', '0');
+      localStorage.setItem('maj_prog_acesso', '[]');
     }
 
     // Preferências de refeição
@@ -5539,6 +5754,157 @@ function obFinish() {
 function maybeShowOnboarding() { /* handled inside bootApp */ }
 
 /* ── AUTH ─────────────────────────────────────────── */
+/* ── TABS LOGIN / CADASTRO ───────────────────────── */
+function switchTab(tab) {
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+  document.getElementById('panelLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('panelSignup').classList.toggle('active', tab === 'signup');
+  document.getElementById('lockErr').textContent = '';
+  document.getElementById('signupErr').textContent = '';
+}
+
+function toggleEyeSignup(btn) {
+  const inp = document.getElementById('signupPass');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  btn.textContent = show ? '🙈' : '👁';
+}
+
+/* ── CADASTRO ────────────────────────────────────── */
+async function tryCadastro() {
+  const nome  = document.getElementById('signupNome').value.trim();
+  const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+  const pass  = document.getElementById('signupPass').value.trim();
+  const err   = document.getElementById('signupErr');
+  const btn   = document.querySelector('#panelSignup .lock-btn');
+
+  err.textContent = '';
+  if (!nome || nome.length < 2)           { err.textContent = 'Digite seu nome'; return; }
+  if (!email || !email.includes('@'))     { err.textContent = 'Email inválido'; return; }
+  if (!pass || pass.length < 6)          { err.textContent = 'Senha com no mínimo 6 caracteres'; return; }
+
+  btn.textContent = 'Criando conta...';
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await _sb.auth.signUp({
+      email, password: pass,
+      options: { data: { nome } }
+    });
+
+    if (error) {
+      if (error.message.includes('already registered')) {
+        err.textContent = 'Este email já possui uma conta. Faça login.';
+        setTimeout(() => switchTab('login'), 2000);
+      } else {
+        err.textContent = error.message;
+      }
+      btn.textContent = 'Criar minha conta';
+      btn.disabled = false;
+      return;
+    }
+
+    // Conta criada — salva nome e direciona ao paywall para assinar
+    localStorage.setItem('maj_nome', nome);
+    localStorage.setItem('maj_email', email);
+    if (data.user) _uid = data.user.id;
+
+    // Mostra paywall para assinar
+    document.getElementById('lockScreen').style.display = 'none';
+    mostrarPaywall('novo');
+
+  } catch(e) {
+    err.textContent = 'Erro de conexão. Tente novamente.';
+    btn.textContent = 'Criar minha conta';
+    btn.disabled = false;
+  }
+}
+
+/* ── PAYWALL ─────────────────────────────────────── */
+function mostrarPaywall(modo) {
+  // modo: 'novo' (recém cadastrado) | 'vencido' (assinatura expirada) | 'sem_acesso'
+  const pw    = document.getElementById('paywall');
+  const title = document.getElementById('paywallTitle');
+  const msg   = document.getElementById('paywallMsg');
+  const btn   = document.getElementById('paywallBtn');
+  const preco = document.getElementById('paywallPreco');
+
+  preco.textContent = HOTMART.assinatura.preco;
+  btn.href = HOTMART.assinatura.link;
+
+  // Passa email como parâmetro para pré-preencher checkout da Hotmart
+  const emailSalvo = localStorage.getItem('maj_email') || '';
+  if (emailSalvo && btn.href !== '#') {
+    btn.href = HOTMART.assinatura.link + (HOTMART.assinatura.link.includes('?') ? '&' : '?') + 'email=' + encodeURIComponent(emailSalvo);
+  }
+
+  if (modo === 'novo') {
+    title.textContent = 'Tudo pronto!';
+    msg.innerHTML = 'Sua conta foi criada com sucesso.<br>Assine para liberar acesso completo à plataforma.';
+    btn.textContent = 'Assinar o Método';
+  } else if (modo === 'vencido') {
+    title.textContent = 'Acesso encerrado';
+    msg.innerHTML = 'Sua assinatura venceu.<br>Renove para continuar treinando.';
+    btn.textContent = 'Renovar agora';
+  } else {
+    title.textContent = 'Acesso necessário';
+    msg.innerHTML = 'Para usar a plataforma, assine o Método Ananias Jr.';
+    btn.textContent = 'Assinar agora';
+  }
+
+  pw.style.display = 'flex';
+}
+
+function fecharPaywall() {
+  document.getElementById('paywall').style.display = 'none';
+}
+
+/* ── BANNER DE RENOVAÇÃO ─────────────────────────── */
+function verificarBannerRenovacao() {
+  const dias = parseInt(localStorage.getItem('maj_dias_restantes') || '999');
+  const banner = document.getElementById('renewalBanner');
+  const text   = document.getElementById('renewalText');
+
+  banner.className = 'warn-' + (dias <= 5 ? '5' : dias <= 10 ? '10' : '15');
+
+  if (dias <= 5) {
+    text.textContent = `Atenção: seu acesso vence em ${dias} dia${dias === 1 ? '' : 's'}. Renove agora.`;
+    banner.classList.add('warn-5');
+    banner.style.display = 'flex';
+  } else if (dias <= 10) {
+    text.textContent = `Seu acesso vence em ${dias} dias. Renove e continue sem interrupção.`;
+    banner.classList.add('warn-10');
+    banner.style.display = 'flex';
+  } else if (dias <= 15) {
+    text.textContent = `Seu acesso vence em ${dias} dias.`;
+    banner.classList.add('warn-15');
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function fecharBanner() {
+  document.getElementById('renewalBanner').style.display = 'none';
+}
+
+function abrirRenovacao() {
+  const email = localStorage.getItem('maj_email') || '';
+  let link = HOTMART.assinatura.link;
+  if (email && link !== '#') {
+    link += (link.includes('?') ? '&' : '?') + 'email=' + encodeURIComponent(email);
+  }
+  window.open(link, '_blank', 'noopener');
+}
+
+/* ── VERIFICAÇÃO DE ASSINATURA ───────────────────── */
+function temAssinaturaAtiva() {
+  const expira = localStorage.getItem('maj_assinatura_expira');
+  if (!expira) return false;
+  return new Date(expira) > new Date();
+}
+
 async function tryLogin() {
   const email = document.getElementById('emailInp').value.trim().toLowerCase();
   const pass  = document.getElementById('passInp').value.trim();
@@ -6203,6 +6569,14 @@ function updateProgAtivoBadge() {
 
 
 function bootApp(email, rawName) {
+  // 0. Verificar assinatura ativa — bloqueia antes de tudo
+  if (!temAssinaturaAtiva()) {
+    document.getElementById('lockScreen').style.display = 'none';
+    const dias = parseInt(localStorage.getItem('maj_dias_restantes') || '0');
+    mostrarPaywall(dias === 0 ? 'vencido' : 'sem_acesso');
+    return;
+  }
+
   // 1. Check if onboarding is needed FIRST — before showing anything
   const done       = localStorage.getItem('maj_onboarding_done');
   const nome_saved = localStorage.getItem('maj_nome');
@@ -6259,6 +6633,9 @@ function bootApp(email, rawName) {
   buildPesoChart();
   setTimeout(deskUpdateKpis, 100);
   renderDesafios();
+
+  // Verificar e exibir banner de renovação se próximo do vencimento
+  verificarBannerRenovacao();
 }
 
 async function logout() {
