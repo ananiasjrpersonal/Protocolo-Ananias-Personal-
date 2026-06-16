@@ -5106,7 +5106,9 @@ let _uid = null;
 async function sbSyncProfile(data) {
   if (!_uid) return;
   try {
-    await _sb.from('profiles').upsert({ id: _uid, ...data, updated_at: new Date().toISOString() });
+    await _sb.from('profiles')
+      .upsert({ id: _uid, ...data, updated_at: new Date().toISOString() },
+              { onConflict: 'id' });
   } catch(e) { console.warn('sbSyncProfile:', e); }
 }
 
@@ -5145,6 +5147,15 @@ async function sbCarregarDados() {
     // Perfil
     const { data: prof } = await _sb.from('profiles').select('*').eq('id', _uid).single();
     if (prof) {
+      // Se perfil existe mas sem nome, tentar user_metadata e salvar de volta
+      if (!prof.nome) {
+        const { data: { user: _u } } = await _sb.auth.getUser().catch(() => ({ data: { user: null } }));
+        const _metaNome = _u?.user_metadata?.nome || _u?.user_metadata?.full_name || '';
+        if (_metaNome && !_metaNome.includes('@') && _metaNome.length > 1) {
+          prof.nome = _metaNome;
+          _sb.from('profiles').update({ nome: _metaNome }).eq('id', _uid).catch(() => {});
+        }
+      }
       if (prof.nome)            localStorage.setItem('maj_nome', prof.nome);
       if (prof.meta_kcal)       localStorage.setItem('maj_kcal', String(prof.meta_kcal));
       if (prof.meta_prot)       localStorage.setItem('maj_prot', String(prof.meta_prot));
@@ -6138,15 +6149,17 @@ async function tryLogin() {
         if (res.error) console.warn('last_access update:', res.error.message);
       });
 
-    // Nome: sbCarregarDados já carregou do Supabase, usar o que está no localStorage
+    // Nome: prioridade Supabase -> user_metadata -> null (nunca salvar email como nome)
     const nomeDb   = localStorage.getItem('maj_nome');
     const nomeMeta = data.user.user_metadata?.nome;
-    const nome     = nomeDb || nomeMeta || email.split('@')[0];
-    // Garantir que está salvo ANTES do bootApp
-    localStorage.setItem('maj_nome', nome);
+    const nomeReal = (nomeDb && !nomeDb.includes('@')) ? nomeDb
+                   : (nomeMeta && !nomeMeta.includes('@')) ? nomeMeta
+                   : null;
+    if (nomeReal) localStorage.setItem('maj_nome', nomeReal);
+    else localStorage.removeItem('maj_nome');
 
     if (btn) { btn.textContent = 'Entrar'; btn.disabled = false; }
-    bootApp(email, nome);
+    bootApp(email, nomeReal);
 
   } catch(e) {
     err.textContent = 'Erro de conexão. Tente novamente.';
@@ -6777,13 +6790,21 @@ function bootApp(email, rawName) {
   }
 
   // 2. Data is complete — boot normally
-  const nome = nome_saved || rawName;
+  // Nome: prioriza localStorage; nunca exibe email; fallback = 'Atleta'
+  const nomeLs = localStorage.getItem('maj_nome');
+  const nomeBruto = nomeLs || rawName || '';
+  const nomeExibir = (nomeBruto && !nomeBruto.includes('@') && nomeBruto.length > 1)
+    ? nomeBruto
+    : 'Atleta';
+  const nome = nomeExibir;
+  const semNomeReal = nome === 'Atleta';
+
   document.getElementById('lockScreen').style.display = 'none';
   document.getElementById('appShell').style.display = 'block';
 
   const initials = nome.slice(0,2).toUpperCase();
   document.getElementById('sidebarInitials').textContent = initials;
-  document.getElementById('sidebarName').textContent = nome;
+  document.getElementById('sidebarName').textContent = semNomeReal ? '— configure seus dados' : nome;
   document.getElementById('perfilAvatar').textContent = initials;
   document.getElementById('perfilName').textContent = nome;
   document.getElementById('perfilEmail').textContent = email || localStorage.getItem('maj_email') || '';
@@ -6908,9 +6929,9 @@ function setGreeting(nome) {
   const days = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
   const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const dayStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-  // Use nome from onboarding first; strip email domain if fallback
-  let n = localStorage.getItem('maj_nome') || nome || 'Atleta';
-  if (n.includes('@')) n = n.split('@')[0];
+  // Nome: nunca exibir email — usar Atleta como fallback limpo
+  const _nomeLs = localStorage.getItem('maj_nome') || nome || '';
+  let n = (_nomeLs && !_nomeLs.includes('@') && _nomeLs.length > 1) ? _nomeLs : 'Atleta';
   n = n.charAt(0).toUpperCase() + n.slice(1);
   const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
   const greetEl  = document.getElementById('greetMsg');
@@ -8656,8 +8677,20 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(function(res) {
           if (res.error) console.warn('last_access update:', res.error.message);
         });
-      // Nome: prioridade é o que veio do Supabase (sbCarregarDados já setou)
-      const nome = localStorage.getItem('maj_nome') || email.split('@')[0];
+      // Nome: 1) Supabase via sbCarregarDados, 2) user_metadata do signup, 3) Atleta
+      const _nDb   = localStorage.getItem('maj_nome');
+      const _nMeta = session.user.user_metadata?.nome || session.user.user_metadata?.full_name || '';
+      let nome;
+      if (_nDb && !_nDb.includes('@') && _nDb.length > 1) {
+        nome = _nDb; // ja veio do Supabase profiles
+      } else if (_nMeta && !_nMeta.includes('@') && _nMeta.length > 1) {
+        nome = _nMeta;
+        localStorage.setItem('maj_nome', nome);
+        // Salvar no profiles para proximos logins
+        sbSyncProfile({ nome: nome });
+      } else {
+        nome = 'Atleta'; // nunca usar email como nome
+      }
       bootApp(email, nome);
     } else if (localStorage.getItem('maj_auth') === '1') {
       // Fallback: localStorage (offline ou sessão expirada)
