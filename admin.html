@@ -530,9 +530,11 @@ async function liberarPrograma() {
   if (!progId) { alert('Selecione um programa.'); return; }
 
   const expira = new Date(Date.now() + 35 * 86400000).toISOString();
+  const tipo = progId === 'plataforma' ? 'assinatura' : 'premium';
   const { error } = await _sb.from('prog_acesso').upsert({
     user_id: _alunoSelecionado.id,
     programa_id: progId,
+    tipo: tipo,
     data_pagamento: new Date().toISOString(),
     expira_em: expira,
   }, { onConflict: 'user_id,programa_id' });
@@ -638,10 +640,18 @@ async function criarAluno() {
       id: userId, nome: nome, email: email, programa_ativo: progBase,
     });
 
-    // Liberar premium se selecionado
+    // Liberar assinatura base + premium se selecionado
+    await _sb.from('prog_acesso').upsert({
+      user_id: userId, programa_id: 'plataforma',
+      tipo: 'assinatura',
+      data_pagamento: new Date().toISOString(),
+      expira_em: expira,
+    }, { onConflict: 'user_id,programa_id' });
+
     if (progPrem) {
       await _sb.from('prog_acesso').upsert({
         user_id: userId, programa_id: progPrem,
+        tipo: 'premium',
         data_pagamento: new Date().toISOString(),
         expira_em: expira,
       }, { onConflict: 'user_id,programa_id' });

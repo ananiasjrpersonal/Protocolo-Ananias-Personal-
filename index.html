@@ -6643,6 +6643,12 @@ async function logout() {
   await _sb.auth.signOut();
   localStorage.removeItem('maj_auth');
   localStorage.removeItem('maj_email');
+  localStorage.removeItem('maj_assinatura_expira');
+  localStorage.removeItem('maj_dias_restantes');
+  localStorage.removeItem('maj_prog_acesso');
+  localStorage.removeItem('maj_nome');
+  localStorage.removeItem('maj_onboarding_done');
+  localStorage.removeItem('maj_programa_ativo');
   _uid = null;
   location.reload();
 }
