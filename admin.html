@@ -277,6 +277,14 @@ body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-se
 
     <!-- Alunos -->
     <div class="section-title">Alunos</div>
+    <div style="margin-bottom:12px;">
+      <input type="search" id="buscaAluno" placeholder="Buscar por nome ou email…"
+        oninput="filtrarAlunos(this.value)"
+        style="width:100%;max-width:360px;background:var(--card2);border:1px solid var(--border);
+               color:var(--white);padding:10px 14px;font-family:'Barlow Condensed',sans-serif;
+               font-size:14px;letter-spacing:1px;outline:none;transition:border-color .2s;"
+        onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
     <table class="alunos-table" id="alunosTable">
       <thead>
         <tr>
@@ -426,9 +434,9 @@ async function carregarDados() {
   const prem_ct = acessos     ? new Set(acessos.map(a => a.user_id)).size : 0;
 
   document.getElementById('kpiTotal').textContent = total;
-  document.getElementById('kpiHoje').textContent  = hoje_ct;
-  document.getElementById('kpiExp').textContent   = exp_ct;
-  document.getElementById('kpiPrem').textContent  = prem_ct;
+  document.getElementById('kpiHoje').textContent  = hoje_ct || '—';
+  document.getElementById('kpiExp').textContent   = exp_ct  || '—';
+  document.getElementById('kpiPrem').textContent  = prem_ct || '—';
 
   // Mapear último treino por user
   const ultimoMap = {};
@@ -480,6 +488,11 @@ async function carregarDados() {
     `;
     tbody.appendChild(tr);
   });
+  // registra todas as rows para a busca local
+  _todosAlunosRows = Array.from(tbody.querySelectorAll('tr'));
+  // limpa o campo de busca ao recarregar
+  var buscaInp = document.getElementById('buscaAluno');
+  if (buscaInp) buscaInp.value = '';
 }
 
 /* ── Modal ── */
@@ -501,16 +514,16 @@ async function abrirAluno(profile, ultimoTreino, acessos) {
   const { data: treinos } = await _sb.from('treinos_log')
     .select('data, treino_dia').eq('user_id', profile.id)
     .order('data', { ascending: false }).limit(7);
-  document.getElementById('mTreinos').textContent = treinos && treinos.length
-    ? treinos.map(t => t.data + ' · ' + t.treino_dia).join('  ·  ')
+  document.getElementById('mTreinos').innerHTML = treinos && treinos.length
+    ? treinos.map(t => `<div style="padding:2px 0;">${t.data} · Treino ${t.treino_dia}</div>`).join('')
     : 'Nenhum treino registrado';
 
   // Últimas medidas
   const { data: medidas } = await _sb.from('medidas')
     .select('data, peso, cintura').eq('user_id', profile.id)
     .order('data', { ascending: false }).limit(3);
-  document.getElementById('mMedidas').textContent = medidas && medidas.length
-    ? medidas.map(m => m.data + ' · ' + (m.peso || '—') + 'kg cintura ' + (m.cintura || '—') + 'cm').join('  ·  ')
+  document.getElementById('mMedidas').innerHTML = medidas && medidas.length
+    ? medidas.map(m => `<div style="padding:2px 0;">${m.data} · ${m.peso || '—'}kg · cintura ${m.cintura || '—'}cm</div>`).join('')
     : 'Nenhuma medida registrada';
 
   document.getElementById('liberarSelect').value = '';
@@ -710,6 +723,13 @@ function copiarWpp() {
   }
 }
 
+function toggleNovoSenha(btn) {
+  const inp = document.getElementById('novoSenha');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  btn.textContent = show ? '🙈 Ocultar' : '👁 Ver';
+}
+
 function copiarSQL() {
   if (navigator.clipboard && window._sqlParaCopiar) {
     navigator.clipboard.writeText(window._sqlParaCopiar).then(function() {
@@ -725,6 +745,22 @@ document.addEventListener('DOMContentLoaded', function() {
   if (mA) mA.addEventListener('click', function(e) { if (e.target === this) fecharModal(); });
   if (mN) mN.addEventListener('click', function(e) { if (e.target === this) fecharNovoAluno(); });
 });
+
+/* ── Busca de alunos ── */
+var _todosAlunosRows = []; // guarda todas as <tr> para filtragem local
+
+function filtrarAlunos(termo) {
+  var t = (termo || '').toLowerCase().trim();
+  var tbody = document.getElementById('alunosBody');
+  if (!t) {
+    _todosAlunosRows.forEach(function(tr) { tr.style.display = ''; });
+    return;
+  }
+  _todosAlunosRows.forEach(function(tr) {
+    var texto = tr.textContent.toLowerCase();
+    tr.style.display = texto.includes(t) ? '' : 'none';
+  });
+}
 
 /* ── Verificar sessão existente ── */
 _sb.auth.getSession().then(({ data: { session } }) => {
@@ -767,8 +803,8 @@ _sb.auth.getSession().then(({ data: { session } }) => {
 
       <label class="novo-lbl">Senha temporária</label>
       <div style="position:relative;">
-        <input class="novo-inp" id="novoSenha" type="text" value="Ananias2025" autocomplete="off" style="margin-bottom:0;">
-        <button type="button" onclick="document.getElementById('novoSenha').value='Ananias2025'" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.3);font-size:11px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;">↺ padrão</button>
+        <input class="novo-inp" id="novoSenha" type="password" value="Ananias2025" autocomplete="off" style="margin-bottom:0;padding-right:80px;">
+        <button type="button" onclick="toggleNovoSenha(this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;">👁 Ver</button>
       </div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:rgba(255,255,255,.25);letter-spacing:1px;margin-top:6px;margin-bottom:16px;">
         Senha padrão <b style="color:rgba(255,255,255,.4)">Ananias2025</b> · O aluno troca depois pelo link "Esqueci minha senha"

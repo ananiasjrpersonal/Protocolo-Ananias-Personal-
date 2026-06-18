@@ -3624,19 +3624,19 @@ canvas#pesoChart {
         <span>Manter acesso neste dispositivo</span>
       </label>
 
-      <button class="lock-btn" onclick="tryLogin()">Acessar o Método</button>
-      <div class="lock-err" id="lockErr"></div>
-
       <button type="button" onclick="abrirRecuperacao()" style="
         background:none;border:none;color:var(--muted);
         font-family:'Barlow Condensed',sans-serif;
         font-size:11px;letter-spacing:2px;text-transform:uppercase;
-        cursor:pointer;margin-top:14px;display:block;width:100%;
-        text-align:center;padding:4px;transition:color .15s;
+        cursor:pointer;margin-top:10px;display:block;width:100%;
+        text-align:right;padding:4px 0;transition:color .15s;
       " onmouseover="this.style.color='var(--white)'"
          onmouseout="this.style.color='var(--muted)'">
         Esqueci minha senha
       </button>
+
+      <button class="lock-btn" onclick="tryLogin()">Acessar o Método</button>
+      <div class="lock-err" id="lockErr"></div>
     </div>
 
     <!-- PAINEL CADASTRO -->
@@ -3874,7 +3874,7 @@ canvas#pesoChart {
       </a>
     </div>
     <div class="sidebar-section">
-      <div class="sidebar-section-lbl">Configurações</div>
+      <div class="sidebar-section-lbl">Conteúdo</div>
       <div class="nav-item" onclick="dadosOpen()"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span> Meus Dados</div>
       <div class="nav-item" style="opacity:.5;cursor:not-allowed;" title="Em breve"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></span> Vídeos <span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--faint);margin-left:4px;">🔒 Em breve</span></div>
       <div class="nav-item" data-page="ananias" onclick="navigate('ananias')"><span class="nav-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Quem é Ananias</div>
@@ -5141,7 +5141,7 @@ async function sbSyncProfile(data) {
       .upsert({ id: _uid, ...data, updated_at: new Date().toISOString() },
               { onConflict: 'id' });
     if (res.error) console.error('sbSyncProfile ERRO:', res.error);
-    else console.log('sbSyncProfile OK:', Object.keys(data));
+    // sync ok (log removido de produção)
   } catch(e) { console.error('sbSyncProfile EXCEPTION:', e); }
 }
 
@@ -5179,7 +5179,6 @@ async function sbCarregarDados() {
   try {
     // Perfil
     const { data: prof, error: profErr } = await _sb.from('profiles').select('*').eq('id', _uid).single();
-    console.log('sbCarregarDados profiles:', prof ? 'OK nome=' + prof.nome : 'null', profErr?.message || '');
     if (prof) {
       // Nome: Supabase so sobrescreve se vier valor valido
       if (prof.nome && !prof.nome.includes('@') && prof.nome.length > 1) {
@@ -5189,7 +5188,6 @@ async function sbCarregarDados() {
       else {
         const _nomeLs = localStorage.getItem('maj_nome');
         if (_nomeLs && !_nomeLs.includes('@') && _nomeLs.length > 1) {
-          console.log('sbCarregarDados: salvando nome do localStorage no Supabase:', _nomeLs);
           _sb.from('profiles').update({ nome: _nomeLs }).eq('id', _uid).catch(e => console.warn('update nome:', e));
         }
       }
@@ -5817,7 +5815,7 @@ const TREINOS_CASA = TREINOS_OBJ.manter.intermediario.casa.A.ex;
 const TREINOS_ACA  = TREINOS_OBJ.manter.intermediario.academia.A.ex;
 // TREINOS declarado acima como alias de TREINOS_OBJ
 
-const HIST_MOCK = []; // sem dados de demonstração
+const HIST_MOCK = []; // sem dados de demonstração — mantido para compatibilidade, sempre vazio
 
 /* ── STATE ────────────────────────────────────────── */
 let currentPage = 'dashboard';
@@ -6390,7 +6388,13 @@ function mostrarPaywall(modo) {
     btn.textContent = 'Assinar o Método';
   } else if (modo === 'vencido') {
     title.textContent = 'Acesso encerrado';
-    msg.innerHTML = 'Sua assinatura venceu.<br>Renove para continuar treinando.';
+    const expStr = localStorage.getItem('maj_assinatura_expira');
+    let diasMsg = '';
+    if (expStr) {
+      const diasAtras = Math.ceil((new Date() - new Date(expStr)) / 86400000);
+      diasMsg = diasAtras === 1 ? '<br>Seu acesso expirou há 1 dia.' : `<br>Seu acesso expirou há ${diasAtras} dias.`;
+    }
+    msg.innerHTML = 'Sua assinatura venceu.' + diasMsg + '<br>Renove para continuar treinando.';
     btn.textContent = 'Renovar agora';
   } else {
     title.textContent = 'Acesso necessário';
@@ -7105,7 +7109,10 @@ function progRenderDia(prog, dia) {
   t.ex.forEach((ex, i) => {
     const row = document.createElement('div');
     row.className = 'ex-item';
-    row.innerHTML = `<div class="ex-n">${i+1}</div><div class="ex-body"><div class="ex-name">${ex.n}</div><div class="ex-detail">${ex.d}</div></div><button class="ex-timer-btn" type="button" onclick="event.stopPropagation();openTimer('${ex.n}',${ex.rest || 60})">⏱ ${ex.rest || 60}s</button>`;
+    row.innerHTML = `<div class="ex-n">${i+1}</div><div class="ex-body"><div class="ex-name"></div><div class="ex-detail"></div></div><button class="ex-timer-btn" type="button">⏱ ${ex.rest || 60}s</button>`;
+    row.querySelector('.ex-name').textContent = ex.n;
+    row.querySelector('.ex-detail').textContent = ex.d;
+    row.querySelector('.ex-timer-btn').onclick = function(e) { e.stopPropagation(); openTimer(ex.n, ex.rest || 60); };
     frag.appendChild(row);
   });
   el.appendChild(frag);
@@ -7215,11 +7222,11 @@ function bootApp(email, rawName) {
   // Atribuir programaAtivo ANTES do badge — garante exibição correta após refresh
   programaAtivo = localStorage.getItem('maj_programa_ativo') || null;
   updateProgAtivoBadge();
-  setTimeout(dtRender, 50);
-  setTimeout(initDietaEstatica, 200);
+  requestAnimationFrame(dtRender);
+  requestAnimationFrame(initDietaEstatica);
   buildHistorico();
   buildPesoChart();
-  setTimeout(deskUpdateKpis, 100);
+  requestAnimationFrame(deskUpdateKpis);
   renderDesafios();
 
   // Verificar e exibir banner de renovação se próximo do vencimento
@@ -8065,7 +8072,10 @@ function renderEx(containerId, treinos, storageKey) {
   treinos.forEach((ex, i) => {
     const row = document.createElement('div');
     row.className = 'ex-item' + (done.includes(i)?' done':'');
-    row.innerHTML = `<div class="ex-n">${i+1}</div><div class="ex-body"><div class="ex-name">${ex.n}</div><div class="ex-detail">${ex.d}</div></div><button class="ex-timer-btn" onclick="event.stopPropagation();openTimer('${ex.n}',${ex.rest})">⏱ ${ex.rest}s</button>`;
+    row.innerHTML = `<div class="ex-n">${i+1}</div><div class="ex-body"><div class="ex-name"></div><div class="ex-detail"></div></div><button class="ex-timer-btn">⏱ ${ex.rest}s</button>`;
+    row.querySelector('.ex-name').textContent = ex.n;
+    row.querySelector('.ex-detail').textContent = ex.d;
+    row.querySelector('.ex-timer-btn').onclick = function(e) { e.stopPropagation(); openTimer(ex.n, ex.rest); };
     row.onclick = () => {
       row.classList.toggle('done');
       const cur = JSON.parse(localStorage.getItem('maj_ex_'+containerId)||'[]');
@@ -9018,7 +9028,7 @@ async function enviarRecuperacao() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-  registrarEvento('visita');
+  // registrarEvento('visita') é chamado após getSession para capturar uid quando usuário já está logado
   const passInp = document.getElementById('passInp');
   if (passInp) passInp.addEventListener('keydown', e => {
     if (e.key === 'Enter') tryLogin();
@@ -9038,6 +9048,7 @@ document.addEventListener('DOMContentLoaded', function() {
   _sb.auth.getSession().then(async ({ data: { session } }) => {
     if (session) {
       _uid = session.user.id;
+      registrarEvento('visita'); // uid disponível → visita vinculada ao usuário
       const email = session.user.email;
       localStorage.setItem('maj_auth', '1');
       localStorage.setItem('maj_email', email);
@@ -9066,9 +9077,13 @@ document.addEventListener('DOMContentLoaded', function() {
       bootApp(email, nome);
     } else if (localStorage.getItem('maj_auth') === '1') {
       // Fallback: localStorage (offline ou sessão expirada)
+      registrarEvento('visita'); // visita anônima (sessão expirada)
       const email = localStorage.getItem('maj_email') || '';
       const nome  = localStorage.getItem('maj_nome') || 'Atleta';
       bootApp(email, nome);
+    } else {
+      // Visitante completamente novo — sem sessão e sem localStorage
+      registrarEvento('visita');
     }
   });
 });
