@@ -5080,6 +5080,37 @@ const SUPABASE_URL = 'https://tawvbdvkabxkixwujcfw.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhd3ZiZHZrYWJ4a2l4d3VqY2Z3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyOTY0ODMsImV4cCI6MjA5NDg3MjQ4M30.KXEE-kKXffkGvaEpq5884RwD2orxQrwnMEb_RnJRMdI';
 const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+/* ══════════════════════════════════════════════════
+   TRACKING DE VISITAS / FUNIL
+   Registra visitantes anônimos (GitHub Pages é estático,
+   então isso é a única forma de saber quem passou pelo site).
+   ══════════════════════════════════════════════════ */
+function getVisitorId() {
+  let vid = localStorage.getItem('maj_visitor_id');
+  if (!vid) {
+    vid = 'v_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('maj_visitor_id', vid);
+  }
+  return vid;
+}
+
+function registrarEvento(evento) {
+  try {
+    _sb.from('eventos_visita').insert({
+      visitor_id: getVisitorId(),
+      user_id:    _uid || null,
+      evento:     evento,
+      pagina:     location.pathname,
+      referrer:   document.referrer || null,
+      user_agent: navigator.userAgent,
+    }).then(function(res) {
+      if (res.error) console.warn('registrarEvento:', res.error.message);
+    });
+  } catch (e) {
+    console.warn('registrarEvento falhou:', e);
+  }
+}
+
 /* ── HOTMART — substitua os links abaixo após criar os produtos ── */
 const HOTMART = {
   assinatura: {
@@ -6274,6 +6305,7 @@ function switchTab(tab) {
   document.getElementById('panelSignup').classList.toggle('active', tab === 'signup');
   document.getElementById('lockErr').textContent = '';
   document.getElementById('signupErr').textContent = '';
+  if (tab === 'signup') registrarEvento('clique_criar_conta');
 }
 
 function toggleEyeSignup(btn) {
@@ -6344,6 +6376,7 @@ function mostrarPaywall(modo) {
 
   preco.textContent = HOTMART.assinatura.preco;
   btn.href = HOTMART.assinatura.link;
+  btn.onclick = function() { registrarEvento('clique_assinar'); };
 
   // Passa email como parâmetro para pré-preencher checkout da Hotmart
   const emailSalvo = localStorage.getItem('maj_email') || '';
@@ -8985,6 +9018,7 @@ async function enviarRecuperacao() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
+  registrarEvento('visita');
   const passInp = document.getElementById('passInp');
   if (passInp) passInp.addEventListener('keydown', e => {
     if (e.key === 'Enter') tryLogin();
