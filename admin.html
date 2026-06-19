@@ -353,7 +353,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-se
 <script>
 const SUPABASE_URL = 'https://tawvbdvkabxkixwujcfw.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRhd3ZiZHZrYWJ4a2l4d3VqY2Z3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyOTY0ODMsImV4cCI6MjA5NDg3MjQ4M30.KXEE-kKXffkGvaEpq5884RwD2orxQrwnMEb_RnJRMdI';
-const ADMIN_EMAIL = 'ananiasjr16@gmail.com'; // único email com acesso ao painel
+const ADMIN_EMAILS = ['ananiasjr16@gmail.com', 'michelato88@gmail.com']; // emails com acesso ao painel
 
 const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let _alunoSelecionado = null;
@@ -377,8 +377,8 @@ async function adminLogin() {
     return;
   }
 
-  // Verificar se é o professor
-  if (data.user.email !== ADMIN_EMAIL) {
+  // Verificar se é um dos admins autorizados
+  if (!ADMIN_EMAILS.includes(data.user.email)) {
     err.textContent = 'Acesso não autorizado para este email.';
     await _sb.auth.signOut();
     btn.textContent = 'Entrar no Painel'; btn.disabled = false;
@@ -402,7 +402,7 @@ async function carregarDados() {
 
   // Todos os perfis
   const { data: profiles } = await _sb.from('profiles')
-    .select('*').neq('email', ADMIN_EMAIL);
+    .select('*').not('email', 'in', `(${ADMIN_EMAILS.join(',')})`);
 
   // Último acesso: updated_at do perfil como proxy
   const lastAccessMap = {};
@@ -764,7 +764,7 @@ function filtrarAlunos(termo) {
 
 /* ── Verificar sessão existente ── */
 _sb.auth.getSession().then(({ data: { session } }) => {
-  if (session && session.user.email === ADMIN_EMAIL) {
+  if (session && ADMIN_EMAILS.includes(session.user.email)) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminShell').style.display = 'block';
     carregarDados();
